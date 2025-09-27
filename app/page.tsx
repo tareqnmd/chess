@@ -1,5 +1,7 @@
+import ChessGame from '@/components/chess/ChessGame';
+
 const Home = () => {
-	return <div>Home</div>;
+	return <ChessGame />;
 };
 
 export default Home;
