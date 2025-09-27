@@ -1,4 +1,4 @@
-import ChessGame from '@/components/chess/ChessGame';
+import ChessGame from '@/components/game/play/GamePlay';
 
 const Home = () => {
 	return <ChessGame />;

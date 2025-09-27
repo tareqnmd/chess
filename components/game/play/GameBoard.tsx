@@ -1,8 +1,8 @@
 'use client';
 import { Chessboard } from 'react-chessboard';
 
-const ChessBoard = () => {
+const GameBoard = () => {
 	return <Chessboard />;
 };
 
-export default ChessBoard;
+export default GameBoard;
