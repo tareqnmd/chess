@@ -1,6 +1,10 @@
-import { Chessboard } from 'react-chessboard';
+import { Chessboard, ChessboardOptions } from 'react-chessboard';
 
-const GameChessBoard = () => {
+const GameChessBoard = ({
+	chessOptions,
+}: {
+	chessOptions?: ChessboardOptions;
+}) => {
 	return (
 		<Chessboard
 			options={{
@@ -8,6 +12,7 @@ const GameChessBoard = () => {
 					borderRadius: '12px',
 					maxWidth: '600px',
 				},
+				...chessOptions,
 			}}
 		/>
 	);
