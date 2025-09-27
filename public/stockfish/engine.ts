@@ -1,4 +1,9 @@
-const stockfish = new Worker('./stockfish.wasm.js');
+let stockfish: Worker | null = null;
+
+// Only initialize worker on client side
+if (typeof window !== 'undefined') {
+	stockfish = new Worker('./stockfish.wasm.js');
+}
 
 type EngineMessage = {
 	uciMessage: string;
@@ -16,6 +21,11 @@ export default class Engine {
 	isReady: boolean;
 
 	constructor() {
+		if (!stockfish) {
+			throw new Error(
+				'Stockfish engine can only be initialized in the browser'
+			);
+		}
 		this.stockfish = stockfish;
 		this.isReady = false;
 		this.onMessage = (callback) => {
