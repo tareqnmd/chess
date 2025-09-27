@@ -21,6 +21,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
+				suppressHydrationWarning
 				id="chess-t32"
 				className={`${font.variable} antialiased`}
 			>
