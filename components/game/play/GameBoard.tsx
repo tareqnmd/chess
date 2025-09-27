@@ -1,8 +1,8 @@
 'use client';
-import { Chessboard } from 'react-chessboard';
+import GameChessBoard from '../GameChessBoard';
 
 const GameBoard = () => {
-	return <Chessboard />;
+	return <GameChessBoard />;
 };
 
 export default GameBoard;
