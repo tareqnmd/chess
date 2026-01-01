@@ -11,7 +11,7 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 					chess
 				</h1>
 				
-				<nav className="flex gap-6">
+				<nav className="flex gap-4 md:gap-6">
 					<button
 						onClick={() => onNavigate('play')}
 						className={`text-sm font-medium transition-all ${

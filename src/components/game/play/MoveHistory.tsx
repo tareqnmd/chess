@@ -48,7 +48,7 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 
 	if (history.length === 0) {
 		return (
-			<div className="h-48 flex items-center justify-center text-slate-500 text-sm">
+			<div className="max-h-48 h-48 flex items-center justify-center text-slate-500 text-sm">
 				No moves yet
 			</div>
 		);
@@ -59,7 +59,7 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 	return (
 		<div
 			ref={scrollRef}
-			className="h-48 overflow-y-auto custom-scrollbar pr-2"
+			className="max-h-48 overflow-y-auto custom-scrollbar pr-2"
 		>
 			<div className="flex flex-col gap-1">
 				{movePairs.map((pair) => {
