@@ -16,6 +16,7 @@ interface UseChessClockReturn {
 	resetClock: (timeControl: TimeControl) => void;
 	addIncrement: (color: Color, increment: number) => void;
 	formatTime: (ms: number) => string;
+	startCountdown: () => void;
 }
 
 export function useChessClock(
@@ -84,12 +85,9 @@ export function useChessClock(
 			white: initialTimeMs,
 			black: initialTimeMs,
 			activeColor: 'w',
-			isRunning: true,
+			isRunning: false, // Don't start running until both players move
 		});
-
-		lastTickRef.current = Date.now();
-		startTimer();
-	}, [startTimer]);
+	}, []);
 
 	const switchTurn = useCallback((newActiveColor: Color) => {
 		setClockState((prev) => {
@@ -164,6 +162,12 @@ export function useChessClock(
 		return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 	}, []);
 
+	const startCountdown = useCallback(() => {
+		setClockState((prev) => ({ ...prev, isRunning: true }));
+		lastTickRef.current = Date.now();
+		startTimer();
+	}, [startTimer]);
+
 	return {
 		clockState,
 		startClock,
@@ -174,6 +178,7 @@ export function useChessClock(
 		resetClock,
 		addIncrement,
 		formatTime,
+		startCountdown,
 	};
 }
 

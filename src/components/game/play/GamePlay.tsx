@@ -30,6 +30,7 @@ const GamePlay = () => {
 		stopClock,
 		resetClock,
 		formatTime,
+		startCountdown,
 	} = useChessClock(setTimeoutWinner);
 
 	const { autoSave, saveCompletedGame, clearSavedGame, recordMove } =
@@ -38,6 +39,7 @@ const GamePlay = () => {
 	const prevFenRef = useRef(gameState.fen);
 	const prevHistoryLengthRef = useRef(0);
 	const gameStartTimeRef = useRef<number>(0);
+	const clockStartedRef = useRef(false);
 
 	// Handle clock when moves are made and record moves
 	useEffect(() => {
@@ -48,6 +50,12 @@ const GamePlay = () => {
 			const currentTurn = chess.turn();
 			switchTurn(currentTurn);
 			prevFenRef.current = gameState.fen;
+
+			// Start clock countdown after both players have made their first move (2 moves total)
+			if (gameState.history.length >= 2 && !clockStartedRef.current) {
+				startCountdown();
+				clockStartedRef.current = true;
+			}
 
 			// Record the move if there's a new one
 			if (gameState.history.length > prevHistoryLengthRef.current) {
@@ -81,6 +89,7 @@ const GamePlay = () => {
 		clockState.black,
 		gameState,
 		recordMove,
+		startCountdown,
 	]);
 
 	// Stop clock and save game when game ends
@@ -111,6 +120,7 @@ const GamePlay = () => {
 			startGame(settings);
 			startClock(settings.timeControl);
 			gameStartTimeRef.current = Date.now();
+			clockStartedRef.current = false; // Reset clock started flag
 			clearSavedGame();
 		},
 		[startGame, startClock, clearSavedGame]
@@ -122,6 +132,7 @@ const GamePlay = () => {
 			resetClock(gameState.settings.timeControl);
 		}
 		gameStartTimeRef.current = 0;
+		clockStartedRef.current = false; // Reset clock started flag
 	}, [resetGame, resetClock, gameState.settings]);
 
 	const handleMove = useCallback(
