@@ -84,23 +84,23 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 				<div className="grid grid-cols-2 gap-3">
 					<button
 						onClick={() => setPlayerColor('w')}
-						className={`py-3 px-4 rounded-lg font-medium transition-all ${
+						className={`py-3 px-4 rounded-lg font-medium transition-all border-2 ${
 							playerColor === 'w'
-								? 'bg-white text-slate-900 shadow-lg'
-								: 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+								? 'bg-white text-slate-900 border-emerald-500'
+								: 'bg-white text-slate-700 border-slate-400 hover:border-slate-500'
 						}`}
 					>
-						⚪ White
+						White
 					</button>
 					<button
 						onClick={() => setPlayerColor('b')}
-						className={`py-3 px-4 rounded-lg font-medium transition-all ${
+						className={`py-3 px-4 rounded-lg font-medium transition-all border-2 ${
 							playerColor === 'b'
-								? 'bg-slate-900 text-white border-2 border-slate-500 shadow-lg'
-								: 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+								? 'bg-slate-900 text-white border-emerald-500'
+								: 'bg-slate-900 text-slate-300 border-slate-600 hover:border-slate-500'
 						}`}
 					>
-						⚫ Black
+						Black
 					</button>
 				</div>
 			</div>
