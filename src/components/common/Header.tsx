@@ -5,13 +5,13 @@ interface HeaderProps {
 
 const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 	return (
-		<header className="mb-8">
-			<div className="flex justify-between items-center pb-6">
-				<h1 className="text-xl font-bold text-emerald-400">
+		<header className="mb-6">
+			<div className="flex justify-between items-center pb-4 sm:pb-6">
+				<h1 className="text-xl sm:text-2xl font-bold text-emerald-400">
 					chess
 				</h1>
 				
-				<nav className="flex gap-4 md:gap-6">
+				<nav className="flex gap-3 sm:gap-4 md:gap-6" aria-label="Main navigation">
 					<button
 						onClick={() => onNavigate('play')}
 						className={`text-sm font-medium transition-all ${
@@ -19,6 +19,7 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 								? 'text-emerald-400'
 								: 'text-slate-400 hover:text-slate-200'
 						}`}
+						aria-current={currentPage === 'play' ? 'page' : undefined}
 					>
 						Play
 					</button>
@@ -29,6 +30,7 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 								? 'text-emerald-400'
 								: 'text-slate-400 hover:text-slate-200'
 						}`}
+						aria-current={currentPage === 'analysis' ? 'page' : undefined}
 					>
 						Analysis
 					</button>
@@ -39,12 +41,13 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 								? 'text-emerald-400'
 								: 'text-slate-400 hover:text-slate-200'
 						}`}
+						aria-current={currentPage === 'history' ? 'page' : undefined}
 					>
 						History
 					</button>
 				</nav>
 			</div>
-			<div className="border-b border-slate-700/50 -mx-4"></div>
+			<div className="border-b border-slate-700/50"></div>
 		</header>
 	);
 };

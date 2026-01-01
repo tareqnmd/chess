@@ -176,20 +176,22 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 	}, []);
 
 	return (
-		<div className="grid md:grid-cols-[minmax(300px,600px)_minmax(300px,400px)] gap-8 items-start justify-center">
-			<div className="flex flex-col gap-4">
-				<AnalysisBoard
-					fen={fen}
-					onFenChange={handleFenChange}
-					analysis={analysisState.currentAnalysis}
-					isAnalyzing={analysisState.isAnalyzing}
-				/>
+		<div className="grid lg:grid-cols-[minmax(300px,1fr)_minmax(300px,420px)] gap-6 lg:gap-8 items-start">
+			<section className="flex flex-col gap-5">
+				<div>
+					<AnalysisBoard
+						fen={fen}
+						onFenChange={handleFenChange}
+						analysis={analysisState.currentAnalysis}
+						isAnalyzing={analysisState.isAnalyzing}
+					/>
+				</div>
 				{moveList.length > 0 && (
-					<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
-						<div className="flex items-center justify-between mb-3">
-							<span className="text-sm font-medium text-slate-400 uppercase tracking-wider">
+					<section className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+						<header className="flex items-center justify-between mb-3">
+							<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider">
 								Move {currentMoveIndex + 1} / {moveList.length}
-							</span>
+							</h3>
 							<div className="flex gap-1">
 								<button
 									onClick={goToStart}
@@ -272,8 +274,8 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 									</svg>
 								</button>
 							</div>
-						</div>
-						<div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto p-2 bg-slate-900/50 rounded-lg">
+						</header>
+						<div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto p-2 bg-slate-900/50 rounded-lg" role="list">
 							{moveList.map((move, index) => (
 								<button
 									key={index}
@@ -283,6 +285,9 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 											? 'bg-emerald-600/40 text-emerald-300 border border-emerald-500/50'
 											: 'bg-slate-700/30 text-slate-400 hover:bg-slate-600/40 hover:text-slate-300'
 									}`}
+									role="listitem"
+									aria-label={`Move ${index + 1}: ${move}`}
+									aria-current={index === currentMoveIndex ? 'step' : undefined}
 								>
 									{index % 2 === 0 && (
 										<span className="text-slate-500 mr-1">
@@ -293,12 +298,14 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 								</button>
 							))}
 						</div>
-					</div>
+					</section>
 				)}
-				<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+				<section className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
 					<button
 						onClick={() => setShowPgnInput(!showPgnInput)}
 						className="flex items-center justify-between w-full text-sm font-medium text-slate-400 uppercase tracking-wider"
+						aria-expanded={showPgnInput}
+						aria-controls="pgn-input-section"
 					>
 						<span>Import PGN</span>
 						<svg
@@ -319,14 +326,15 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 					</button>
 
 					{showPgnInput && (
-						<div className="mt-3 flex flex-col gap-2">
+						<div id="pgn-input-section" className="mt-3 flex flex-col gap-2">
 							<textarea
 								value={pgnInput}
 								onChange={(e) => setPgnInput(e.target.value)}
 								placeholder="Paste PGN here...&#10;&#10;Example:&#10;1. e4 e5 2. Nf3 Nc6 3. Bb5 a6"
 								className="w-full h-32 px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-slate-200 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
+								aria-label="PGN input"
 							/>
-							{pgnError && <p className="text-red-400 text-sm">{pgnError}</p>}
+							{pgnError && <p className="text-red-400 text-sm" role="alert">{pgnError}</p>}
 							<button
 								onClick={handlePgnSubmit}
 								className="w-full py-2 px-4 bg-emerald-600/30 hover:bg-emerald-600/40 text-emerald-400 text-sm rounded-lg border border-emerald-600/40 transition-all"
@@ -335,13 +343,14 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 							</button>
 						</div>
 					)}
-				</div>
-				<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
-					<label className="text-sm font-medium text-slate-400 uppercase tracking-wider block mb-2">
+				</section>
+				<section className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+					<label htmlFor="fen-input" className="text-sm font-medium text-slate-400 uppercase tracking-wider block mb-2">
 						Position (FEN)
 					</label>
 					<div className="flex gap-2">
 						<input
+							id="fen-input"
 							type="text"
 							value={fenInput}
 							onChange={(e) => setFenInput(e.target.value)}
@@ -349,17 +358,20 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 							onKeyDown={(e) => e.key === 'Enter' && handleFenInputSubmit()}
 							className="flex-1 px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-slate-200 font-mono text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 overflow-x-auto"
 							placeholder="Enter FEN..."
+							aria-label="FEN position input"
 						/>
 						<button
 							onClick={handleReset}
 							className="px-3 py-2 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 rounded-lg border border-slate-600/50 transition-all"
 							title="Reset to starting position"
+							aria-label="Reset to starting position"
 						>
 							<svg
 								className="w-5 h-5"
 								fill="none"
 								viewBox="0 0 24 24"
 								stroke="currentColor"
+								aria-hidden="true"
 							>
 								<path
 									strokeLinecap="round"
@@ -370,8 +382,8 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 							</svg>
 						</button>
 					</div>
-				</div>
-			</div>
+				</section>
+			</section>
 			<AnalysisPanel
 				analysis={analysisState.currentAnalysis}
 				isAnalyzing={analysisState.isAnalyzing}

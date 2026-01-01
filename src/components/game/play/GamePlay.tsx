@@ -143,7 +143,7 @@ const GamePlay = () => {
 
 	return (
 		<GameLayout>
-			<div className={`relative ${isIdle ? 'hidden md:block' : ''}`}>
+			<section className={`relative ${isIdle ? 'hidden lg:block' : ''}`} aria-label="Chess board">
 				<GameBoard
 					gameState={gameState}
 					onMove={handleMove}
@@ -158,19 +158,19 @@ const GamePlay = () => {
 						bot={gameState.settings.bot}
 					/>
 				)}
-			</div>
+			</section>
 
-			<div className="flex flex-col gap-6">
+			<aside className="flex flex-col gap-6">
 				{isIdle ? (
 					<GameSettings onStartGame={handleStartGame} />
 				) : (
 					<>
 						{gameState.settings && (
-							<div className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
-								<span className="text-4xl">
+							<section className="flex items-center gap-4 p-5 bg-slate-800/50 rounded-xl border border-slate-700/50">
+								<span className="text-4xl" aria-hidden="true">
 									{gameState.settings.bot.avatar}
 								</span>
-								<div>
+								<div className="flex-1">
 									<h3 className="font-semibold text-slate-100">
 										{gameState.settings.bot.name}
 									</h3>
@@ -179,38 +179,42 @@ const GamePlay = () => {
 									</p>
 								</div>
 								{!isPlayerTurn && isPlaying && (
-									<div className="ml-auto px-3 py-1 bg-emerald-600/20 text-emerald-400 text-sm rounded-full border border-emerald-600/30">
+									<div className="px-3 py-1 bg-emerald-600/20 text-emerald-400 text-sm rounded-full border border-emerald-600/30">
 										Thinking...
 									</div>
 								)}
-							</div>
+							</section>
 						)}
 
 						{gameState.settings && (
-							<ChessClock
-								clockState={clockState}
-								formatTime={formatTime}
-								playerColor={gameState.settings.playerColor}
-								isGameOver={isGameOver}
-							/>
+							<section aria-label="Game clock">
+								<ChessClock
+									clockState={clockState}
+									formatTime={formatTime}
+									playerColor={gameState.settings.playerColor}
+									isGameOver={isGameOver}
+								/>
+							</section>
 						)}
 
-						<div className="flex-1 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+						<section className="flex-1 p-5 bg-slate-800/50 rounded-xl border border-slate-700/50">
 							<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-3">
 								Moves
 							</h3>
 							<MoveHistory history={gameState.history} />
-						</div>
+						</section>
 
-						<GameControls
-							onResign={resign}
-							onNewGame={handleNewGame}
-							isGameOver={isGameOver}
-							isPlaying={isPlaying}
-						/>
+						<section aria-label="Game controls">
+							<GameControls
+								onResign={resign}
+								onNewGame={handleNewGame}
+								isGameOver={isGameOver}
+								isPlaying={isPlaying}
+							/>
+						</section>
 					</>
 				)}
-			</div>
+			</aside>
 		</GameLayout>
 	);
 };

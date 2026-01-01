@@ -60,6 +60,8 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 		<div
 			ref={scrollRef}
 			className="max-h-48 overflow-y-auto custom-scrollbar pr-2"
+			role="list"
+			aria-label="Move history"
 		>
 			<div className="flex flex-col gap-1">
 				{movePairs.map((pair) => {
@@ -70,6 +72,7 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 						<div
 							key={pair.moveNumber}
 							className="flex items-center gap-2 text-sm"
+							role="listitem"
 						>
 							<span className="w-8 text-slate-500 font-mono text-right shrink-0">
 								{pair.moveNumber}.

@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
-import Header from './components/common/Header';
-import Footer from './components/common/Footer';
-import GamePlay from './components/game/play/GamePlay';
+import { useCallback, useState } from 'react';
 import AnalysisPage from './components/analysis/AnalysisPage';
+import Footer from './components/common/Footer';
+import Header from './components/common/Header';
+import GamePlay from './components/game/play/GamePlay';
 import HistoryPage from './components/history/HistoryPage';
 
 type Page = 'play' | 'analysis' | 'history';
@@ -35,9 +35,9 @@ function App() {
 				return <GamePlay />;
 			case 'analysis':
 				return (
-					<AnalysisPage 
-						importedPgn={analysisImport.pgn} 
-						importedFen={analysisImport.fen} 
+					<AnalysisPage
+						importedPgn={analysisImport.pgn}
+						importedFen={analysisImport.fen}
 					/>
 				);
 			case 'history':
@@ -49,9 +49,12 @@ function App() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-			<div className="container mx-auto px-4 py-8 max-w-6xl">
-				<Header currentPage={currentPage} onNavigate={handleNavigate} />
-				<main>{renderPage()}</main>
+			<div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
+				<Header
+					currentPage={currentPage}
+					onNavigate={handleNavigate}
+				/>
+				<main className="mt-8">{renderPage()}</main>
 				<Footer />
 			</div>
 		</div>

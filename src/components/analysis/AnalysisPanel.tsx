@@ -49,8 +49,8 @@ const AnalysisPanel = ({
 	};
 
 	return (
-		<div className="flex flex-col gap-6">
-			<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+		<aside className="flex flex-col gap-6">
+			<section className="p-5 bg-slate-800/50 rounded-xl border border-slate-700/50">
 				<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 					Engine Analysis
 				</h3>
@@ -119,24 +119,25 @@ const AnalysisPanel = ({
 						)}
 					</div>
 				)}
-			</div>
+			</section>
 
 			{/* Saved Analyses */}
-			<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 flex-1">
+			<section className="p-5 bg-slate-800/50 rounded-xl border border-slate-700/50 flex-1">
 				<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 					Saved Positions ({savedAnalyses.length})
 				</h3>
 				
-				<div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
+				<div className="flex flex-col gap-2 max-h-64 overflow-y-auto" role="list">
 					{savedAnalyses.length === 0 ? (
 						<p className="text-slate-500 text-sm text-center py-4">
 							No saved analyses yet
 						</p>
 					) : (
 						savedAnalyses.map((saved) => (
-							<div
+							<article
 								key={saved.id}
 								className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg group"
+								role="listitem"
 							>
 								<div className="flex-1 min-w-0">
 									<div className="flex items-center gap-2">
@@ -171,12 +172,12 @@ const AnalysisPanel = ({
 										</svg>
 									</button>
 								</div>
-							</div>
+							</article>
 						))
 					)}
 				</div>
-			</div>
-		</div>
+			</section>
+		</aside>
 	);
 };
 

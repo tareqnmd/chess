@@ -176,13 +176,17 @@ const AnalysisBoard = ({
 	);
 
 	return (
-		<div className="relative">
+		<div className="relative" role="region" aria-label="Chess analysis board">
 			{/* @ts-expect-error react-chessboard type mismatch */}
 			<Chessboard options={chessboardOptions} />
 
 			{isAnalyzing && (
-				<div className="absolute top-4 right-4 flex items-center gap-2 bg-blue-600/90 backdrop-blur-sm px-3 py-1.5 rounded-lg">
-					<div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+				<div 
+					className="absolute top-4 right-4 flex items-center gap-2 bg-blue-600/90 backdrop-blur-sm px-3 py-1.5 rounded-lg"
+					role="status"
+					aria-live="polite"
+				>
+					<div className="w-2 h-2 bg-white rounded-full animate-pulse" aria-hidden="true" />
 					<span className="text-sm text-white font-medium">Analyzing...</span>
 				</div>
 			)}

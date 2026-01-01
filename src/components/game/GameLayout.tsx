@@ -1,6 +1,6 @@
 const GameLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
-		<div className="grid md:grid-cols-[minmax(300px,600px)_minmax(300px,400px)] gap-8 items-start justify-center">
+		<div className="grid lg:grid-cols-[minmax(300px,1fr)_minmax(300px,420px)] gap-6 lg:gap-8 items-start">
 			{children}
 		</div>
 	);

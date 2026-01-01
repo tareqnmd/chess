@@ -73,16 +73,17 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 	};
 
 	return (
-		<div className="grid md:grid-cols-[1fr_300px] gap-8">
+		<div className="grid lg:grid-cols-[1fr_320px] gap-6 lg:gap-8">
 			{/* Games List */}
-			<div className="flex flex-col gap-6">
+			<section className="flex flex-col gap-6">
 				{/* Header */}
-				<div className="flex items-center justify-between">
-					<h2 className="text-xl font-semibold text-slate-100">Game History</h2>
+				<header className="flex items-center justify-between">
+					<h2 className="text-xl sm:text-2xl font-semibold text-slate-100">Game History</h2>
 					<div className="flex gap-2">
 						<button
 							onClick={handleExport}
 							className="px-3 py-1.5 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 text-sm rounded-lg border border-slate-600/50 transition-all"
+							aria-label="Export game data"
 						>
 							Export Data
 						</button>
@@ -90,23 +91,24 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 							onClick={handleClearHistory}
 							disabled={games.length === 0}
 							className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm rounded-lg border border-red-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+							aria-label="Clear all game history"
 						>
 							Clear All
 						</button>
 					</div>
-				</div>
+				</header>
 
 				{/* Games */}
 				{games.length === 0 ? (
 					<div className="p-12 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
-						<div className="text-5xl mb-4">📊</div>
+						<div className="text-5xl mb-4" aria-hidden="true">📊</div>
 						<h3 className="text-lg font-medium text-slate-300 mb-2">No games yet</h3>
 						<p className="text-slate-500">Play some games and they'll appear here!</p>
 					</div>
 				) : (
-					<div className="flex flex-col gap-3">
+					<div className="flex flex-col gap-3" role="list">
 						{games.map((game) => (
-							<div
+							<article
 								key={game.id}
 								onClick={() => setSelectedGame(game)}
 								className={`p-4 bg-slate-800/50 rounded-xl border transition-all cursor-pointer ${
@@ -114,6 +116,8 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 										? 'border-emerald-500/50'
 										: 'border-slate-700/50 hover:border-slate-600/50'
 								}`}
+								role="listitem"
+								aria-label={`Game vs ${game.settings.bot.name}, ${game.result}`}
 							>
 								<div className="flex items-center gap-4">
 									{/* Result */}
@@ -164,13 +168,13 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 						))}
 					</div>
 				)}
-			</div>
+			</section>
 
 			{/* Stats Sidebar */}
-			<div className="flex flex-col gap-6">
+			<aside className="flex flex-col gap-6">
 				{/* Overall Stats */}
 				{stats && stats.totalGames > 0 && (
-					<div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
+					<section className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
 						<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 							Statistics
 						</h3>
@@ -228,12 +232,12 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 								)}
 							</div>
 						</div>
-					</div>
+					</section>
 				)}
 
 				{/* Selected Game Details */}
 				{selectedGame && (
-					<div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
+					<section className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
 						<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 							Game Details
 						</h3>
@@ -263,9 +267,9 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 								)}
 							</div>
 						</div>
-					</div>
+					</section>
 				)}
-			</div>
+			</aside>
 		</div>
 	);
 };

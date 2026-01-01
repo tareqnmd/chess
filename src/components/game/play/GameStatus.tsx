@@ -43,12 +43,17 @@ const GameStatus = ({ status, winner, playerColor, bot }: GameStatusProps) => {
 	};
 
 	return (
-		<div className="absolute inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm rounded-xl z-10">
+		<div 
+			className="absolute inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm rounded-xl z-10"
+			role="dialog"
+			aria-labelledby="game-status-title"
+			aria-modal="false"
+		>
 			<div
 				className={`text-center p-8 rounded-2xl bg-gradient-to-br ${getBackgroundClass()} border-2 shadow-2xl transform animate-bounce-in`}
 			>
-				<div className="text-6xl mb-4">{getIcon()}</div>
-				<h2 className="text-2xl font-bold text-white mb-2">{getStatusMessage()}</h2>
+				<div className="text-6xl mb-4" aria-hidden="true">{getIcon()}</div>
+				<h2 id="game-status-title" className="text-2xl font-bold text-white mb-2">{getStatusMessage()}</h2>
 				<p className="text-sm text-white/70">
 					{isDraw
 						? 'Neither player wins'

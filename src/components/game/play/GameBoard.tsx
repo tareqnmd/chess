@@ -291,12 +291,16 @@ const GameBoard = ({
 	);
 
 	return (
-		<div className="relative">
+		<div className="relative" role="region" aria-label="Game board">
 			{/* @ts-expect-error react-chessboard type mismatch */}
 			<Chessboard options={chessboardOptions} />
 			{gameState.status === 'playing' && !isPlayerTurn && (
-				<div className="absolute bottom-4 left-4 flex items-center gap-2 bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700">
-					<div className="flex gap-1">
+				<div 
+					className="absolute bottom-4 left-4 flex items-center gap-2 bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700"
+					role="status"
+					aria-live="polite"
+				>
+					<div className="flex gap-1" aria-hidden="true">
 						<span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
 						<span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
 						<span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" />

@@ -46,9 +46,9 @@ const ChessClock = ({
 	};
 
 	return (
-		<div className="flex flex-col gap-3">
+		<div className="flex flex-col gap-3" role="timer">
 			{/* Opponent's clock (top) */}
-			<div className={getClockStyles(opponentColor)}>
+			<div className={getClockStyles(opponentColor)} aria-label={`${opponentColor === 'w' ? 'White' : 'Black'} time remaining`}>
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
 						<div
@@ -65,7 +65,7 @@ const ChessClock = ({
 			</div>
 
 			{/* Player's clock (bottom) */}
-			<div className={getClockStyles(playerColor)}>
+			<div className={getClockStyles(playerColor)} aria-label={`Your time remaining (${playerColor === 'w' ? 'White' : 'Black'})`}>
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
 						<div
