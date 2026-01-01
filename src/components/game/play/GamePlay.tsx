@@ -41,7 +41,6 @@ const GamePlay = () => {
 	const gameStartTimeRef = useRef<number>(0);
 	const clockStartedRef = useRef(false);
 
-	// Handle clock when moves are made and record moves
 	useEffect(() => {
 		if (gameState.status !== 'playing' || !gameState.settings) return;
 
@@ -51,13 +50,11 @@ const GamePlay = () => {
 			switchTurn(currentTurn);
 			prevFenRef.current = gameState.fen;
 
-			// Start clock countdown after both players have made their first move (2 moves total)
 			if (gameState.history.length >= 2 && !clockStartedRef.current) {
 				startCountdown();
 				clockStartedRef.current = true;
 			}
 
-			// Record the move if there's a new one
 			if (gameState.history.length > prevHistoryLengthRef.current) {
 				const lastMove = gameState.history[gameState.history.length - 1];
 				const moveColor = lastMove.color;
@@ -76,7 +73,6 @@ const GamePlay = () => {
 				prevHistoryLengthRef.current = gameState.history.length;
 			}
 
-			// Auto-save game state
 			autoSave(gameState, clockState.white, clockState.black);
 		}
 	}, [
@@ -92,12 +88,10 @@ const GamePlay = () => {
 		startCountdown,
 	]);
 
-	// Stop clock and save game when game ends
 	useEffect(() => {
 		if (gameState.status !== 'playing' && gameState.status !== 'idle') {
 			stopClock();
 
-			// Save completed game
 			if (gameState.settings && gameStartTimeRef.current) {
 				const duration = Math.floor(
 					(Date.now() - gameStartTimeRef.current) / 1000
@@ -120,7 +114,7 @@ const GamePlay = () => {
 			startGame(settings);
 			startClock(settings.timeControl);
 			gameStartTimeRef.current = Date.now();
-			clockStartedRef.current = false; // Reset clock started flag
+			clockStartedRef.current = false;
 			clearSavedGame();
 		},
 		[startGame, startClock, clearSavedGame]
@@ -132,7 +126,7 @@ const GamePlay = () => {
 			resetClock(gameState.settings.timeControl);
 		}
 		gameStartTimeRef.current = 0;
-		clockStartedRef.current = false; // Reset clock started flag
+		clockStartedRef.current = false;
 	}, [resetGame, resetClock, gameState.settings]);
 
 	const handleMove = useCallback(
@@ -149,7 +143,6 @@ const GamePlay = () => {
 
 	return (
 		<GameLayout>
-			{/* Chess Board - Hidden on small devices when idle */}
 			<div className={`relative ${isIdle ? 'hidden md:block' : ''}`}>
 				<GameBoard
 					gameState={gameState}
@@ -167,14 +160,11 @@ const GamePlay = () => {
 				)}
 			</div>
 
-			{/* Side Panel */}
 			<div className="flex flex-col gap-6">
-				{/* Show settings when idle */}
 				{isIdle ? (
 					<GameSettings onStartGame={handleStartGame} />
 				) : (
 					<>
-						{/* Opponent Info */}
 						{gameState.settings && (
 							<div className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
 								<span className="text-4xl">
@@ -196,7 +186,6 @@ const GamePlay = () => {
 							</div>
 						)}
 
-						{/* Clock */}
 						{gameState.settings && (
 							<ChessClock
 								clockState={clockState}
@@ -206,7 +195,6 @@ const GamePlay = () => {
 							/>
 						)}
 
-						{/* Move History */}
 						<div className="flex-1 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
 							<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-3">
 								Moves
@@ -214,7 +202,6 @@ const GamePlay = () => {
 							<MoveHistory history={gameState.history} />
 						</div>
 
-						{/* Game Controls */}
 						<GameControls
 							onResign={resign}
 							onNewGame={handleNewGame}

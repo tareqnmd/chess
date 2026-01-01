@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import type { PositionAnalysis, AnalysisState } from '@/types/chess';
-import { getEngine, terminateEngine } from '@/lib/stockfish-engine';
+import { getEngine } from '@/lib/stockfish-engine';
 import { saveAnalysis, getSavedAnalyses, deleteAnalysis, type SavedAnalysis } from '@/lib/storage';
 
 interface UseAnalysisReturn {
@@ -76,7 +76,7 @@ export function useAnalysis(): UseAnalysisReturn {
 							mate: mate ? (isWhiteTurn ? mate : -mate) : null,
 							bestMove: data.bestMove || null,
 							bestLine: data.pv || null,
-							depth: data.depth,
+							depth: data.depth || 0,
 						},
 					}));
 				}

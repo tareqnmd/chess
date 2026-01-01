@@ -50,7 +50,6 @@ const AnalysisPanel = ({
 
 	return (
 		<div className="flex flex-col gap-6">
-			{/* Analysis Controls */}
 			<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
 				<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 					Engine Analysis

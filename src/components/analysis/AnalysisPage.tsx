@@ -45,7 +45,7 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 		// Try to detect what move was made by comparing positions
 		try {
 			const oldChess = new Chess(fen);
-			const newChess = new Chess(newFen);
+			new Chess(newFen);
 			
 			// Find the move by trying all legal moves from old position
 			const legalMoves = oldChess.moves({ verbose: true });
@@ -159,7 +159,6 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 
 	return (
 		<div className="grid md:grid-cols-[minmax(300px,600px)_minmax(300px,400px)] gap-8 items-start justify-center">
-			{/* Board Section */}
 			<div className="flex flex-col gap-4">
 				<AnalysisBoard
 					fen={fen}
@@ -167,8 +166,6 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 					analysis={analysisState.currentAnalysis}
 					isAnalyzing={analysisState.isAnalyzing}
 				/>
-
-				{/* Move Navigation (when PGN is loaded) */}
 				{moveList.length > 0 && (
 					<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
 						<div className="flex items-center justify-between mb-3">
@@ -218,8 +215,6 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 								</button>
 							</div>
 						</div>
-						
-						{/* Move List */}
 						<div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto p-2 bg-slate-900/50 rounded-lg">
 							{moveList.map((move, index) => (
 								<button
@@ -240,8 +235,6 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 						</div>
 					</div>
 				)}
-
-				{/* PGN Import Toggle */}
 				<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
 					<button
 						onClick={() => setShowPgnInput(!showPgnInput)}
@@ -278,8 +271,6 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 						</div>
 					)}
 				</div>
-
-				{/* FEN Input */}
 				<div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
 					<label className="text-sm font-medium text-slate-400 uppercase tracking-wider block mb-2">
 						Position (FEN)
@@ -306,8 +297,6 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 					</div>
 				</div>
 			</div>
-
-			{/* Analysis Panel */}
 			<AnalysisPanel
 				analysis={analysisState.currentAnalysis}
 				isAnalyzing={analysisState.isAnalyzing}
