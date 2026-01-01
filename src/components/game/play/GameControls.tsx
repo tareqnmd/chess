@@ -39,7 +39,7 @@ const GameControls = ({
 				onClick={onNewGame}
 				className={`flex-1 py-3 px-4 font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2 ${
 					isGameOver
-						? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+						? 'bg-emerald-600 hover:bg-emerald-500 text-white'
 						: 'bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 border border-slate-600/50'
 				}`}
 			>

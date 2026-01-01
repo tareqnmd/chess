@@ -75,7 +75,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 	return (
 		<div className="grid md:grid-cols-[1fr_300px] gap-8">
 			{/* Games List */}
-			<div className="space-y-6">
+			<div className="flex flex-col gap-6">
 				{/* Header */}
 				<div className="flex items-center justify-between">
 					<h2 className="text-xl font-semibold text-slate-100">Game History</h2>
@@ -104,14 +104,14 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 						<p className="text-slate-500">Play some games and they'll appear here!</p>
 					</div>
 				) : (
-					<div className="space-y-3">
+					<div className="flex flex-col gap-3">
 						{games.map((game) => (
 							<div
 								key={game.id}
 								onClick={() => setSelectedGame(game)}
 								className={`p-4 bg-slate-800/50 rounded-xl border transition-all cursor-pointer ${
 									selectedGame?.id === game.id
-										? 'border-emerald-500/50 shadow-lg shadow-emerald-500/10'
+										? 'border-emerald-500/50'
 										: 'border-slate-700/50 hover:border-slate-600/50'
 								}`}
 							>
@@ -167,7 +167,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 			</div>
 
 			{/* Stats Sidebar */}
-			<div className="space-y-6">
+			<div className="flex flex-col gap-6">
 				{/* Overall Stats */}
 				{stats && stats.totalGames > 0 && (
 					<div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
@@ -175,7 +175,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 							Statistics
 						</h3>
 						
-						<div className="space-y-4">
+						<div className="flex flex-col gap-4">
 							{/* Win Rate */}
 							<div>
 								<div className="flex justify-between text-sm mb-1">
@@ -207,7 +207,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 							</div>
 
 							{/* Other Stats */}
-							<div className="space-y-2 pt-2 border-t border-slate-700/50">
+							<div className="flex flex-col gap-2 pt-2 border-t border-slate-700/50">
 								<div className="flex justify-between text-sm">
 									<span className="text-slate-500">Total Games</span>
 									<span className="text-slate-300">{stats.totalGames}</span>
@@ -238,7 +238,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 							Game Details
 						</h3>
 						
-						<div className="space-y-3">
+						<div className="flex flex-col gap-3">
 							<div className="p-3 bg-slate-700/30 rounded-lg">
 								<span className="text-slate-500 text-xs uppercase tracking-wider">PGN</span>
 								<pre className="mt-1 text-slate-200 text-xs font-mono whitespace-pre-wrap break-all max-h-32 overflow-y-auto">

@@ -38,7 +38,7 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 	return (
 		<div className="flex flex-col gap-5 p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
 			{/* Bot Selection */}
-			<div className="space-y-2">
+			<div className="flex flex-col gap-2">
 				<label className="block text-sm font-medium text-slate-300">
 					Opponent
 				</label>
@@ -60,7 +60,7 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 			</div>
 
 			{/* Time Control Selection */}
-			<div className="space-y-2">
+			<div className="flex flex-col gap-2">
 				<label className="block text-sm font-medium text-slate-300">
 					Time Control
 				</label>
@@ -84,7 +84,7 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 			</div>
 
 			{/* Color Selection */}
-			<div className="space-y-2">
+			<div className="flex flex-col gap-2">
 				<label className="block text-sm font-medium text-slate-300">
 					Play as
 				</label>
@@ -125,7 +125,7 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 			{/* Start Button */}
 			<button
 				onClick={handleStartGame}
-				className="w-full py-3 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg shadow-lg transition-all hover:shadow-xl active:scale-95"
+				className="w-full py-3 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-all active:scale-95"
 			>
 				Start Game
 			</button>

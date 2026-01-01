@@ -61,7 +61,7 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 			ref={scrollRef}
 			className="h-48 overflow-y-auto custom-scrollbar pr-2"
 		>
-			<div className="space-y-1">
+			<div className="flex flex-col gap-1">
 				{movePairs.map((pair) => {
 					const isLastWhite = pair.white === lastMove;
 					const isLastBlack = pair.black === lastMove;

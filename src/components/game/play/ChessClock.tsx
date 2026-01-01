@@ -32,11 +32,11 @@ const ChessClock = ({
 			baseStyles += ' opacity-50';
 		} else if (isActive) {
 			if (isCritical) {
-				baseStyles += ' bg-red-600/90 text-white animate-pulse shadow-lg shadow-red-500/50';
+				baseStyles += ' bg-red-600/90 text-white animate-pulse';
 			} else if (isLow) {
-				baseStyles += ' bg-amber-600/90 text-white shadow-lg shadow-amber-500/30';
+				baseStyles += ' bg-amber-600/90 text-white';
 			} else {
-				baseStyles += ' bg-emerald-600/90 text-white shadow-lg shadow-emerald-500/30';
+				baseStyles += ' bg-emerald-600/90 text-white';
 			}
 		} else {
 			baseStyles += ' bg-slate-700/50 text-slate-300';

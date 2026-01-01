@@ -1,11 +1,8 @@
 const Footer = () => {
 	return (
-		<footer className="mt-12 text-center text-slate-500 text-sm">
+		<footer className="mt-12 pt-8 border-t border-slate-700/50 text-center text-slate-500 text-sm">
 			<p>
-				Built with React + Vite • Powered by Stockfish Engine
-			</p>
-			<p className="mt-1 text-slate-600">
-				Play against AI • Analyze positions • Track your progress
+				Powered by Stockfish
 			</p>
 		</footer>
 	);

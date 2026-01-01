@@ -7,46 +7,45 @@ interface HeaderProps {
 
 const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 	return (
-		<header className="flex justify-between items-center mb-8">
-			<div className="flex items-center gap-3">
-				<span className="text-4xl">♟️</span>
-				<h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-					Chess Master
+		<header className="mb-8 pb-6 border-b border-slate-700/50">
+			<div className="flex justify-between items-center">
+				<h1 className="text-xl font-bold text-emerald-400">
+					chess
 				</h1>
+				
+				<nav className="flex gap-6">
+					<button
+						onClick={() => onNavigate('play')}
+						className={`text-sm font-medium transition-all ${
+							currentPage === 'play'
+								? 'text-emerald-400'
+								: 'text-slate-400 hover:text-slate-200'
+						}`}
+					>
+						Play
+					</button>
+					<button
+						onClick={() => onNavigate('analysis')}
+						className={`text-sm font-medium transition-all ${
+							currentPage === 'analysis'
+								? 'text-emerald-400'
+								: 'text-slate-400 hover:text-slate-200'
+						}`}
+					>
+						Analysis
+					</button>
+					<button
+						onClick={() => onNavigate('history')}
+						className={`text-sm font-medium transition-all ${
+							currentPage === 'history'
+								? 'text-emerald-400'
+								: 'text-slate-400 hover:text-slate-200'
+						}`}
+					>
+						History
+					</button>
+				</nav>
 			</div>
-			
-			<nav className="flex gap-2">
-				<button
-					onClick={() => onNavigate('play')}
-					className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-						currentPage === 'play'
-							? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25'
-							: 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 hover:text-white'
-					}`}
-				>
-					Play
-				</button>
-				<button
-					onClick={() => onNavigate('analysis')}
-					className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-						currentPage === 'analysis'
-							? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25'
-							: 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 hover:text-white'
-					}`}
-				>
-					Analysis
-				</button>
-				<button
-					onClick={() => onNavigate('history')}
-					className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-						currentPage === 'history'
-							? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25'
-							: 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 hover:text-white'
-					}`}
-				>
-					History
-				</button>
-			</nav>
 		</header>
 	);
 };

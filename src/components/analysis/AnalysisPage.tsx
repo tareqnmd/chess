@@ -160,7 +160,7 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 	return (
 		<div className="grid md:grid-cols-[minmax(300px,600px)_minmax(300px,400px)] gap-8 items-start justify-center">
 			{/* Board Section */}
-			<div className="space-y-4">
+			<div className="flex flex-col gap-4">
 				<AnalysisBoard
 					fen={fen}
 					onFenChange={handleFenChange}
@@ -259,7 +259,7 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 					</button>
 					
 					{showPgnInput && (
-						<div className="mt-3 space-y-2">
+						<div className="mt-3 flex flex-col gap-2">
 							<textarea
 								value={pgnInput}
 								onChange={(e) => setPgnInput(e.target.value)}

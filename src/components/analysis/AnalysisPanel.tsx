@@ -67,7 +67,7 @@ const AnalysisPanel = ({
 					) : (
 						<button
 							onClick={onAnalyze}
-							className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg shadow-lg shadow-blue-500/25 transition-all"
+							className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-all"
 						>
 							Analyze
 						</button>
@@ -83,7 +83,7 @@ const AnalysisPanel = ({
 
 				{/* Evaluation Display */}
 				{analysis && (
-					<div className="space-y-3">
+					<div className="flex flex-col gap-3">
 						{/* Eval Bar */}
 						<div className="h-6 bg-slate-900 rounded-full overflow-hidden relative">
 							<div
@@ -128,7 +128,7 @@ const AnalysisPanel = ({
 					Saved Positions ({savedAnalyses.length})
 				</h3>
 				
-				<div className="space-y-2 max-h-64 overflow-y-auto">
+				<div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
 					{savedAnalyses.length === 0 ? (
 						<p className="text-slate-500 text-sm text-center py-4">
 							No saved analyses yet
