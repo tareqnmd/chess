@@ -164,7 +164,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 										</svg>
 									</button>
 								</div>
-							</div>
+							</article>
 						))}
 					</div>
 				)}
