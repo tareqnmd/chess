@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 interface HeaderProps {
 	currentPage: 'play' | 'analysis' | 'history';
 	onNavigate: (page: 'play' | 'analysis' | 'history') => void;
@@ -7,8 +5,8 @@ interface HeaderProps {
 
 const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 	return (
-		<header className="mb-8 pb-6 border-b border-slate-700/50">
-			<div className="flex justify-between items-center">
+		<header className="mb-8">
+			<div className="flex justify-between items-center pb-6">
 				<h1 className="text-xl font-bold text-emerald-400">
 					chess
 				</h1>
@@ -46,6 +44,7 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 					</button>
 				</nav>
 			</div>
+			<div className="border-b border-slate-700/50 -mx-4"></div>
 		</header>
 	);
 };

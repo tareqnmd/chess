@@ -1,9 +1,12 @@
 const Footer = () => {
 	return (
-		<footer className="mt-12 pt-8 border-t border-slate-700/50 text-center text-slate-500 text-sm">
-			<p>
-				Powered by Stockfish
-			</p>
+		<footer className="mt-12">
+			<div className="border-t border-slate-700/50 -mx-4"></div>
+			<div className="pt-8 text-center text-slate-500 text-sm">
+				<p>
+					© {new Date().getFullYear()} Chess. All rights reserved.
+				</p>
+			</div>
 		</footer>
 	);
 };

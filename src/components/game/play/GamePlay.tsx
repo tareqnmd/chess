@@ -149,8 +149,8 @@ const GamePlay = () => {
 
 	return (
 		<GameLayout>
-			{/* Chess Board - Always visible */}
-			<div className="relative">
+			{/* Chess Board - Hidden on small devices when idle */}
+			<div className={`relative ${isIdle ? 'hidden md:block' : ''}`}>
 				<GameBoard
 					gameState={gameState}
 					onMove={handleMove}
@@ -164,17 +164,6 @@ const GamePlay = () => {
 						playerColor={gameState.settings.playerColor}
 						bot={gameState.settings.bot}
 					/>
-				)}
-				{/* Disabled overlay when idle */}
-				{isIdle && (
-					<div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] rounded-lg flex items-center justify-center">
-						<div className="text-center">
-							<div className="text-5xl mb-3">♟️</div>
-							<p className="text-slate-300 font-medium">
-								Configure game settings to start
-							</p>
-						</div>
-					</div>
 				)}
 			</div>
 
