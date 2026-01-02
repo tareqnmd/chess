@@ -1,7 +1,7 @@
 import type { Color } from '@/components/common/types';
 import { BOTS, TIME_CONTROLS } from '@/components/game/constants';
 import type { Bot, GameSettings, TimeControl } from '@/components/game/types';
-import { Button, Card, Select } from '@/components/ui';
+import { Button, Card, Select, ToggleButton } from '@/components/ui';
 import { useState } from 'react';
 
 interface GameSettingsProps {
@@ -77,32 +77,32 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 					Play as
 				</label>
 				<div className="flex gap-4 items-center">
-					<button
+					<ToggleButton
 						onClick={() => setColorChoice('w')}
-						className={`w-[40px] h-[40px] rounded-full bg-white transition-all ${
-							colorChoice === 'w'
-								? 'ring-4 ring-emerald-500 ring-offset-2 ring-offset-slate-800'
-								: 'ring-2 ring-slate-600 hover:ring-slate-500'
-						}`}
-						title="White"
+						selected={colorChoice === 'w'}
+						variant="circle"
+						size="md"
+						className="bg-white"
+						title="Play as White"
+						aria-label="Play as White"
 					/>
-					<button
+					<ToggleButton
 						onClick={() => setColorChoice('b')}
-						className={`w-[40px] h-[40px] rounded-full bg-slate-900 border-2 border-slate-700 transition-all ${
-							colorChoice === 'b'
-								? 'ring-4 ring-emerald-500 ring-offset-2 ring-offset-slate-800'
-								: 'ring-2 ring-slate-600 hover:ring-slate-500'
-						}`}
-						title="Black"
+						selected={colorChoice === 'b'}
+						variant="circle"
+						size="md"
+						className="bg-slate-900 border-2 border-slate-700"
+						title="Play as Black"
+						aria-label="Play as Black"
 					/>
-					<button
+					<ToggleButton
 						onClick={() => setColorChoice('random')}
-						className={`w-[40px] h-[40px] rounded-full bg-linear-to-r from-white from-50% to-slate-900 to-50% border-2 border-slate-700 transition-all ${
-							colorChoice === 'random'
-								? 'ring-4 ring-emerald-500 ring-offset-2 ring-offset-slate-800'
-								: 'ring-2 ring-slate-600 hover:ring-slate-500'
-						}`}
-						title="Random"
+						selected={colorChoice === 'random'}
+						variant="circle"
+						size="md"
+						className="bg-gradient-to-r from-white from-50% to-slate-900 to-50% border-2 border-slate-700"
+						title="Random color"
+						aria-label="Random color"
 					/>
 				</div>
 			</div>

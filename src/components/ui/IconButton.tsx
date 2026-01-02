@@ -1,27 +1,25 @@
-import { cn } from '@/lib/utils';
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'info';
-	size?: 'sm' | 'md' | 'lg' | 'xl';
-	fullWidth?: boolean;
-	children: ReactNode;
+	size?: 'sm' | 'md' | 'lg';
+	icon: ReactNode;
 }
 
-const Button = ({
-	variant = 'primary',
+const IconButton = ({
+	variant = 'ghost',
 	size = 'md',
-	fullWidth = false,
+	icon,
 	className,
-	children,
 	...props
-}: ButtonProps) => {
+}: IconButtonProps) => {
 	return (
 		<button
 			className={cn(
 				// Base styles
-				'inline-flex items-center justify-center gap-2',
-				'font-medium rounded-lg',
+				'inline-flex items-center justify-center',
+				'rounded-lg',
 				'transition-all duration-200',
 				'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900',
 				'active:scale-95',
@@ -30,7 +28,6 @@ const Button = ({
 				variant === 'primary' && [
 					'bg-emerald-600 hover:bg-emerald-500',
 					'text-white',
-					'shadow-sm shadow-emerald-600/20',
 					'focus-visible:ring-emerald-500',
 				],
 				variant === 'secondary' && [
@@ -51,26 +48,23 @@ const Button = ({
 					'focus-visible:ring-slate-500',
 				],
 				variant === 'info' && [
-					'bg-blue-600 hover:bg-blue-500',
-					'text-white',
-					'shadow-sm shadow-blue-600/20',
+					'bg-blue-600/20 hover:bg-blue-600/30',
+					'text-blue-400 hover:text-blue-300',
+					'border border-blue-600/30',
 					'focus-visible:ring-blue-500',
 				],
 				// Size styles
-				size === 'sm' && 'px-3 py-1.5 text-sm',
-				size === 'md' && 'px-4 py-2 text-base',
-				size === 'lg' && 'px-6 py-3 text-lg',
-				size === 'xl' && 'px-8 py-4 text-xl',
-				// Full width
-				fullWidth && 'w-full',
+				size === 'sm' && 'p-1.5',
+				size === 'md' && 'p-2',
+				size === 'lg' && 'p-3',
 				// Custom className
 				className
 			)}
 			{...props}
 		>
-			{children}
+			{icon}
 		</button>
 	);
 };
 
-export default Button;
+export default IconButton;

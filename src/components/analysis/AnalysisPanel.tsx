@@ -1,5 +1,6 @@
 import type { PositionAnalysis } from '@/components/analysis/types';
 import type { SavedAnalysis } from '@/lib/storage';
+import { Button, IconButton, Badge } from '@/components/ui';
 
 interface AnalysisPanelProps {
 	analysis: PositionAnalysis | null;
@@ -57,34 +58,24 @@ const AnalysisPanel = ({
 
 				<div className="flex gap-3 mb-4">
 					{isAnalyzing ? (
-						<button
-							onClick={onStop}
-							className="flex-1 py-2 px-4 bg-red-600/20 hover:bg-red-600/30 text-red-400 font-medium rounded-lg border border-red-600/30 transition-all"
-						>
+						<Button onClick={onStop} variant="danger" className="flex-1">
 							Stop
-						</button>
+						</Button>
 					) : (
-						<button
-							onClick={onAnalyze}
-							className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-all"
-						>
+						<Button onClick={onAnalyze} variant="info" className="flex-1">
 							Analyze
-						</button>
+						</Button>
 					)}
-					<button
-						onClick={onSave}
-						disabled={!analysis}
-						className="py-2 px-4 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-medium rounded-lg border border-slate-600/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-					>
+					<Button onClick={onSave} disabled={!analysis} variant="secondary">
 						Save
-					</button>
+					</Button>
 				</div>
 
 				{analysis && (
 					<div className="flex flex-col gap-3">
 						<div className="h-6 bg-slate-900 rounded-full overflow-hidden relative">
 							<div
-								className="h-full bg-linear-to-r from-slate-100 to-slate-300 transition-all duration-500"
+								className="h-full bg-gradient-to-r from-slate-100 to-slate-300 transition-all duration-500"
 								style={{
 									width: `${getEvalBarWidth(analysis.evaluation, analysis.mate)}%`,
 								}}
@@ -98,18 +89,18 @@ const AnalysisPanel = ({
 							</div>
 						</div>
 
-						<div className="grid grid-cols-2 gap-3 text-sm">
-							<div className="p-2 bg-slate-700/30 rounded-lg">
-								<span className="text-slate-500">Depth:</span>
-								<span className="ml-2 text-slate-200 font-mono">
+						<div className="grid grid-cols-2 gap-3">
+							<div className="flex items-center gap-2">
+								<span className="text-sm text-slate-500">Depth:</span>
+								<Badge variant="default" size="sm">
 									{analysis.depth}
-								</span>
+								</Badge>
 							</div>
-							<div className="p-2 bg-slate-700/30 rounded-lg">
-								<span className="text-slate-500">Best:</span>
-								<span className="ml-2 text-emerald-400 font-mono">
+							<div className="flex items-center gap-2">
+								<span className="text-sm text-slate-500">Best:</span>
+								<Badge variant="primary" size="sm">
 									{analysis.bestMove || '-'}
-								</span>
+								</Badge>
 							</div>
 						</div>
 
@@ -154,53 +145,59 @@ const AnalysisPanel = ({
 										>
 											{formatEvaluation(saved.evaluation, null)}
 										</span>
-										<span className="text-slate-500 text-xs">
+										<Badge variant="default" size="sm">
 											d{saved.depth}
-										</span>
+										</Badge>
 									</div>
 									<p className="text-xs text-slate-500 truncate">
 										{new Date(saved.date).toLocaleDateString()}
 									</p>
 								</div>
 								<div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-									<button
+									<IconButton
 										onClick={() => onLoadAnalysis(saved.fen)}
-										className="p-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded"
+										variant="info"
+										size="sm"
 										title="Load position"
-									>
-										<svg
-											className="w-4 h-4"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-											/>
-										</svg>
-									</button>
-									<button
+										aria-label="Load position"
+										icon={
+											<svg
+												className="w-4 h-4"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke="currentColor"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+												/>
+											</svg>
+										}
+									/>
+									<IconButton
 										onClick={() => onDeleteAnalysis(saved.id)}
-										className="p-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded"
+										variant="danger"
+										size="sm"
 										title="Delete"
-									>
-										<svg
-											className="w-4 h-4"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-											/>
-										</svg>
-									</button>
+										aria-label="Delete"
+										icon={
+											<svg
+												className="w-4 h-4"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke="currentColor"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+												/>
+											</svg>
+										}
+									/>
 								</div>
 							</article>
 						))

@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui';
+
 interface GameControlsProps {
 	onResign: () => void;
 	onNewGame: () => void;
@@ -14,9 +16,11 @@ const GameControls = ({
 	return (
 		<div className="flex gap-3">
 			{isPlaying && !isGameOver && (
-				<button
+				<Button
 					onClick={onResign}
-					className="flex-1 py-3 px-4 bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 font-medium rounded-xl border border-red-600/30 transition-all duration-200 flex items-center justify-center gap-2"
+					variant="danger"
+					size="lg"
+					className="flex-1"
 				>
 					<svg
 						className="w-5 h-5"
@@ -32,16 +36,14 @@ const GameControls = ({
 						/>
 					</svg>
 					Resign
-				</button>
+				</Button>
 			)}
 
-			<button
+			<Button
 				onClick={onNewGame}
-				className={`flex-1 py-3 px-4 font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2 ${
-					isGameOver
-						? 'bg-emerald-600 hover:bg-emerald-500 text-white'
-						: 'bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 border border-slate-600/50'
-				}`}
+				variant={isGameOver ? 'primary' : 'secondary'}
+				size="lg"
+				className="flex-1"
 			>
 				<svg
 					className="w-5 h-5"
@@ -57,7 +59,7 @@ const GameControls = ({
 					/>
 				</svg>
 				{isGameOver ? 'Play Again' : 'New Game'}
-			</button>
+			</Button>
 		</div>
 	);
 };
