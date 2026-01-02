@@ -11,7 +11,7 @@ const Header = ({ currentPage, onNavigate, onOpenSettings }: HeaderProps) => {
 		<header className="mb-6">
 			<div className="flex justify-between items-center pb-4 sm:pb-6">
 				<h1 className="text-xl sm:text-2xl font-bold text-emerald-400">
-					chess
+					Chess
 				</h1>
 				
 				<div className="flex items-center gap-4">
