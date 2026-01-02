@@ -9,7 +9,7 @@ interface HeaderProps {
 const Header = ({ currentPage, onNavigate, onOpenSettings }: HeaderProps) => {
 	return (
 		<header className="mb-6">
-			<div className="flex justify-between items-center pb-4 sm:pb-6">
+			<div className="flex justify-between items-center flex-wrap gap-6 pb-4 sm:pb-6">
 				<h1 className="text-xl sm:text-2xl font-bold text-emerald-400">
 					Chess
 				</h1>
