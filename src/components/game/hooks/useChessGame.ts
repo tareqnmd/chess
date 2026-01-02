@@ -2,7 +2,7 @@ import type { Color, Square } from '@/components/common/types';
 import type { GameSettings, GameState } from '@/components/game/types';
 import { GameStatus, TerminationType } from '@/components/game/types';
 import { calculateBotMove, parseUCIMove } from '@/lib/chess-ai';
-import { Chess } from 'chess.js';
+import { Chess, Move } from 'chess.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -208,11 +208,12 @@ export function useChessGame(): UseChessGameReturn {
 			const masterChess = new Chess();
 			masterChessRef.current = masterChess;
 
+			let history: Move[] = [];
 			if (pgn) {
 				masterChess.loadPgn(pgn);
-			}
 
-			const history = chess.history({ verbose: true });
+				history = masterChess.history({ verbose: true });
+			}
 
 			setGameState({
 				gameId,
