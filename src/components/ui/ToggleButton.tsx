@@ -24,7 +24,7 @@ const ToggleButton = ({
 				// Base styles
 				'inline-flex items-center justify-center',
 				'transition-all duration-200',
-				'focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900',
+				'focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500',
 				'active:scale-95',
 				'disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
 				// Variant styles
@@ -32,8 +32,8 @@ const ToggleButton = ({
 				variant === 'rounded' && 'rounded-lg',
 				// Selected state
 				selected
-					? 'ring-4 ring-emerald-500 ring-offset-2 ring-offset-slate-800'
-					: 'ring-2 ring-slate-600 hover:ring-slate-500',
+					? 'ring-2 ring-emerald-500'
+					: 'ring-1 ring-slate-600 hover:ring-slate-500',
 				// Size styles
 				size === 'sm' && 'min-w-8 min-h-8 p-1',
 				size === 'md' && 'min-w-10 min-h-10 p-2',

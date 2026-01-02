@@ -72,7 +72,7 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 				))}
 			</Select>
 
-			<div className="flex flex-col gap-4">
+			<div className="flex flex-col gap-2">
 				<label className="block text-sm font-medium text-slate-300">
 					Play as
 				</label>
