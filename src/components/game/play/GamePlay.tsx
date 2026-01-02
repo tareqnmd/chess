@@ -97,6 +97,8 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 
 			let adjustedClockWhite = savedGame.clockWhite;
 			let adjustedClockBlack = savedGame.clockBlack;
+			let timeExpired = false;
+			let loser: 'w' | 'b' | null = null;
 
 			if (savedGame.clockRunning && savedGame.lastMoveTime) {
 				const chess = new Chess(savedGame.fen);
@@ -106,12 +108,16 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 
 				if (currentTurn === 'w') {
 					adjustedClockWhite = Math.max(0, savedGame.clockWhite - elapsedMs);
+					if (adjustedClockWhite === 0) {
+						timeExpired = true;
+						loser = 'w';
+					}
 				} else {
 					adjustedClockBlack = Math.max(0, savedGame.clockBlack - elapsedMs);
-				}
-
-				if (adjustedClockWhite === 0 || adjustedClockBlack === 0) {
-					toast.error('Time expired while away from game');
+					if (adjustedClockBlack === 0) {
+						timeExpired = true;
+						loser = 'b';
+					}
 				}
 			}
 
@@ -130,17 +136,25 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 			gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
 			lastSaveRef.current = Date.now();
 
-			if (savedGame.moves > 0) {
+			// Clock starts only after both players moved (2+ moves)
+			if (savedGame.moves >= 2) {
 				clockStartedRef.current = true;
 			}
 
-			if (savedGame.clockRunning) {
+			// If time expired, trigger timeout immediately
+			if (timeExpired && loser) {
+				toast.error('Time expired while away from game');
 				setTimeout(() => {
-					startCountdown();
-				}, 100);
+					setTimeoutWinner(loser);
+				}, 500);
+			} else {
+				if (savedGame.clockRunning) {
+					setTimeout(() => {
+						startCountdown();
+					}, 100);
+				}
+				toast.info('Game resumed');
 			}
-
-			toast.info('Game resumed');
 		}
 	}, [
 		gameId,
@@ -166,12 +180,8 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 
 		if (!moveCountChanged) return;
 
-		if (
-			!clockStartedRef.current &&
-			prevMovesCountRef.current === 0 &&
-			gameState.history.length === 1
-		) {
-			clockStartedRef.current = true;
+		// Handle first move (White's move)
+		if (prevMovesCountRef.current === 0 && gameState.history.length === 1) {
 			prevMovesCountRef.current = 1;
 			prevFenRef.current = gameState.fen;
 			lastSaveRef.current = Date.now();
@@ -179,6 +189,38 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 			const chess = new Chess(gameState.fen);
 			switchTurn(chess.turn());
 
+			const duration = Math.floor(
+				(Date.now() - gameStartTimeRef.current) / 1000
+			);
+			updateGameInHistory(gameId, {
+				pgn: gameState.pgn,
+				fen: gameState.fen,
+				moves: gameState.history.length,
+				duration,
+				clockWhite: clockState.white,
+				clockBlack: clockState.black,
+				clockRunning: false, // Clock hasn't started yet
+				lastMoveTime: new Date().toISOString(),
+			});
+
+			return;
+		}
+
+		// Handle second move (Black's move) - START THE CLOCK
+		if (
+			!clockStartedRef.current &&
+			prevMovesCountRef.current === 1 &&
+			gameState.history.length === 2
+		) {
+			clockStartedRef.current = true;
+			prevMovesCountRef.current = 2;
+			prevFenRef.current = gameState.fen;
+			lastSaveRef.current = Date.now();
+
+			const chess = new Chess(gameState.fen);
+			switchTurn(chess.turn());
+
+			// Start the clock countdown after both players moved
 			setTimeout(() => {
 				startCountdown();
 			}, 100);
@@ -193,14 +235,15 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 				duration,
 				clockWhite: clockState.white,
 				clockBlack: clockState.black,
-				clockRunning: true,
+				clockRunning: true, // Clock starts now
 				lastMoveTime: new Date().toISOString(),
 			});
 
 			return;
 		}
 
-		if (prevMovesCountRef.current > 0) {
+		// Handle subsequent moves (after second move)
+		if (prevMovesCountRef.current >= 2) {
 			const chess = new Chess(gameState.fen);
 			const currentTurn = chess.turn();
 			const wasBotMove = currentTurn === gameState.settings.playerColor;

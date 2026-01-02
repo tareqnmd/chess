@@ -96,24 +96,6 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	};
 
-	const formatLastMoveTime = (lastMoveTime: string | null) => {
-		if (!lastMoveTime) return 'No moves yet';
-
-		const moveDate = new Date(lastMoveTime);
-		const now = new Date();
-		const diffMs = now.getTime() - moveDate.getTime();
-		const diffMins = Math.floor(diffMs / 60000);
-		const diffHours = Math.floor(diffMs / 3600000);
-		const diffDays = Math.floor(diffMs / 86400000);
-
-		if (diffMins < 1) return 'Just now';
-		if (diffMins < 60) return `${diffMins}m ago`;
-		if (diffHours < 24) return `${diffHours}h ago`;
-		if (diffDays < 7) return `${diffDays}d ago`;
-
-		return moveDate.toLocaleDateString();
-	};
-
 	const getBotName = (botId: string) => {
 		return BOTS.find((b) => b.id === botId)?.name || botId;
 	};
@@ -257,14 +239,6 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 														</span>
 													</>
 												)}
-												{game.status === 'playing' && game.lastMoveTime && (
-													<>
-														<span>•</span>
-														<span className="text-blue-400 text-xs">
-															Last move: {formatLastMoveTime(game.lastMoveTime)}
-														</span>
-													</>
-												)}
 											</div>
 										</div>
 
@@ -320,11 +294,6 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 										{game.termination && (
 											<div className="mt-2 text-xs text-slate-400">
 												{getTerminationText(game.termination)}
-											</div>
-										)}
-										{game.status === 'playing' && game.lastMoveTime && (
-											<div className="mt-2 text-xs text-blue-400">
-												Last move: {formatLastMoveTime(game.lastMoveTime)}
 											</div>
 										)}
 									</div>
@@ -418,23 +387,6 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 						</h3>
 
 						<div className="flex flex-col gap-3">
-							{selectedGame.status === 'playing' &&
-								selectedGame.lastMoveTime && (
-									<div className="p-3 bg-blue-600/10 border border-blue-600/30 rounded-lg">
-										<div className="flex items-center justify-between">
-											<span className="text-blue-400 text-xs uppercase tracking-wider">
-												Last Move
-											</span>
-											<span className="text-blue-300 text-sm font-medium">
-												{formatLastMoveTime(selectedGame.lastMoveTime)}
-											</span>
-										</div>
-										<div className="text-xs text-slate-400 mt-1">
-											{new Date(selectedGame.lastMoveTime).toLocaleString()}
-										</div>
-									</div>
-								)}
-
 							<div className="p-3 bg-slate-700/30 rounded-lg">
 								<span className="text-slate-500 text-xs uppercase tracking-wider block mb-2">
 									PGN
