@@ -11,7 +11,7 @@ export const BoardSettingsButton = ({
 		<button
 			onClick={onClick}
 			className={`
-				p-2 rounded-lg bg-slate-800 border border-slate-700 
+				p-1 rounded-lg bg-slate-800 border border-slate-700 
 				hover:bg-slate-700 hover:border-slate-600
 				transition-colors duration-200
 				text-slate-300 hover:text-white
