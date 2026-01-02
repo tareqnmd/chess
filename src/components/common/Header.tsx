@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { BoardSettingsButton } from './BoardSettingsButton';
 
 interface HeaderProps {
@@ -15,9 +15,11 @@ const Header = ({ onOpenSettings }: HeaderProps) => {
 		<header className="border-b border-slate-700/50">
 			<div className="container">
 				<div className="flex justify-between items-center flex-wrap gap-4">
-					<h1 className="text-xl sm:text-2xl font-bold text-emerald-400">
-						Chess
-					</h1>
+					<Link to="/" className="no-underline">
+						<h1 className="text-xl sm:text-2xl font-bold text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer">
+							Chess
+						</h1>
+					</Link>
 
 					<div className="flex items-center gap-4">
 						<nav
