@@ -1,6 +1,10 @@
 import type { BoardSettings } from '@/components/common/types';
 import { GameStatus } from '@/components/game/types';
-import { Chess } from 'chess.js';
+import {
+	finishGameInHistory,
+	getGameById,
+	updateGameInHistory,
+} from '@/lib/storage';
 import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -24,6 +28,7 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 
 	const {
 		gameState,
+		startGame,
 		restoreGame,
 		makeMove,
 		resign,
@@ -31,150 +36,111 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		isPlayerTurn,
 	} = useChessGame();
 
-	const {
-		clockState,
-		switchTurn,
-		stopClock,
-		resetClock,
-		formatTime,
-		startCountdown,
-	} = useChessClock(setTimeoutWinner);
+	const { clockState, startClock, stopClock, resetClock, formatTime } =
+		useChessClock(setTimeoutWinner);
 
-	const {
-		autoSave,
-		saveCompletedGame,
-		clearSavedGame,
-		recordMove,
-		loadSavedGame,
-	} = useGameStorage();
+	useGameStorage(); // Still needed for default settings
 
 	const prevFenRef = useRef(gameState.fen);
-	const prevHistoryLengthRef = useRef(0);
+	const prevMovesCountRef = useRef(0);
 	const gameStartTimeRef = useRef<number>(0);
-	const clockStartedRef = useRef(false);
-	const gameRestoredRef = useRef(false);
+	const gameInitializedRef = useRef(false);
+	const lastSaveRef = useRef<number>(0);
 
+	// Initialize or restore game from history
 	useEffect(() => {
-		if (gameRestoredRef.current) return;
-		gameRestoredRef.current = true;
+		if (gameInitializedRef.current) return;
+		gameInitializedRef.current = true;
 
-		const savedGame = loadSavedGame();
-
-		if (!savedGame || !savedGame.settings || savedGame.gameId !== gameId) {
+		if (!gameId) {
 			navigate('/', { replace: true });
 			return;
 		}
 
-		const chess = new Chess(savedGame.fen);
+		const savedGame = getGameById(gameId);
 
-		// Only restore if the game is still playable (not ended)
-		const isGameEnded =
-			chess.isCheckmate() ||
-			chess.isStalemate() ||
-			chess.isInsufficientMaterial() ||
-			chess.isThreefoldRepetition() ||
-			chess.isDraw();
-
-		if (isGameEnded) {
-			clearSavedGame();
+		if (!savedGame) {
+			toast.error('Game not found');
 			navigate('/', { replace: true });
 			return;
 		}
 
-		restoreGame(
-			savedGame.gameId,
-			savedGame.fen,
-			savedGame.pgn,
-			savedGame.settings,
-			savedGame.startedAt
-		);
-
-		const currentTurn = chess.turn();
-
-		resetClock(
-			savedGame.settings.timeControl,
-			savedGame.clockWhite,
-			savedGame.clockBlack
-		);
-
-		switchTurn(currentTurn);
-
-		prevFenRef.current = savedGame.fen;
-		prevHistoryLengthRef.current = savedGame.moveHistory.length;
-
-		gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
-
-		if (savedGame.moveHistory.length >= 2) {
-			clockStartedRef.current = true;
-			startCountdown();
+		if (savedGame.status === 'finished') {
+			toast.error('This game has already finished');
+			navigate('/history', { replace: true });
+			return;
 		}
 
-		toast.info('Game restored from last session');
-	}, [
-		gameId,
-		loadSavedGame,
-		restoreGame,
-		resetClock,
-		switchTurn,
-		startCountdown,
-		clearSavedGame,
-		navigate,
-	]);
+		// Check if it's a new game or resuming
+		if (savedGame.moves === 0) {
+			// New game
+			startGame(savedGame.settings);
+			startClock(savedGame.settings.timeControl);
+			gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
+		} else {
+			// Resuming game
+			restoreGame(
+				savedGame.id,
+				savedGame.fen,
+				savedGame.pgn,
+				savedGame.settings,
+				savedGame.startedAt
+			);
 
+			resetClock(
+				savedGame.settings.timeControl,
+				savedGame.clockWhite,
+				savedGame.clockBlack
+			);
+
+			gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
+			prevMovesCountRef.current = savedGame.moves;
+
+			toast.info('Game resumed');
+		}
+	}, [gameId, navigate, startGame, startClock, restoreGame, resetClock]);
+
+	// Auto-save game state to history
 	useEffect(() => {
-		if (gameState.status !== GameStatus.PLAYING || !gameState.settings) return;
+		if (
+			gameState.status !== GameStatus.PLAYING ||
+			!gameState.settings ||
+			!gameId
+		)
+			return;
 
-		if (prevFenRef.current !== gameState.fen) {
-			const chess = new Chess(gameState.fen);
-			const currentTurn = chess.turn();
-			switchTurn(currentTurn);
+		if (
+			prevFenRef.current !== gameState.fen ||
+			gameState.history.length !== prevMovesCountRef.current
+		) {
 			prevFenRef.current = gameState.fen;
+			prevMovesCountRef.current = gameState.history.length;
 
-			if (gameState.history.length >= 2 && !clockStartedRef.current) {
-				startCountdown();
-				clockStartedRef.current = true;
-			}
+			// Throttle saves to every 2 seconds
+			const now = Date.now();
+			if (now - lastSaveRef.current < 2000) return;
+			lastSaveRef.current = now;
 
-			if (
-				clockStartedRef.current &&
-				!clockState.isRunning &&
-				gameState.history.length > prevHistoryLengthRef.current
-			) {
-				startCountdown();
-			}
+			const duration = Math.floor((now - gameStartTimeRef.current) / 1000);
 
-			if (gameState.history.length > prevHistoryLengthRef.current) {
-				const lastMove = gameState.history[gameState.history.length - 1];
-				const moveColor = lastMove.color;
-				const clockTime =
-					moveColor === 'w' ? clockState.white : clockState.black;
-
-				recordMove(
-					{
-						san: lastMove.san,
-						fen: gameState.fen,
-						color: moveColor,
-						clockTime,
-					},
-					gameState.pgn
-				);
-				prevHistoryLengthRef.current = gameState.history.length;
-			}
-
-			autoSave(gameState, clockState.white, clockState.black);
+			updateGameInHistory(gameId, {
+				pgn: gameState.pgn,
+				fen: gameState.fen,
+				moves: gameState.history.length,
+				duration,
+				clockWhite: clockState.white,
+				clockBlack: clockState.black,
+			});
 		}
 	}, [
 		gameState.fen,
 		gameState.status,
 		gameState.settings,
-		switchTurn,
-		autoSave,
+		gameState.pgn,
+		gameState.history.length,
+		gameId,
 		clockState.white,
 		clockState.black,
-		clockState.isRunning,
-		gameState,
-		recordMove,
-		startCountdown,
 	]);
 
 	useEffect(() => {
@@ -187,7 +153,8 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 			if (
 				gameState.settings &&
 				gameStartTimeRef.current &&
-				gameState.termination
+				gameState.termination &&
+				gameId
 			) {
 				const duration = Math.floor(
 					(Date.now() - gameStartTimeRef.current) / 1000
@@ -204,19 +171,19 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 					toast.info('Game ended in a draw 🤝');
 				}
 
-				saveCompletedGame(gameState, result, gameState.termination, duration);
+				// Finish the game in history
+				finishGameInHistory(gameId, result, gameState.termination, duration);
 
 				setTimeout(() => {
-					navigate('/', { replace: true });
+					navigate('/history', { replace: true });
 				}, 3000);
 			}
 		}
-	}, [gameState.status, stopClock, gameState, saveCompletedGame, navigate]);
+	}, [gameState.status, stopClock, gameState, gameId, navigate]);
 
 	const handleNewGame = useCallback(() => {
-		clearSavedGame();
 		navigate('/', { replace: true });
-	}, [clearSavedGame, navigate]);
+	}, [navigate]);
 
 	const handleMove = useCallback(
 		(from: string, to: string, promotion?: string): boolean => {

@@ -8,8 +8,8 @@ import Header from './components/common/Header';
 import NotFound from './components/common/NotFound';
 import type { BoardSettings } from './components/common/types';
 import GamePlay from './components/game/play/GamePlay';
-import HomePage from './components/home/HomePage';
 import HistoryPage from './components/history/HistoryPage';
+import HomePage from './components/home/HomePage';
 import {
 	getUserId,
 	loadBoardSettings,

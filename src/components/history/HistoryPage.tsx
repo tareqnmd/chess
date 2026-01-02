@@ -10,6 +10,7 @@ import {
 	type SavedGame,
 } from '@/lib/storage';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface HistoryPageProps {
@@ -17,6 +18,7 @@ interface HistoryPageProps {
 }
 
 const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
+	const navigate = useNavigate();
 	const [games, setGames] = useState<SavedGame[]>([]);
 	const [stats, setStats] = useState<GameStats | null>(null);
 	const [selectedGame, setSelectedGame] = useState<SavedGame | null>(null);
@@ -60,7 +62,8 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 		toast.success('Game history exported successfully');
 	}, []);
 
-	const getResultColor = (result: 'win' | 'loss' | 'draw') => {
+	const getResultColor = (result: 'win' | 'loss' | 'draw' | null) => {
+		if (result === null) return 'text-blue-400 bg-blue-600/20';
 		switch (result) {
 			case 'win':
 				return 'text-emerald-400 bg-emerald-600/20';
@@ -71,7 +74,8 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 		}
 	};
 
-	const getResultIcon = (result: 'win' | 'loss' | 'draw') => {
+	const getResultIcon = (result: 'win' | 'loss' | 'draw' | null) => {
+		if (result === null) return '▶️';
 		switch (result) {
 			case 'win':
 				return '🏆';
@@ -80,6 +84,10 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 			case 'draw':
 				return '🤝';
 		}
+	};
+
+	const getResultText = (result: 'win' | 'loss' | 'draw' | null) => {
+		return result === null ? 'IN PROGRESS' : result.toUpperCase();
 	};
 
 	const formatDuration = (seconds: number) => {
@@ -164,7 +172,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 										<div
 											className={`px-3 py-1.5 rounded-lg font-medium text-sm whitespace-nowrap ${getResultColor(game.result)}`}
 										>
-											{getResultIcon(game.result)} {game.result.toUpperCase()}
+											{getResultIcon(game.result)} {getResultText(game.result)}
 										</div>
 
 										<div className="flex items-center gap-2">
@@ -205,7 +213,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 										<div
 											className={`px-3 py-1.5 rounded-lg font-medium text-sm whitespace-nowrap ${getResultColor(game.result)}`}
 										>
-											{getResultIcon(game.result)} {game.result.toUpperCase()}
+											{getResultIcon(game.result)} {getResultText(game.result)}
 										</div>
 
 										<div className="flex-1 min-w-0">
@@ -389,24 +397,35 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 							</div>
 
 							<div className="flex flex-col sm:flex-row gap-2">
-								<button
-									onClick={() => {
-										navigator.clipboard.writeText(selectedGame.pgn);
-										toast.success('PGN copied to clipboard');
-									}}
-									className="flex-1 py-2 px-4 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 text-sm rounded-lg border border-slate-600/50 transition-all"
-								>
-									Copy PGN
-								</button>
-								{onAnalyzeGame && (
+								{selectedGame.status === 'playing' ? (
 									<button
-										onClick={() =>
-											onAnalyzeGame(selectedGame.pgn, selectedGame.fen)
-										}
-										className="flex-1 py-2 px-4 bg-emerald-600/30 hover:bg-emerald-600/40 text-emerald-400 text-sm rounded-lg border border-emerald-600/40 transition-all"
+										onClick={() => navigate(`/play/${selectedGame.id}`)}
+										className="w-full py-2 px-4 bg-blue-600/30 hover:bg-blue-600/40 text-blue-400 text-sm rounded-lg border border-blue-600/40 transition-all"
 									>
-										Analyze
+										Resume Game
 									</button>
+								) : (
+									<>
+										<button
+											onClick={() => {
+												navigator.clipboard.writeText(selectedGame.pgn);
+												toast.success('PGN copied to clipboard');
+											}}
+											className="flex-1 py-2 px-4 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 text-sm rounded-lg border border-slate-600/50 transition-all"
+										>
+											Copy PGN
+										</button>
+										{onAnalyzeGame && (
+											<button
+												onClick={() =>
+													onAnalyzeGame(selectedGame.pgn, selectedGame.fen)
+												}
+												className="flex-1 py-2 px-4 bg-emerald-600/30 hover:bg-emerald-600/40 text-emerald-400 text-sm rounded-lg border border-emerald-600/40 transition-all"
+											>
+												Analyze
+											</button>
+										)}
+									</>
 								)}
 							</div>
 						</div>

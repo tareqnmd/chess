@@ -36,6 +36,7 @@ export function useChessClock(
 	const rafIdRef = useRef<number | null>(null);
 	const lastTickRef = useRef<number>(0);
 	const incrementRef = useRef<number>(0);
+	const isRunningRef = useRef<boolean>(false);
 
 	const clearTimer = useCallback(() => {
 		if (rafIdRef.current !== null) {
@@ -47,13 +48,20 @@ export function useChessClock(
 	const startTimer = useCallback(() => {
 		clearTimer();
 		lastTickRef.current = performance.now();
+		isRunningRef.current = true;
 
 		const tick = (timestamp: number) => {
+			if (!isRunningRef.current) {
+				rafIdRef.current = null;
+				return;
+			}
+
 			const elapsed = timestamp - lastTickRef.current;
 			lastTickRef.current = timestamp;
 
 			setClockState((prev) => {
 				if (!prev.isRunning || !prev.activeColor) {
+					isRunningRef.current = false;
 					rafIdRef.current = null;
 					return prev;
 				}
@@ -62,7 +70,7 @@ export function useChessClock(
 				const newTime = Math.max(0, prev[activeKey] - elapsed);
 
 				if (newTime === 0) {
-					clearTimer();
+					isRunningRef.current = false;
 					onTimeout?.(prev.activeColor);
 					return {
 						...prev,
@@ -71,13 +79,16 @@ export function useChessClock(
 					};
 				}
 
-				rafIdRef.current = requestAnimationFrame(tick);
-
 				return {
 					...prev,
 					[activeKey]: newTime,
 				};
 			});
+
+			// Schedule next frame outside of setState
+			if (isRunningRef.current) {
+				rafIdRef.current = requestAnimationFrame(tick);
+			}
 		};
 
 		rafIdRef.current = requestAnimationFrame(tick);
@@ -118,16 +129,19 @@ export function useChessClock(
 	}, []);
 
 	const pauseClock = useCallback(() => {
+		isRunningRef.current = false;
 		clearTimer();
 		setClockState((prev) => ({ ...prev, isRunning: false }));
 	}, [clearTimer]);
 
 	const resumeClock = useCallback(() => {
+		isRunningRef.current = true;
 		setClockState((prev) => ({ ...prev, isRunning: true }));
 		startTimer();
 	}, [startTimer]);
 
 	const stopClock = useCallback(() => {
+		isRunningRef.current = false;
 		clearTimer();
 		setClockState((prev) => ({
 			...prev,
@@ -175,8 +189,8 @@ export function useChessClock(
 	}, []);
 
 	const startCountdown = useCallback(() => {
+		isRunningRef.current = true;
 		setClockState((prev) => ({ ...prev, isRunning: true }));
-		lastTickRef.current = Date.now();
 		startTimer();
 	}, [startTimer]);
 

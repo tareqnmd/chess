@@ -1,43 +1,14 @@
 import { Chess } from 'chess.js';
-import type { GameSettings } from '@/components/game/types';
-import { TerminationType } from '@/components/game/types';
 import type { Color } from '@/components/common/types';
 import {
 	getUserId,
 	getGameHistory,
-	saveGame,
 	deleteGame as deleteGameFromStorage,
 	clearGameHistory,
-	getCurrentGame,
-	saveCurrentGame,
-	clearCurrentGame,
-	addMoveToCurrentGame,
 	getGameStats,
 	type SavedGame,
-	type CurrentGameState,
-	type MoveRecord,
 	type GameStats,
 } from './storage';
-
-export interface GameCreateParams {
-	settings: GameSettings;
-	clockWhite: number;
-	clockBlack: number;
-}
-
-export interface MoveParams {
-	san: string;
-	fen: string;
-	color: Color;
-	clockTime: number;
-	pgn: string;
-}
-
-export interface GameCompleteParams {
-	result: 'win' | 'loss' | 'draw';
-	termination: TerminationType;
-	duration: number;
-}
 
 export interface GameForAnalysis {
 	id: string;
@@ -45,13 +16,9 @@ export interface GameForAnalysis {
 	fen: string;
 	playerColor: Color;
 	opponentName: string;
-	result: 'win' | 'loss' | 'draw';
+	result: 'win' | 'loss' | 'draw' | null;
 	date: string;
 	moves: number;
-}
-
-function generateGameId(): string {
-	return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
 class GameService {
@@ -59,31 +26,6 @@ class GameService {
 
 	constructor() {
 		this.userId = getUserId();
-	}
-
-	createGame(params: GameCreateParams): string {
-		const gameId = generateGameId();
-		const now = new Date().toISOString();
-
-		const gameState: CurrentGameState = {
-			gameId,
-			odlId: this.userId,
-			fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-			pgn: '',
-			settings: params.settings,
-			clockWhite: params.clockWhite,
-			clockBlack: params.clockBlack,
-			moveHistory: [],
-			startedAt: now,
-			savedAt: now,
-		};
-
-		saveCurrentGame(gameState);
-		return gameId;
-	}
-
-	getCurrentGame(): CurrentGameState | null {
-		return getCurrentGame();
 	}
 
 	getGameById(gameId: string): SavedGame | null {
@@ -134,48 +76,6 @@ class GameService {
 		}));
 	}
 
-	addMove(params: MoveParams): CurrentGameState | null {
-		return addMoveToCurrentGame(
-			{
-				san: params.san,
-				fen: params.fen,
-				color: params.color,
-				clockTime: params.clockTime,
-			},
-			params.pgn
-		);
-	}
-
-	updateClock(clockWhite: number, clockBlack: number): void {
-		const current = getCurrentGame();
-		if (!current) return;
-
-		saveCurrentGame({
-			...current,
-			clockWhite,
-			clockBlack,
-		});
-	}
-
-	completeGame(params: GameCompleteParams): SavedGame | null {
-		const current = getCurrentGame();
-		if (!current) return null;
-
-		const saved = saveGame({
-			pgn: current.pgn,
-			fen: current.fen,
-			result: params.result,
-			termination: params.termination,
-			settings: current.settings,
-			moves: current.moveHistory.length,
-			duration: params.duration,
-			startedAt: current.startedAt,
-		});
-
-		clearCurrentGame();
-		return saved;
-	}
-
 	deleteGame(gameId: string): boolean {
 		const game = this.getGameById(gameId);
 		if (!game) return false;
@@ -187,10 +87,6 @@ class GameService {
 
 		deleteGameFromStorage(gameId);
 		return true;
-	}
-
-	cancelCurrentGame(): void {
-		clearCurrentGame();
 	}
 
 	clearAllHistory(): void {
@@ -228,33 +124,6 @@ class GameService {
 			chess.loadPgn(pgn);
 			const moves = chess.history();
 			return { moves, fen: chess.fen() };
-		} catch {
-			return null;
-		}
-	}
-
-	getMovesFromPgn(pgn: string): MoveRecord[] | null {
-		try {
-			const chess = new Chess();
-			chess.loadPgn(pgn);
-
-			const moves: MoveRecord[] = [];
-			const history = chess.history({ verbose: true });
-
-			chess.reset();
-
-			for (const move of history) {
-				chess.move(move.san);
-				moves.push({
-					san: move.san,
-					fen: chess.fen(),
-					color: move.color,
-					timestamp: new Date().toISOString(),
-					clockTime: 0,
-				});
-			}
-
-			return moves;
 		} catch {
 			return null;
 		}

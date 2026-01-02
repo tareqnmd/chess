@@ -6,8 +6,6 @@ const STORAGE_KEYS = {
 	GAME_HISTORY: 'chess_game_history',
 	SAVED_ANALYSIS: 'chess_saved_analysis',
 	USER_PREFERENCES: 'chess_user_preferences',
-	CURRENT_GAME: 'chess_current_game',
-	ACTIVE_GAMES: 'chess_active_games',
 } as const;
 
 export interface SavedGame {
@@ -16,35 +14,16 @@ export interface SavedGame {
 	date: string;
 	pgn: string;
 	fen: string;
-	result: 'win' | 'loss' | 'draw';
-	termination: TerminationType;
+	result: 'win' | 'loss' | 'draw' | null;
+	termination: TerminationType | null;
 	settings: GameSettings;
 	moves: number;
 	duration: number;
 	startedAt: string;
-	endedAt: string;
-}
-
-export interface ActiveGame {
-	id: string;
-	odlId: string;
-	pgn: string;
-	fen: string;
-	settings: GameSettings;
+	endedAt: string | null;
+	status: 'playing' | 'finished';
 	clockWhite: number;
 	clockBlack: number;
-	moveHistory: MoveRecord[];
-	startedAt: string;
-	lastMoveAt: string;
-	status: 'playing' | 'paused';
-}
-
-export interface MoveRecord {
-	san: string;
-	fen: string;
-	timestamp: string;
-	color: 'w' | 'b';
-	clockTime: number;
 }
 
 export interface SavedAnalysis {
@@ -64,19 +43,6 @@ export interface UserPreferences {
 	defaultColor: Color;
 	boardTheme: 'classic' | 'modern' | 'wood';
 	soundEnabled: boolean;
-}
-
-export interface CurrentGameState {
-	gameId: string;
-	odlId: string;
-	fen: string;
-	pgn: string;
-	settings: GameSettings;
-	clockWhite: number;
-	clockBlack: number;
-	moveHistory: MoveRecord[];
-	startedAt: string;
-	savedAt: string;
 }
 
 function safeJsonParse<T>(json: string | null, fallback: T): T {
@@ -118,17 +84,30 @@ export function getGameHistory(): SavedGame[] {
 	return safeJsonParse<SavedGame[]>(data, []);
 }
 
-export function saveGame(
-	game: Omit<SavedGame, 'id' | 'date' | 'odlId' | 'endedAt'>
+export function createGameInHistory(
+	gameId: string,
+	settings: GameSettings,
+	clockWhite: number,
+	clockBlack: number
 ): SavedGame {
 	const history = getGameHistory();
 	const now = new Date().toISOString();
 	const newGame: SavedGame = {
-		...game,
-		id: generateId(),
+		id: gameId,
 		odlId: getUserId(),
 		date: now,
-		endedAt: now,
+		pgn: '',
+		fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+		result: null,
+		termination: null,
+		settings,
+		moves: 0,
+		duration: 0,
+		startedAt: now,
+		endedAt: null,
+		status: 'playing',
+		clockWhite,
+		clockBlack,
 	};
 
 	const updatedHistory = [newGame, ...history].slice(0, 50);
@@ -140,133 +119,78 @@ export function saveGame(
 	return newGame;
 }
 
-export function getActiveGames(): ActiveGame[] {
-	const data = localStorage.getItem(STORAGE_KEYS.ACTIVE_GAMES);
-	return safeJsonParse<ActiveGame[]>(data, []);
-}
-
-export function getActiveGameById(gameId: string): ActiveGame | null {
-	const games = getActiveGames();
-	return games.find((g) => g.id === gameId) || null;
-}
-
-export function createActiveGame(
-	settings: GameSettings,
-	clockWhite: number,
-	clockBlack: number
-): ActiveGame {
-	const games = getActiveGames();
-	const now = new Date().toISOString();
-
-	const newGame: ActiveGame = {
-		id: generateId(),
-		odlId: getUserId(),
-		pgn: '',
-		fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-		settings,
-		clockWhite,
-		clockBlack,
-		moveHistory: [],
-		startedAt: now,
-		lastMoveAt: now,
-		status: 'playing',
-	};
-
-	const userGames = games.filter((g) => g.odlId === getUserId()).slice(0, 4);
-	const otherGames = games.filter((g) => g.odlId !== getUserId());
-
-	localStorage.setItem(
-		STORAGE_KEYS.ACTIVE_GAMES,
-		JSON.stringify([newGame, ...userGames, ...otherGames])
-	);
-
-	return newGame;
-}
-
-export function updateActiveGame(
+export function updateGameInHistory(
 	gameId: string,
 	updates: Partial<
-		Pick<ActiveGame, 'pgn' | 'fen' | 'clockWhite' | 'clockBlack' | 'status'>
+		Pick<
+			SavedGame,
+			'pgn' | 'fen' | 'moves' | 'duration' | 'clockWhite' | 'clockBlack'
+		>
 	>
-): ActiveGame | null {
-	const games = getActiveGames();
-	const index = games.findIndex((g) => g.id === gameId);
+): void {
+	const history = getGameHistory();
+	const index = history.findIndex((g) => g.id === gameId);
 
-	if (index === -1) return null;
+	if (index === -1) return;
 
-	const updated: ActiveGame = {
-		...games[index],
+	const updated: SavedGame = {
+		...history[index],
 		...updates,
-		lastMoveAt: new Date().toISOString(),
 	};
 
-	games[index] = updated;
-	localStorage.setItem(STORAGE_KEYS.ACTIVE_GAMES, JSON.stringify(games));
-
-	return updated;
+	history[index] = updated;
+	localStorage.setItem(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(history));
 }
 
-export function addMoveToActiveGame(
-	gameId: string,
-	move: { san: string; fen: string; color: 'w' | 'b'; clockTime: number },
-	pgn: string
-): ActiveGame | null {
-	const games = getActiveGames();
-	const index = games.findIndex((g) => g.id === gameId);
-
-	if (index === -1) return null;
-
-	const now = new Date().toISOString();
-	const moveRecord: MoveRecord = {
-		...move,
-		timestamp: now,
-	};
-
-	const updated: ActiveGame = {
-		...games[index],
-		pgn,
-		fen: move.fen,
-		clockWhite: move.color === 'w' ? move.clockTime : games[index].clockWhite,
-		clockBlack: move.color === 'b' ? move.clockTime : games[index].clockBlack,
-		moveHistory: [...games[index].moveHistory, moveRecord],
-		lastMoveAt: now,
-	};
-
-	games[index] = updated;
-	localStorage.setItem(STORAGE_KEYS.ACTIVE_GAMES, JSON.stringify(games));
-
-	return updated;
-}
-
-export function deleteActiveGame(gameId: string): void {
-	const games = getActiveGames();
-	const filtered = games.filter((g) => g.id !== gameId);
-	localStorage.setItem(STORAGE_KEYS.ACTIVE_GAMES, JSON.stringify(filtered));
-}
-
-export function completeActiveGame(
+export function finishGameInHistory(
 	gameId: string,
 	result: 'win' | 'loss' | 'draw',
 	termination: TerminationType,
 	duration: number
-): SavedGame | null {
-	const activeGame = getActiveGameById(gameId);
-	if (!activeGame) return null;
+): void {
+	const history = getGameHistory();
+	const index = history.findIndex((g) => g.id === gameId);
 
-	const saved = saveGame({
-		pgn: activeGame.pgn,
-		fen: activeGame.fen,
+	if (index === -1) return;
+
+	const updated: SavedGame = {
+		...history[index],
 		result,
 		termination,
-		settings: activeGame.settings,
-		moves: activeGame.moveHistory.length,
 		duration,
-		startedAt: activeGame.startedAt,
-	});
+		endedAt: new Date().toISOString(),
+		status: 'finished',
+	};
 
-	deleteActiveGame(gameId);
+	history[index] = updated;
+	localStorage.setItem(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(history));
+}
 
-	return saved;
+export function getGameById(gameId: string): SavedGame | null {
+	const history = getGameHistory();
+	return history.find((g) => g.id === gameId) || null;
+}
+
+export function saveGame(
+	game: Omit<SavedGame, 'id' | 'date' | 'odlId'>
+): SavedGame {
+	const history = getGameHistory();
+	const now = new Date().toISOString();
+	const newGame: SavedGame = {
+		...game,
+		id: generateId(),
+		odlId: getUserId(),
+		date: now,
+		endedAt: game.endedAt || now,
+	};
+
+	const updatedHistory = [newGame, ...history].slice(0, 50);
+	localStorage.setItem(
+		STORAGE_KEYS.GAME_HISTORY,
+		JSON.stringify(updatedHistory)
+	);
+
+	return newGame;
 }
 
 export function deleteGame(id: string): void {
@@ -341,80 +265,6 @@ export function saveUserPreferences(
 	return updated;
 }
 
-export function getCurrentGame(): CurrentGameState | null {
-	const data = localStorage.getItem(STORAGE_KEYS.CURRENT_GAME);
-	return safeJsonParse<CurrentGameState | null>(data, null);
-}
-
-export function saveCurrentGame(
-	state: Omit<CurrentGameState, 'savedAt' | 'odlId'>
-): void {
-	const gameState: CurrentGameState = {
-		...state,
-		odlId: getUserId(),
-		savedAt: new Date().toISOString(),
-	};
-	localStorage.setItem(STORAGE_KEYS.CURRENT_GAME, JSON.stringify(gameState));
-}
-
-export function clearCurrentGame(): void {
-	localStorage.removeItem(STORAGE_KEYS.CURRENT_GAME);
-}
-
-export function initializeGameSession(
-	settings: GameSettings,
-	clockWhite: number,
-	clockBlack: number
-): string {
-	clearCurrentGame();
-
-	const gameId = generateUUID();
-	const now = new Date().toISOString();
-
-	const gameState: CurrentGameState = {
-		gameId,
-		odlId: getUserId(),
-		fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-		pgn: '',
-		settings,
-		clockWhite,
-		clockBlack,
-		moveHistory: [],
-		startedAt: now,
-		savedAt: now,
-	};
-
-	localStorage.setItem(STORAGE_KEYS.CURRENT_GAME, JSON.stringify(gameState));
-	return gameId;
-}
-
-export function addMoveToCurrentGame(
-	move: { san: string; fen: string; color: 'w' | 'b'; clockTime: number },
-	pgn: string
-): CurrentGameState | null {
-	const current = getCurrentGame();
-	if (!current) return null;
-
-	const now = new Date().toISOString();
-	const moveRecord: MoveRecord = {
-		...move,
-		timestamp: now,
-	};
-
-	const updated: CurrentGameState = {
-		...current,
-		pgn,
-		fen: move.fen,
-		clockWhite: move.color === 'w' ? move.clockTime : current.clockWhite,
-		clockBlack: move.color === 'b' ? move.clockTime : current.clockBlack,
-		moveHistory: [...current.moveHistory, moveRecord],
-		savedAt: now,
-	};
-
-	localStorage.setItem(STORAGE_KEYS.CURRENT_GAME, JSON.stringify(updated));
-	return updated;
-}
-
 export interface GameStats {
 	totalGames: number;
 	wins: number;
@@ -428,8 +278,10 @@ export interface GameStats {
 
 export function getGameStats(): GameStats {
 	const history = getGameHistory();
+	// Only count finished games for stats
+	const finishedGames = history.filter((g) => g.status === 'finished');
 
-	if (history.length === 0) {
+	if (finishedGames.length === 0) {
 		return {
 			totalGames: 0,
 			wins: 0,
@@ -442,13 +294,13 @@ export function getGameStats(): GameStats {
 		};
 	}
 
-	const wins = history.filter((g) => g.result === 'win').length;
-	const losses = history.filter((g) => g.result === 'loss').length;
-	const draws = history.filter((g) => g.result === 'draw').length;
-	const totalMoves = history.reduce((sum, g) => sum + g.moves, 0);
-	const longestGame = Math.max(...history.map((g) => g.moves));
+	const wins = finishedGames.filter((g) => g.result === 'win').length;
+	const losses = finishedGames.filter((g) => g.result === 'loss').length;
+	const draws = finishedGames.filter((g) => g.result === 'draw').length;
+	const totalMoves = finishedGames.reduce((sum, g) => sum + g.moves, 0);
+	const longestGame = Math.max(...finishedGames.map((g) => g.moves));
 
-	const botCounts = history.reduce(
+	const botCounts = finishedGames.reduce(
 		(acc, g) => {
 			acc[g.settings.bot.id] = (acc[g.settings.bot.id] || 0) + 1;
 			return acc;
@@ -460,12 +312,12 @@ export function getGameStats(): GameStats {
 		Object.entries(botCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 
 	return {
-		totalGames: history.length,
+		totalGames: finishedGames.length,
 		wins,
 		losses,
 		draws,
-		winRate: Math.round((wins / history.length) * 100),
-		avgMoves: Math.round(totalMoves / history.length),
+		winRate: Math.round((wins / finishedGames.length) * 100),
+		avgMoves: Math.round(totalMoves / finishedGames.length),
 		favoriteBot,
 		longestGame,
 	};
