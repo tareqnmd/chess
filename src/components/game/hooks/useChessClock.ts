@@ -33,28 +33,30 @@ export function useChessClock(
 		isRunning: false,
 	});
 
-	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	const rafIdRef = useRef<number | null>(null);
 	const lastTickRef = useRef<number>(0);
 	const incrementRef = useRef<number>(0);
 
 	const clearTimer = useCallback(() => {
-		if (intervalRef.current) {
-			clearInterval(intervalRef.current);
-			intervalRef.current = null;
+		if (rafIdRef.current !== null) {
+			cancelAnimationFrame(rafIdRef.current);
+			rafIdRef.current = null;
 		}
 	}, []);
 
 	const startTimer = useCallback(() => {
 		clearTimer();
-		lastTickRef.current = Date.now();
+		lastTickRef.current = performance.now();
 
-		intervalRef.current = setInterval(() => {
-			const now = Date.now();
-			const elapsed = now - lastTickRef.current;
-			lastTickRef.current = now;
+		const tick = (timestamp: number) => {
+			const elapsed = timestamp - lastTickRef.current;
+			lastTickRef.current = timestamp;
 
 			setClockState((prev) => {
-				if (!prev.isRunning || !prev.activeColor) return prev;
+				if (!prev.isRunning || !prev.activeColor) {
+					rafIdRef.current = null;
+					return prev;
+				}
 
 				const activeKey = colorToKey(prev.activeColor);
 				const newTime = Math.max(0, prev[activeKey] - elapsed);
@@ -69,12 +71,16 @@ export function useChessClock(
 					};
 				}
 
+				rafIdRef.current = requestAnimationFrame(tick);
+
 				return {
 					...prev,
 					[activeKey]: newTime,
 				};
 			});
-		}, 100);
+		};
+
+		rafIdRef.current = requestAnimationFrame(tick);
 	}, [clearTimer, onTimeout]);
 
 	useEffect(() => {
