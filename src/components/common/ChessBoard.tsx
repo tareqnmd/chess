@@ -373,6 +373,31 @@ const ChessBoard = ({
 		};
 	}, [mode, bestMove]);
 
+	const checkSquare = useMemo(() => {
+		if (!chess.inCheck()) return {};
+
+		const turn = chess.turn();
+		const kingSquare = chess
+			.board()
+			.flat()
+			.findIndex(
+				(piece) => piece && piece.type === 'k' && piece.color === turn
+			);
+
+		if (kingSquare === -1) return {};
+
+		const file = String.fromCharCode(97 + (kingSquare % 8));
+		const rank = 8 - Math.floor(kingSquare / 8);
+		const square = `${file}${rank}`;
+
+		return {
+			[square]: {
+				backgroundColor: 'rgba(239, 68, 68, 0.8)',
+				boxShadow: '0 0 10px rgba(239, 68, 68, 0.6)',
+			},
+		};
+	}, [chess]);
+
 	const chessboardOptions = useMemo(
 		() => ({
 			id: mode === 'game' ? 'PlayVsBot' : 'AnalysisBoard',
@@ -387,9 +412,18 @@ const ChessBoard = ({
 			squareStyles: {
 				...optionSquares,
 				...(mode === 'game' ? rightClickedSquares : bestMoveSquares),
+				...checkSquare,
 			},
 			darkSquareStyle: { backgroundColor: darkSquareColor },
 			lightSquareStyle: { backgroundColor: lightSquareColor },
+			darkSquareNotationStyle: {
+				color: 'rgba(255, 255, 255, 0.9)',
+				fontWeight: '600',
+			},
+			lightSquareNotationStyle: {
+				color: 'rgba(0, 0, 0, 0.8)',
+				fontWeight: '600',
+			},
 			boardStyle: {
 				borderRadius: '8px',
 				boxShadow:
@@ -414,6 +448,7 @@ const ChessBoard = ({
 			optionSquares,
 			rightClickedSquares,
 			bestMoveSquares,
+			checkSquare,
 			darkSquareColor,
 			lightSquareColor,
 			animationDuration,

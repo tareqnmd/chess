@@ -1,15 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'sonner';
-import {
-	getGameHistory,
-	deleteGame,
-	clearGameHistory,
-	getGameStats,
-	downloadExportData,
-	type SavedGame,
-	type GameStats,
-} from '@/lib/storage';
 import { BOTS } from '@/components/game/constants';
+import {
+	clearGameHistory,
+	deleteGame,
+	downloadExportData,
+	getGameHistory,
+	getGameStats,
+	type GameStats,
+	type SavedGame,
+} from '@/lib/storage';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface HistoryPageProps {
 	onAnalyzeGame?: (pgn: string, fen: string) => void;
@@ -146,7 +146,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 								role="listitem"
 								aria-label={`Game vs ${game.settings.bot.name}, ${game.result}`}
 							>
-								<div className="flex items-center gap-4">
+								<div className="flex items-center  gap-4">
 									<div
 										className={`px-3 py-1.5 rounded-lg font-medium ${getResultColor(game.result)}`}
 									>

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import type { Color } from '@/components/common/types';
 import { BOTS, TIME_CONTROLS } from '@/components/game/constants';
 import type { Bot, GameSettings, TimeControl } from '@/components/game/types';
-import type { Color } from '@/components/common/types';
 import { Button, Card, Select } from '@/components/ui';
+import { useState } from 'react';
 
 interface GameSettingsProps {
 	onStartGame: (settings: GameSettings) => void;
@@ -75,7 +75,7 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 			</Select>
 
 			{}
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-col gap-4">
 				<label className="block text-sm font-medium text-slate-300">
 					Play as
 				</label>
@@ -100,7 +100,7 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 					/>
 					<button
 						onClick={() => setColorChoice('random')}
-						className={`w-[40px] h-[40px] rounded-full bg-gradient-to-r from-white from-50% to-slate-900 to-50% border-2 border-slate-700 transition-all ${
+						className={`w-[40px] h-[40px] rounded-full bg-linear-to-r from-white from-50% to-slate-900 to-50% border-2 border-slate-700 transition-all ${
 							colorChoice === 'random'
 								? 'ring-4 ring-emerald-500 ring-offset-2 ring-offset-slate-800'
 								: 'ring-2 ring-slate-600 hover:ring-slate-500'
