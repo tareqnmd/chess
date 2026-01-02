@@ -1,9 +1,9 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { Chess } from 'chess.js';
-import type { GameState, GameSettings } from '@/components/game/types';
-import { GameStatus, TerminationType } from '@/components/game/types';
 import type { Color, Square } from '@/components/common/types';
+import type { GameSettings, GameState } from '@/components/game/types';
+import { GameStatus, TerminationType } from '@/components/game/types';
 import { calculateBotMove, parseUCIMove } from '@/lib/chess-ai';
+import { Chess } from 'chess.js';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -14,6 +14,13 @@ function generateGameId(): string {
 interface UseChessGameReturn {
 	gameState: GameState;
 	startGame: (settings: GameSettings) => void;
+	restoreGame: (
+		gameId: string,
+		fen: string,
+		pgn: string,
+		settings: GameSettings,
+		startedAt: string
+	) => void;
 	makeMove: (from: string, to: string, promotion?: string) => boolean;
 	resetGame: () => void;
 	resign: () => void;
@@ -187,6 +194,42 @@ export function useChessGame(): UseChessGameReturn {
 		});
 	}, []);
 
+	const restoreGame = useCallback(
+		(
+			gameId: string,
+			fen: string,
+			pgn: string,
+			settings: GameSettings,
+			startedAt: string
+		) => {
+			const chess = new Chess(fen);
+			chessRef.current = chess;
+
+			const masterChess = new Chess();
+			masterChessRef.current = masterChess;
+
+			if (pgn) {
+				masterChess.loadPgn(pgn);
+			}
+
+			const history = chess.history({ verbose: true });
+
+			setGameState({
+				gameId,
+				chess,
+				fen,
+				pgn,
+				history,
+				status: GameStatus.PLAYING,
+				winner: null,
+				termination: null,
+				settings,
+				startedAt,
+			});
+		},
+		[]
+	);
+
 	const makeMove = useCallback(
 		(from: string, to: string, promotion?: string): boolean => {
 			const { settings, status, fen } = gameState;
@@ -302,6 +345,7 @@ export function useChessGame(): UseChessGameReturn {
 	return {
 		gameState,
 		startGame,
+		restoreGame,
 		makeMove,
 		resetGame,
 		resign,

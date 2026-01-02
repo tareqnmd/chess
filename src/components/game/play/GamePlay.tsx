@@ -23,6 +23,7 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 	const {
 		gameState,
 		startGame,
+		restoreGame,
 		makeMove,
 		resetGame,
 		resign,
@@ -40,13 +41,56 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		startCountdown,
 	} = useChessClock(setTimeoutWinner);
 
-	const { autoSave, saveCompletedGame, clearSavedGame, recordMove } =
-		useGameStorage();
+	const {
+		autoSave,
+		saveCompletedGame,
+		clearSavedGame,
+		recordMove,
+		initializeGame,
+		loadSavedGame,
+	} = useGameStorage();
 
 	const prevFenRef = useRef(gameState.fen);
 	const prevHistoryLengthRef = useRef(0);
 	const gameStartTimeRef = useRef<number>(0);
 	const clockStartedRef = useRef(false);
+	const gameRestoredRef = useRef(false);
+
+	useEffect(() => {
+		if (gameRestoredRef.current) return;
+		gameRestoredRef.current = true;
+
+		const savedGame = loadSavedGame();
+		if (savedGame && savedGame.settings) {
+			restoreGame(
+				savedGame.gameId,
+				savedGame.fen,
+				savedGame.pgn,
+				savedGame.settings,
+				savedGame.startedAt
+			);
+
+			const chess = new Chess(savedGame.fen);
+			const currentTurn = chess.turn();
+
+			resetClock(
+				savedGame.settings.timeControl,
+				savedGame.clockWhite,
+				savedGame.clockBlack
+			);
+
+			switchTurn(currentTurn);
+
+			prevFenRef.current = savedGame.fen;
+			prevHistoryLengthRef.current = savedGame.moveHistory.length;
+
+			if (savedGame.moveHistory.length >= 2) {
+				clockStartedRef.current = true;
+			}
+
+			toast.info('Game restored from last session');
+		}
+	}, [loadSavedGame, restoreGame, resetClock, switchTurn, startCountdown]);
 
 	useEffect(() => {
 		if (gameState.status !== GameStatus.PLAYING || !gameState.settings) return;
@@ -60,6 +104,14 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 			if (gameState.history.length >= 2 && !clockStartedRef.current) {
 				startCountdown();
 				clockStartedRef.current = true;
+			}
+
+			if (
+				clockStartedRef.current &&
+				!clockState.isRunning &&
+				gameState.history.length > prevHistoryLengthRef.current
+			) {
+				startCountdown();
 			}
 
 			if (gameState.history.length > prevHistoryLengthRef.current) {
@@ -90,6 +142,7 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		autoSave,
 		clockState.white,
 		clockState.black,
+		clockState.isRunning,
 		gameState,
 		recordMove,
 		startCountdown,
@@ -134,9 +187,14 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 			gameStartTimeRef.current = Date.now();
 			clockStartedRef.current = false;
 			clearSavedGame();
+			initializeGame(
+				settings,
+				settings.timeControl.initialTime * 1000,
+				settings.timeControl.initialTime * 1000
+			);
 			toast.success(`Game started vs ${settings.bot.name}`);
 		},
-		[startGame, startClock, clearSavedGame]
+		[startGame, startClock, clearSavedGame, initializeGame]
 	);
 
 	const handleNewGame = useCallback(() => {

@@ -1,6 +1,6 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import type { ClockState, TimeControl } from '@/components/game/types';
 import type { Color } from '@/components/common/types';
+import type { ClockState, TimeControl } from '@/components/game/types';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const colorToKey = (color: Color): 'white' | 'black' => {
 	return color === 'w' ? 'white' : 'black';
@@ -13,7 +13,11 @@ interface UseChessClockReturn {
 	pauseClock: () => void;
 	resumeClock: () => void;
 	stopClock: () => void;
-	resetClock: (timeControl: TimeControl) => void;
+	resetClock: (
+		timeControl: TimeControl,
+		whiteTime?: number,
+		blackTime?: number
+	) => void;
 	addIncrement: (color: Color, increment: number) => void;
 	formatTime: (ms: number) => string;
 	startCountdown: () => void;
@@ -127,14 +131,14 @@ export function useChessClock(
 	}, [clearTimer]);
 
 	const resetClock = useCallback(
-		(timeControl: TimeControl) => {
+		(timeControl: TimeControl, whiteTime?: number, blackTime?: number) => {
 			clearTimer();
 			const initialTimeMs = timeControl.initialTime * 1000;
 			incrementRef.current = timeControl.increment * 1000;
 
 			setClockState({
-				white: initialTimeMs,
-				black: initialTimeMs,
+				white: whiteTime !== undefined ? whiteTime : initialTimeMs,
+				black: blackTime !== undefined ? blackTime : initialTimeMs,
 				activeColor: null,
 				isRunning: false,
 			});
