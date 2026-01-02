@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import AnalysisPage from './components/analysis/AnalysisPage';
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
@@ -7,6 +7,7 @@ import HistoryPage from './components/history/HistoryPage';
 import { BoardSettingsModal } from './components/common/BoardSettingsModal';
 import type { BoardSettings } from './types/board-settings';
 import { loadBoardSettings, saveBoardSettings } from './lib/board-settings-storage';
+import { updatePageMeta } from './utils/meta';
 
 type Page = 'play' | 'analysis' | 'history';
 
@@ -32,6 +33,14 @@ function App() {
 			setAnalysisImport({});
 		}
 		setCurrentPage(page);
+		
+		// Update meta tags for the new page
+		updatePageMeta(page);
+	}, []);
+
+	// Update meta tags on initial load
+	useEffect(() => {
+		updatePageMeta(currentPage);
 	}, []);
 
 	const handleSaveSettings = useCallback((settings: BoardSettings) => {
