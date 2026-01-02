@@ -2,6 +2,7 @@ import { gameService } from '@/lib/game-service';
 import type { BoardSettings } from '@/components/common/types';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAnalysis } from '../game/hooks/useAnalysis';
 import AnalysisBoard from './AnalysisBoard';
@@ -10,16 +11,20 @@ import AnalysisPanel from './AnalysisPanel';
 const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 interface AnalysisPageProps {
-	importedPgn?: string;
-	importedFen?: string;
 	boardSettings: BoardSettings;
 }
 
-const AnalysisPage = ({
-	importedPgn,
-	importedFen,
-	boardSettings,
-}: AnalysisPageProps) => {
+interface LocationState {
+	pgn?: string;
+	fen?: string;
+}
+
+const AnalysisPage = ({ boardSettings }: AnalysisPageProps) => {
+	const location = useLocation();
+	const state = (location.state as LocationState) || {};
+	const importedPgn = state.pgn;
+	const importedFen = state.fen;
+
 	const [fen, setFen] = useState(importedFen || INITIAL_FEN);
 	const [fenInput, setFenInput] = useState(importedFen || INITIAL_FEN);
 	const [pgnInput, setPgnInput] = useState(importedPgn || '');
