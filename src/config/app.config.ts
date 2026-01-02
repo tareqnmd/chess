@@ -63,10 +63,19 @@ export const APP_CONFIG = {
 		supportUrl: 'https://yourchessapp.com/support',
 	},
 	
-	// Analytics (optional)
+	// Analytics & Verification
 	analytics: {
 		enabled: false,
-		googleAnalyticsId: 'GA_MEASUREMENT_ID',
+		googleAnalyticsId: 'G-XXXXXXXXXX', // Format: G-XXXXXXXXXX for GA4
+		googleTagManagerId: '', // Optional: GTM-XXXXXXX
+		measurementId: '', // Optional: Additional measurement ID
+	},
+	
+	verification: {
+		google: '', // Google Search Console verification code
+		bing: '', // Bing Webmaster Tools verification
+		yandex: '', // Yandex verification
+		pinterest: '', // Pinterest verification
 	},
 	
 	// Legal

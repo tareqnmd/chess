@@ -1,12 +1,21 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AnalysisPage from './components/analysis/AnalysisPage';
+import { BoardSettingsModal } from './components/common/BoardSettingsModal';
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
 import GamePlay from './components/game/play/GamePlay';
 import HistoryPage from './components/history/HistoryPage';
-import { BoardSettingsModal } from './components/common/BoardSettingsModal';
+import {
+	getUserId,
+	loadBoardSettings,
+	saveBoardSettings,
+} from './lib/board-settings-storage';
 import type { BoardSettings } from './types/board-settings';
-import { loadBoardSettings, saveBoardSettings } from './lib/board-settings-storage';
+import {
+	initializeAnalytics,
+	setUserId,
+	trackPageView,
+} from './utils/analytics';
 import { updatePageMeta } from './utils/meta';
 
 type Page = 'play' | 'analysis' | 'history';
@@ -19,7 +28,9 @@ interface AnalysisImport {
 function App() {
 	const [currentPage, setCurrentPage] = useState<Page>('play');
 	const [analysisImport, setAnalysisImport] = useState<AnalysisImport>({});
-	const [boardSettings, setBoardSettings] = useState<BoardSettings>(() => loadBoardSettings());
+	const [boardSettings, setBoardSettings] = useState<BoardSettings>(() =>
+		loadBoardSettings()
+	);
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
 	const handleAnalyzeGame = useCallback((pgn: string, fen: string) => {
@@ -33,14 +44,28 @@ function App() {
 			setAnalysisImport({});
 		}
 		setCurrentPage(page);
-		
+
 		// Update meta tags for the new page
 		updatePageMeta(page);
+
+		// Track page view
+		trackPageView(page);
 	}, []);
 
-	// Update meta tags on initial load
+	// Initialize analytics and meta tags on mount
 	useEffect(() => {
+		// Initialize analytics
+		initializeAnalytics();
+
+		// Set user ID for tracking
+		const userId = getUserId();
+		setUserId(userId);
+
+		// Update meta tags
 		updatePageMeta(currentPage);
+
+		// Track initial page view
+		trackPageView(currentPage);
 	}, []);
 
 	const handleSaveSettings = useCallback((settings: BoardSettings) => {
