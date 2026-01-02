@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+# Pre-commit hook
+# Runs before each commit to ensure code quality
+
+echo "🔍 Running pre-commit checks..."
+
+# 1. Run lint-staged (ESLint + Prettier on staged files)
+echo "📝 Formatting and linting staged files..."
+pnpm lint-staged
+
+# 2. Type check
+echo "🔍 Type checking..."
+pnpm exec tsc --noEmit || {
+  echo "❌ Type check failed. Please fix TypeScript errors before committing."
+  exit 1
+}
+
+echo "✅ Pre-commit checks passed!"

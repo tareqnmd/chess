@@ -210,6 +210,8 @@ The app supports Google Analytics 4:
 - **State Management**: React Hooks
 - **Storage**: localStorage
 - **Analytics**: Google Analytics 4
+- **Code Quality**: ESLint + Prettier
+- **Git Hooks**: Husky + lint-staged
 
 ## 📊 Performance
 
@@ -241,11 +243,22 @@ The app supports Google Analytics 4:
 - Native-like experience
 - Push notifications ready
 
-## 🧪 Testing
+## 🧪 Testing & Code Quality
+
+### Linting & Formatting
 
 ```bash
 # Run linter
 pnpm lint
+
+# Fix linting issues
+pnpm lint:fix
+
+# Check code formatting
+pnpm format:check
+
+# Format all code
+pnpm format
 
 # Type check
 pnpm type-check
@@ -253,6 +266,29 @@ pnpm type-check
 # Build test
 pnpm build
 ```
+
+### Git Hooks (Husky)
+
+**Pre-commit** hooks automatically:
+
+- Run ESLint with auto-fix
+- Format code with Prettier
+- Type check TypeScript
+- Only on staged files (fast!)
+
+**Commit-msg** validation:
+
+- Enforces [Conventional Commits](https://www.conventionalcommits.org/) format
+- Examples: `feat:`, `fix:`, `docs:`, etc.
+
+**Pre-push** validation:
+
+- Lint entire codebase
+- Type check all files
+- Format check
+- Build verification
+
+See [GIT-HOOKS-GUIDE.md](./GIT-HOOKS-GUIDE.md) for complete documentation.
 
 ## 📈 SEO Optimizations
 
@@ -272,9 +308,17 @@ Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+3. Commit your changes using [Conventional Commits](https://www.conventionalcommits.org/)
+   - `git commit -m 'feat: add some amazing feature'`
+   - `git commit -m 'fix: resolve rendering issue'`
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+**Note:** Git hooks will automatically:
+
+- Format and lint your code on commit
+- Validate commit message format
+- Run full validation before push
 
 ## 📝 License
 

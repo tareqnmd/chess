@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
-import { Select } from '@/components/ui/Select';
+import Button from '@/components/ui/Button';
+import Select from '@/components/ui/Select';
 import type { BoardSettings, PieceTheme } from '@/types/board-settings';
 import { BOARD_THEMES } from '@/types/board-settings';
 
@@ -115,7 +115,7 @@ export const BoardSettingsModal = ({
 					</label>
 					<Select
 						value={localSettings.pieceTheme}
-						onChange={(e) =>
+						onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
 							setLocalSettings({
 								...localSettings,
 								pieceTheme: e.target.value as PieceTheme,
@@ -269,4 +269,3 @@ export const BoardSettingsModal = ({
 		</Modal>
 	);
 };
-

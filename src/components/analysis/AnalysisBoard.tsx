@@ -1,6 +1,6 @@
-import type { PositionAnalysis } from '@/types/chess';
-import type { BoardSettings } from '@/types/board-settings';
 import ChessBoard from '@/components/common/ChessBoard';
+import type { BoardSettings } from '@/types/board-settings';
+import type { PositionAnalysis } from '@/types/chess';
 
 interface AnalysisBoardProps {
 	fen: string;
@@ -22,7 +22,7 @@ const AnalysisBoard = ({
 			mode="analysis"
 			fen={fen}
 			onFenChange={onFenChange}
-			bestMove={analysis?.bestMove}
+			bestMove={analysis?.bestMove ?? undefined}
 			isAnalyzing={isAnalyzing}
 			settings={settings}
 		/>

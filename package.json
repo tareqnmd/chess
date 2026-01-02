@@ -1,37 +1,58 @@
 {
-  "name": "chess-vite",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "chess.js": "^1.4.0",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.562.0",
-    "react": "^19.2.0",
-    "react-chessboard": "^5.8.6",
-    "react-dom": "^19.2.0",
-    "stockfish.js": "^10.0.2"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@tailwindcss/vite": "^4.1.18",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.5",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
-    "eslint": "^9.39.1",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
-    "globals": "^16.5.0",
-    "tailwindcss": "^4.1.18",
-    "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
-  }
+	"name": "chess-vite",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc -b && vite build",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+		"format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+		"type-check": "tsc --noEmit",
+		"preview": "vite preview",
+		"prepare": "husky",
+		"test:hooks": "echo 'Testing pre-commit...' && git hook run pre-commit",
+		"validate": "pnpm lint && pnpm type-check && pnpm format:check && pnpm build"
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{json,css,md}": [
+			"prettier --write"
+		]
+	},
+	"dependencies": {
+		"chess.js": "^1.4.0",
+		"clsx": "^2.1.1",
+		"lucide-react": "^0.562.0",
+		"react": "^19.2.0",
+		"react-chessboard": "^5.8.6",
+		"react-dom": "^19.2.0",
+		"stockfish.js": "^10.0.2"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^20.3.0",
+		"@commitlint/config-conventional": "^20.3.0",
+		"@eslint/js": "^9.39.1",
+		"@tailwindcss/vite": "^4.1.18",
+		"@types/node": "^24.10.1",
+		"@types/react": "^19.2.5",
+		"@types/react-dom": "^19.2.3",
+		"@vitejs/plugin-react": "^5.1.1",
+		"eslint": "^9.39.1",
+		"eslint-plugin-react-hooks": "^7.0.1",
+		"eslint-plugin-react-refresh": "^0.4.24",
+		"globals": "^16.5.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.7.4",
+		"tailwindcss": "^4.1.18",
+		"typescript": "~5.9.3",
+		"typescript-eslint": "^8.46.4",
+		"vite": "^7.2.4"
+	}
 }

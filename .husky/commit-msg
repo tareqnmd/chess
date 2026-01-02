@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+# Commit message hook
+# Validates commit message format
+
+echo "📝 Validating commit message..."
+
+pnpm exec commitlint --edit "$1" || {
+  echo ""
+  echo "❌ Commit message doesn't follow conventional commits format!"
+  echo ""
+  echo "Valid format: <type>(<scope>): <subject>"
+  echo ""
+  echo "Types:"
+  echo "  feat:     New feature"
+  echo "  fix:      Bug fix"
+  echo "  docs:     Documentation changes"
+  echo "  style:    Code formatting (no logic change)"
+  echo "  refactor: Code refactoring"
+  echo "  perf:     Performance improvement"
+  echo "  test:     Adding/updating tests"
+  echo "  build:    Build system or dependencies"
+  echo "  ci:       CI/CD changes"
+  echo "  chore:    Other changes"
+  echo ""
+  echo "Examples:"
+  echo "  feat: add board settings modal"
+  echo "  feat(game): implement time controls"
+  echo "  fix: resolve board theme not saving"
+  echo "  docs: update README with deployment guide"
+  echo ""
+  exit 1
+}
+
+echo "✅ Commit message is valid!"
+
