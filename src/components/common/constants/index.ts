@@ -7,7 +7,7 @@ export const DEFAULT_BOARD_SETTINGS: BoardSettings = {
 		light: '#94a3b8',
 		dark: '#334155',
 	},
-	showCoordinates: true,
+	showCoordinates: false,
 	animationDuration: 200,
 };
 

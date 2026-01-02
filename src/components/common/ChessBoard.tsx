@@ -1,8 +1,8 @@
+import type { BoardSettings } from '@/components/common/types';
 import { Chess, Square } from 'chess.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { toast } from 'sonner';
-import type { BoardSettings } from '@/components/common/types';
 
 type PieceDataType = {
 	pieceType: string;
@@ -409,6 +409,7 @@ const ChessBoard = ({
 			canDragPiece,
 			onPieceDrag,
 			allowDragging: canInteract,
+			showNotation: showCoordinates,
 			squareStyles: {
 				...optionSquares,
 				...(mode === 'game' ? rightClickedSquares : bestMoveSquares),

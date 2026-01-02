@@ -24,6 +24,8 @@ export interface SavedGame {
 	status: 'playing' | 'finished';
 	clockWhite: number;
 	clockBlack: number;
+	clockRunning: boolean;
+	lastMoveTime: string | null;
 }
 
 export interface SavedAnalysis {
@@ -81,7 +83,28 @@ export function setUserId(id: string): void {
 
 export function getGameHistory(): SavedGame[] {
 	const data = localStorage.getItem(STORAGE_KEYS.GAME_HISTORY);
-	return safeJsonParse<SavedGame[]>(data, []);
+	const games = safeJsonParse<SavedGame[]>(data, []);
+
+	// Migrate old games that don't have clockRunning or lastMoveTime fields
+	return games.map((game) => {
+		const migrated = { ...game };
+
+		if (migrated.clockRunning === undefined) {
+			// If game is playing and has moves, assume clock was running
+			// If game is finished or has no moves, clock is not running
+			migrated.clockRunning = game.status === 'playing' && game.moves > 0;
+		}
+
+		if (migrated.lastMoveTime === undefined) {
+			// For old games, use current time as fallback
+			migrated.lastMoveTime =
+				game.status === 'playing' && game.moves > 0
+					? new Date().toISOString()
+					: null;
+		}
+
+		return migrated;
+	});
 }
 
 export function createGameInHistory(
@@ -108,6 +131,8 @@ export function createGameInHistory(
 		status: 'playing',
 		clockWhite,
 		clockBlack,
+		clockRunning: false, // Clock hasn't started yet for new games
+		lastMoveTime: null, // No moves made yet
 	};
 
 	const updatedHistory = [newGame, ...history].slice(0, 50);
@@ -124,7 +149,14 @@ export function updateGameInHistory(
 	updates: Partial<
 		Pick<
 			SavedGame,
-			'pgn' | 'fen' | 'moves' | 'duration' | 'clockWhite' | 'clockBlack'
+			| 'pgn'
+			| 'fen'
+			| 'moves'
+			| 'duration'
+			| 'clockWhite'
+			| 'clockBlack'
+			| 'clockRunning'
+			| 'lastMoveTime'
 		>
 	>
 ): void {
@@ -160,6 +192,7 @@ export function finishGameInHistory(
 		duration,
 		endedAt: new Date().toISOString(),
 		status: 'finished',
+		clockRunning: false, // Clock stops when game finishes
 	};
 
 	history[index] = updated;

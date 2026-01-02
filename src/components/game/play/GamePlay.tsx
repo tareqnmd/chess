@@ -54,8 +54,8 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 	const gameStartTimeRef = useRef<number>(0);
 	const gameInitializedRef = useRef(false);
 	const lastSaveRef = useRef<number>(0);
+	const clockStartedRef = useRef(false);
 
-	// Initialize or restore game from history
 	useEffect(() => {
 		if (gameInitializedRef.current) return;
 		gameInitializedRef.current = true;
@@ -95,27 +95,50 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 				savedGame.startedAt
 			);
 
-			// Restore clock times
+			let adjustedClockWhite = savedGame.clockWhite;
+			let adjustedClockBlack = savedGame.clockBlack;
+
+			if (savedGame.clockRunning && savedGame.lastMoveTime) {
+				const chess = new Chess(savedGame.fen);
+				const currentTurn = chess.turn();
+				const elapsedMs =
+					Date.now() - new Date(savedGame.lastMoveTime).getTime();
+
+				if (currentTurn === 'w') {
+					adjustedClockWhite = Math.max(0, savedGame.clockWhite - elapsedMs);
+				} else {
+					adjustedClockBlack = Math.max(0, savedGame.clockBlack - elapsedMs);
+				}
+
+				if (adjustedClockWhite === 0 || adjustedClockBlack === 0) {
+					toast.error('Time expired while away from game');
+				}
+			}
+
 			resetClock(
 				savedGame.settings.timeControl,
-				savedGame.clockWhite,
-				savedGame.clockBlack
+				adjustedClockWhite,
+				adjustedClockBlack
 			);
 
-			// Set the current turn and start the clock
 			const chess = new Chess(savedGame.fen);
-			switchTurn(chess.turn());
+			const currentTurn = chess.turn();
+			switchTurn(currentTurn);
 
-			// Set refs to avoid unnecessary auto-saves right after restoration
 			prevFenRef.current = savedGame.fen;
 			prevMovesCountRef.current = savedGame.moves;
 			gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
 			lastSaveRef.current = Date.now();
 
-			// Start the clock countdown after a small delay
-			setTimeout(() => {
-				startCountdown();
-			}, 100);
+			if (savedGame.moves > 0) {
+				clockStartedRef.current = true;
+			}
+
+			if (savedGame.clockRunning) {
+				setTimeout(() => {
+					startCountdown();
+				}, 100);
+			}
 
 			toast.info('Game resumed');
 		}
@@ -130,7 +153,6 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		startCountdown,
 	]);
 
-	// Auto-save game state to history
 	useEffect(() => {
 		if (
 			gameState.status !== GameStatus.PLAYING ||
@@ -139,20 +161,31 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		)
 			return;
 
+		const moveCountChanged =
+			gameState.history.length !== prevMovesCountRef.current;
+
+		if (!moveCountChanged) return;
+
 		if (
-			prevFenRef.current !== gameState.fen ||
-			gameState.history.length !== prevMovesCountRef.current
+			!clockStartedRef.current &&
+			prevMovesCountRef.current === 0 &&
+			gameState.history.length === 1
 		) {
+			clockStartedRef.current = true;
+			prevMovesCountRef.current = 1;
 			prevFenRef.current = gameState.fen;
-			prevMovesCountRef.current = gameState.history.length;
+			lastSaveRef.current = Date.now();
 
-			// Throttle saves to every 2 seconds
-			const now = Date.now();
-			if (now - lastSaveRef.current < 2000) return;
-			lastSaveRef.current = now;
+			const chess = new Chess(gameState.fen);
+			switchTurn(chess.turn());
 
-			const duration = Math.floor((now - gameStartTimeRef.current) / 1000);
+			setTimeout(() => {
+				startCountdown();
+			}, 100);
 
+			const duration = Math.floor(
+				(Date.now() - gameStartTimeRef.current) / 1000
+			);
 			updateGameInHistory(gameId, {
 				pgn: gameState.pgn,
 				fen: gameState.fen,
@@ -160,7 +193,42 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 				duration,
 				clockWhite: clockState.white,
 				clockBlack: clockState.black,
+				clockRunning: true,
+				lastMoveTime: new Date().toISOString(),
 			});
+
+			return;
+		}
+
+		if (prevMovesCountRef.current > 0) {
+			const chess = new Chess(gameState.fen);
+			const currentTurn = chess.turn();
+			const wasBotMove = currentTurn === gameState.settings.playerColor;
+
+			prevFenRef.current = gameState.fen;
+			prevMovesCountRef.current = gameState.history.length;
+
+			switchTurn(currentTurn);
+
+			const now = Date.now();
+			const shouldSave = wasBotMove || now - lastSaveRef.current >= 2000;
+
+			if (shouldSave) {
+				lastSaveRef.current = now;
+
+				const duration = Math.floor((now - gameStartTimeRef.current) / 1000);
+
+				updateGameInHistory(gameId, {
+					pgn: gameState.pgn,
+					fen: gameState.fen,
+					moves: gameState.history.length,
+					duration,
+					clockWhite: clockState.white,
+					clockBlack: clockState.black,
+					clockRunning: clockState.isRunning,
+					lastMoveTime: new Date().toISOString(), // Track when this move was made
+				});
+			}
 		}
 	}, [
 		gameState.fen,
@@ -171,6 +239,9 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		gameId,
 		clockState.white,
 		clockState.black,
+		clockState.isRunning,
+		switchTurn,
+		startCountdown,
 	]);
 
 	useEffect(() => {
