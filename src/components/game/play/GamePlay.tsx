@@ -5,6 +5,7 @@ import {
 	getGameById,
 	updateGameInHistory,
 } from '@/lib/storage';
+import { Chess } from 'chess.js';
 import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -36,8 +37,15 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		isPlayerTurn,
 	} = useChessGame();
 
-	const { clockState, startClock, stopClock, resetClock, formatTime } =
-		useChessClock(setTimeoutWinner);
+	const {
+		clockState,
+		startClock,
+		stopClock,
+		resetClock,
+		formatTime,
+		switchTurn,
+		startCountdown,
+	} = useChessClock(setTimeoutWinner);
 
 	useGameStorage(); // Still needed for default settings
 
@@ -87,18 +95,40 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 				savedGame.startedAt
 			);
 
+			// Restore clock times
 			resetClock(
 				savedGame.settings.timeControl,
 				savedGame.clockWhite,
 				savedGame.clockBlack
 			);
 
-			gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
+			// Set the current turn and start the clock
+			const chess = new Chess(savedGame.fen);
+			switchTurn(chess.turn());
+
+			// Set refs to avoid unnecessary auto-saves right after restoration
+			prevFenRef.current = savedGame.fen;
 			prevMovesCountRef.current = savedGame.moves;
+			gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
+			lastSaveRef.current = Date.now();
+
+			// Start the clock countdown after a small delay
+			setTimeout(() => {
+				startCountdown();
+			}, 100);
 
 			toast.info('Game resumed');
 		}
-	}, [gameId, navigate, startGame, startClock, restoreGame, resetClock]);
+	}, [
+		gameId,
+		navigate,
+		startGame,
+		startClock,
+		restoreGame,
+		resetClock,
+		switchTurn,
+		startCountdown,
+	]);
 
 	// Auto-save game state to history
 	useEffect(() => {
