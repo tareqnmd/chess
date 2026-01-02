@@ -146,14 +146,110 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 								role="listitem"
 								aria-label={`Game vs ${game.settings.bot.name}, ${game.result}`}
 							>
-								<div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-									<div
-										className={`px-3 py-1.5 rounded-lg font-medium text-sm whitespace-nowrap ${getResultColor(game.result)}`}
-									>
-										{getResultIcon(game.result)} {game.result.toUpperCase()}
+								<div className="flex flex-col gap-3">
+									{/* Mobile: Result and Delete button on top */}
+									<div className="flex items-center justify-between sm:hidden">
+										<div
+											className={`px-3 py-1.5 rounded-lg font-medium text-sm whitespace-nowrap ${getResultColor(game.result)}`}
+										>
+											{getResultIcon(game.result)} {game.result.toUpperCase()}
+										</div>
+
+										<div className="flex items-center gap-2">
+											<div
+												className={`w-6 h-6 rounded-full shrink-0 ${
+													game.settings.playerColor === 'w'
+														? 'bg-white'
+														: 'bg-slate-900 border border-slate-600'
+												}`}
+											/>
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													handleDeleteGame(game.id);
+												}}
+												className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-600/10 rounded-lg transition-all"
+												aria-label="Delete game"
+											>
+												<svg
+													className="w-5 h-5"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke="currentColor"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+													/>
+												</svg>
+											</button>
+										</div>
 									</div>
 
-									<div className="flex-1 min-w-0 w-full sm:w-auto">
+									{/* Desktop: All in one row */}
+									<div className="hidden sm:flex items-center gap-4">
+										<div
+											className={`px-3 py-1.5 rounded-lg font-medium text-sm whitespace-nowrap ${getResultColor(game.result)}`}
+										>
+											{getResultIcon(game.result)} {game.result.toUpperCase()}
+										</div>
+
+										<div className="flex-1 min-w-0">
+											<div className="flex items-center gap-2 flex-wrap">
+												<span className="text-slate-100 font-medium">
+													vs {game.settings.bot.name}
+												</span>
+												<span className="text-xs px-2 py-0.5 rounded-full bg-slate-600/50 text-slate-400">
+													{game.settings.bot.rating}
+												</span>
+											</div>
+											<div className="flex items-center flex-wrap gap-3 text-sm text-slate-500 mt-1">
+												<span>{new Date(game.date).toLocaleDateString()}</span>
+												<span>•</span>
+												<span>{game.moves} moves</span>
+												<span>•</span>
+												<span>{formatDuration(game.duration)}</span>
+											</div>
+										</div>
+
+										<div className="flex items-center gap-3">
+											<div
+												className={`w-6 h-6 rounded-full shrink-0 ${
+													game.settings.playerColor === 'w'
+														? 'bg-white'
+														: 'bg-slate-900 border border-slate-600'
+												}`}
+											/>
+
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													handleDeleteGame(game.id);
+												}}
+												className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-600/10 rounded-lg transition-all"
+												aria-label="Delete game"
+											>
+												<svg
+													className="w-5 h-5"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke="currentColor"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+													/>
+												</svg>
+											</button>
+										</div>
+									</div>
+
+									{/* Game info - shown on mobile only */}
+									<div className="sm:hidden">
 										<div className="flex items-center gap-2 flex-wrap">
 											<span className="text-slate-100 font-medium">
 												vs {game.settings.bot.name}
@@ -162,46 +258,11 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 												{game.settings.bot.rating}
 											</span>
 										</div>
-										<div className="flex items-center flex-wrap gap-2 sm:gap-3 text-sm text-slate-500 mt-1">
+										<div className="flex items-center flex-wrap gap-2 text-sm text-slate-500 mt-1">
 											<span>{new Date(game.date).toLocaleDateString()}</span>
-											<span className="hidden sm:inline">•</span>
 											<span>{game.moves} moves</span>
-											<span className="hidden sm:inline">•</span>
 											<span>{formatDuration(game.duration)}</span>
 										</div>
-									</div>
-
-									<div className="flex items-center gap-3 ml-auto sm:ml-0">
-										<div
-											className={`w-6 h-6 rounded-full shrink-0 ${
-												game.settings.playerColor === 'w'
-													? 'bg-white'
-													: 'bg-slate-900 border border-slate-600'
-											}`}
-										/>
-
-										<button
-											onClick={(e) => {
-												e.stopPropagation();
-												handleDeleteGame(game.id);
-											}}
-											className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-600/10 rounded-lg transition-all"
-											aria-label="Delete game"
-										>
-											<svg
-												className="w-5 h-5"
-												fill="none"
-												viewBox="0 0 24 24"
-												stroke="currentColor"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-												/>
-											</svg>
-										</button>
 									</div>
 								</div>
 							</article>
