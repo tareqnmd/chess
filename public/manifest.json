@@ -1,0 +1,65 @@
+{
+  "name": "Chess - Play & Analyze",
+  "short_name": "Chess",
+  "description": "Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/chess.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "education", "entertainment"],
+  "screenshots": [
+    {
+      "src": "/chess.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Play Chess",
+      "short_name": "Play",
+      "description": "Start a new game against AI",
+      "url": "/?page=play",
+      "icons": [
+        {
+          "src": "/chess.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Analyze Position",
+      "short_name": "Analyze",
+      "description": "Analyze chess positions with Stockfish",
+      "url": "/?page=analysis",
+      "icons": [
+        {
+          "src": "/chess.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Game History",
+      "short_name": "History",
+      "description": "View your past games",
+      "url": "/?page=history",
+      "icons": [
+        {
+          "src": "/chess.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
+
