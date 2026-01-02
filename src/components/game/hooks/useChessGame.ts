@@ -1,10 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Chess } from 'chess.js';
-import type {
-	GameState,
-	GameSettings,
-	GameStatus,
-} from '@/components/game/types';
+import type { GameState, GameSettings } from '@/components/game/types';
+import { GameStatus, TerminationType } from '@/components/game/types';
 import type { Color, Square } from '@/components/common/types';
 import { calculateBotMove, parseUCIMove } from '@/lib/chess-ai';
 
@@ -37,8 +34,9 @@ export function useChessGame(): UseChessGameReturn {
 		fen: INITIAL_FEN,
 		pgn: '',
 		history: [],
-		status: 'idle',
+		status: GameStatus.IDLE,
 		winner: null,
+		termination: null,
 		settings: null,
 		startedAt: null,
 	});
@@ -50,18 +48,51 @@ export function useChessGame(): UseChessGameReturn {
 	}, []);
 
 	const checkGameEnd = useCallback(
-		(chess: Chess): { status: GameStatus; winner: Color | 'draw' | null } => {
+		(
+			chess: Chess
+		): {
+			status: GameStatus;
+			winner: Color | 'draw' | null;
+			termination: TerminationType | null;
+		} => {
 			if (chess.isCheckmate()) {
 				const winner = chess.turn() === 'w' ? 'b' : 'w';
-				return { status: 'checkmate', winner };
+				return {
+					status: GameStatus.CHECKMATE,
+					winner,
+					termination: TerminationType.CHECKMATE,
+				};
 			}
 			if (chess.isStalemate()) {
-				return { status: 'stalemate', winner: 'draw' };
+				return {
+					status: GameStatus.STALEMATE,
+					winner: 'draw',
+					termination: TerminationType.STALEMATE,
+				};
+			}
+			if (chess.isInsufficientMaterial()) {
+				return {
+					status: GameStatus.DRAW,
+					winner: 'draw',
+					termination: TerminationType.INSUFFICIENT_MATERIAL,
+				};
+			}
+			if (chess.isThreefoldRepetition()) {
+				return {
+					status: GameStatus.DRAW,
+					winner: 'draw',
+					termination: TerminationType.THREEFOLD_REPETITION,
+				};
 			}
 			if (chess.isDraw()) {
-				return { status: 'draw', winner: 'draw' };
+				// This catches fifty-move rule and other draws
+				return {
+					status: GameStatus.DRAW,
+					winner: 'draw',
+					termination: TerminationType.FIFTY_MOVE,
+				};
 			}
-			return { status: 'playing', winner: null };
+			return { status: GameStatus.PLAYING, winner: null, termination: null };
 		},
 		[]
 	);
@@ -70,7 +101,7 @@ export function useChessGame(): UseChessGameReturn {
 		if (botThinkingRef.current) return;
 
 		const { settings, status, fen } = gameState;
-		if (!settings || status !== 'playing') return;
+		if (!settings || status !== GameStatus.PLAYING) return;
 
 		const chess = new Chess(fen);
 		const isBotTurn = chess.turn() !== settings.playerColor;
@@ -93,7 +124,11 @@ export function useChessGame(): UseChessGameReturn {
 					});
 
 					if (result) {
-						const { status: newStatus, winner } = checkGameEnd(newChess);
+						const {
+							status: newStatus,
+							winner,
+							termination,
+						} = checkGameEnd(newChess);
 
 						masterChessRef.current.move({
 							from: parsed.from,
@@ -109,6 +144,7 @@ export function useChessGame(): UseChessGameReturn {
 							history: [...prev.history, result],
 							status: newStatus,
 							winner,
+							termination,
 						}));
 					}
 				}
@@ -119,7 +155,7 @@ export function useChessGame(): UseChessGameReturn {
 	}, [gameState, checkGameEnd]);
 
 	useEffect(() => {
-		if (gameState.status !== 'playing' || !gameState.settings) return;
+		if (gameState.status !== GameStatus.PLAYING || !gameState.settings) return;
 
 		const chess = new Chess(gameState.fen);
 		const isBotTurn = chess.turn() !== gameState.settings.playerColor;
@@ -143,8 +179,9 @@ export function useChessGame(): UseChessGameReturn {
 			fen: chess.fen(),
 			pgn: '',
 			history: [],
-			status: 'playing',
+			status: GameStatus.PLAYING,
 			winner: null,
+			termination: null,
 			settings,
 			startedAt: now,
 		});
@@ -154,7 +191,7 @@ export function useChessGame(): UseChessGameReturn {
 		(from: string, to: string, promotion?: string): boolean => {
 			const { settings, status, fen } = gameState;
 
-			if (status !== 'playing' || !settings) return false;
+			if (status !== GameStatus.PLAYING || !settings) return false;
 
 			const chess = new Chess(fen);
 			const isPlayerTurn = chess.turn() === settings.playerColor;
@@ -169,7 +206,11 @@ export function useChessGame(): UseChessGameReturn {
 				});
 
 				if (move) {
-					const { status: newStatus, winner } = checkGameEnd(chess);
+					const {
+						status: newStatus,
+						winner,
+						termination,
+					} = checkGameEnd(chess);
 
 					masterChessRef.current.move({
 						from,
@@ -185,6 +226,7 @@ export function useChessGame(): UseChessGameReturn {
 						history: [...prev.history, move],
 						status: newStatus,
 						winner,
+						termination,
 					}));
 
 					return true;
@@ -210,8 +252,9 @@ export function useChessGame(): UseChessGameReturn {
 			fen: chess.fen(),
 			pgn: '',
 			history: [],
-			status: 'idle',
+			status: GameStatus.IDLE,
 			winner: null,
+			termination: null,
 			settings: null,
 			startedAt: null,
 		});
@@ -222,13 +265,21 @@ export function useChessGame(): UseChessGameReturn {
 		if (!settings) return;
 
 		const winner = settings.playerColor === 'w' ? 'b' : 'w';
-		updateGameState({ status: 'resigned', winner });
+		updateGameState({
+			status: GameStatus.RESIGNED,
+			winner,
+			termination: TerminationType.RESIGNATION,
+		});
 	}, [gameState, updateGameState]);
 
 	const setTimeoutWinner = useCallback(
 		(loser: Color) => {
 			const winner = loser === 'w' ? 'b' : 'w';
-			updateGameState({ status: 'timeout', winner });
+			updateGameState({
+				status: GameStatus.TIMEOUT,
+				winner,
+				termination: TerminationType.TIMEOUT,
+			});
 		},
 		[updateGameState]
 	);

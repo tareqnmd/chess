@@ -1,4 +1,5 @@
 import { BOTS } from '@/components/game/constants';
+import { TerminationType } from '@/components/game/types';
 import {
 	clearGameHistory,
 	deleteGame,
@@ -89,6 +90,20 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 
 	const getBotName = (botId: string) => {
 		return BOTS.find((b) => b.id === botId)?.name || botId;
+	};
+
+	const getTerminationText = (termination: TerminationType) => {
+		const terminationMap: Record<TerminationType, string> = {
+			[TerminationType.CHECKMATE]: 'Checkmate',
+			[TerminationType.TIMEOUT]: 'Time out',
+			[TerminationType.RESIGNATION]: 'Resignation',
+			[TerminationType.STALEMATE]: 'Stalemate',
+			[TerminationType.INSUFFICIENT_MATERIAL]: 'Insufficient material',
+			[TerminationType.FIFTY_MOVE]: 'Fifty-move rule',
+			[TerminationType.THREEFOLD_REPETITION]: 'Threefold repetition',
+			[TerminationType.AGREEMENT]: 'Draw by agreement',
+		};
+		return terminationMap[termination] || termination;
 	};
 
 	return (
@@ -211,6 +226,14 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 												<span>{game.moves} moves</span>
 												<span>•</span>
 												<span>{formatDuration(game.duration)}</span>
+												{game.termination && (
+													<>
+														<span>•</span>
+														<span className="text-slate-400">
+															{getTerminationText(game.termination)}
+														</span>
+													</>
+												)}
 											</div>
 										</div>
 
@@ -263,6 +286,11 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 											<span>{game.moves} moves</span>
 											<span>{formatDuration(game.duration)}</span>
 										</div>
+										{game.termination && (
+											<div className="mt-2 text-xs text-slate-400">
+												{getTerminationText(game.termination)}
+											</div>
+										)}
 									</div>
 								</div>
 							</article>

@@ -1,5 +1,6 @@
-import type { GameSettings as GameSettingsType } from '@/components/game/types';
 import type { BoardSettings } from '@/components/common/types';
+import type { GameSettings as GameSettingsType } from '@/components/game/types';
+import { GameStatus } from '@/components/game/types';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
@@ -11,7 +12,7 @@ import ChessClock from './ChessClock';
 import GameBoard from './GameBoard';
 import GameControls from './GameControls';
 import GameSettings from './GameSettings';
-import GameStatus from './GameStatus';
+import GameStatusComponent from './GameStatus';
 import MoveHistory from './MoveHistory';
 
 interface GamePlayProps {
@@ -48,7 +49,7 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 	const clockStartedRef = useRef(false);
 
 	useEffect(() => {
-		if (gameState.status !== 'playing' || !gameState.settings) return;
+		if (gameState.status !== GameStatus.PLAYING || !gameState.settings) return;
 
 		if (prevFenRef.current !== gameState.fen) {
 			const chess = new Chess(gameState.fen);
@@ -95,10 +96,17 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 	]);
 
 	useEffect(() => {
-		if (gameState.status !== 'playing' && gameState.status !== 'idle') {
+		if (
+			gameState.status !== GameStatus.PLAYING &&
+			gameState.status !== GameStatus.IDLE
+		) {
 			stopClock();
 
-			if (gameState.settings && gameStartTimeRef.current) {
+			if (
+				gameState.settings &&
+				gameStartTimeRef.current &&
+				gameState.termination
+			) {
 				const duration = Math.floor(
 					(Date.now() - gameStartTimeRef.current) / 1000
 				);
@@ -114,7 +122,7 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 					toast.info('Game ended in a draw 🤝');
 				}
 
-				saveCompletedGame(gameState, result, duration);
+				saveCompletedGame(gameState, result, gameState.termination, duration);
 			}
 		}
 	}, [gameState.status, stopClock, gameState, saveCompletedGame]);
@@ -147,10 +155,11 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		[makeMove]
 	);
 
-	const isIdle = gameState.status === 'idle';
-	const isPlaying = gameState.status === 'playing';
+	const isIdle = gameState.status === GameStatus.IDLE;
+	const isPlaying = gameState.status === GameStatus.PLAYING;
 	const isGameOver =
-		gameState.status !== 'playing' && gameState.status !== 'idle';
+		gameState.status !== GameStatus.PLAYING &&
+		gameState.status !== GameStatus.IDLE;
 
 	return (
 		<GameLayout>
@@ -166,11 +175,12 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 					settings={boardSettings}
 				/>
 				{isGameOver && gameState.settings && (
-					<GameStatus
+					<GameStatusComponent
 						status={gameState.status}
 						winner={gameState.winner}
 						playerColor={gameState.settings.playerColor}
 						bot={gameState.settings.bot}
+						termination={gameState.termination}
 					/>
 				)}
 			</section>

@@ -1,5 +1,6 @@
 import { Chess } from 'chess.js';
 import type { GameSettings } from '@/components/game/types';
+import { TerminationType } from '@/components/game/types';
 import type { Color } from '@/components/common/types';
 import {
 	getUserId,
@@ -34,6 +35,7 @@ export interface MoveParams {
 
 export interface GameCompleteParams {
 	result: 'win' | 'loss' | 'draw';
+	termination: TerminationType;
 	duration: number;
 }
 
@@ -163,6 +165,7 @@ class GameService {
 			pgn: current.pgn,
 			fen: current.fen,
 			result: params.result,
+			termination: params.termination,
 			settings: current.settings,
 			moves: current.moveHistory.length,
 			duration: params.duration,

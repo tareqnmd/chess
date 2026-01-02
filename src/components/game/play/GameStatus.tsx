@@ -1,39 +1,61 @@
-import type {
-	GameStatus as GameStatusType,
-	Bot,
-} from '@/components/game/types';
+import type { Bot } from '@/components/game/types';
+import { GameStatus, TerminationType } from '@/components/game/types';
 import type { Color } from '@/components/common/types';
 
 interface GameStatusProps {
-	status: GameStatusType;
+	status: GameStatus;
 	winner: Color | 'draw' | null;
 	playerColor: Color;
 	bot: Bot;
+	termination?: TerminationType | null;
 }
 
-const GameStatus = ({ status, winner, playerColor, bot }: GameStatusProps) => {
-	if (status === 'idle' || status === 'playing') return null;
+const GameStatusComponent = ({
+	status,
+	winner,
+	playerColor,
+	bot,
+	termination,
+}: GameStatusProps) => {
+	if (status === GameStatus.IDLE || status === GameStatus.PLAYING) return null;
 
 	const playerWon = winner === playerColor;
 	const isDraw = winner === 'draw';
 
 	const getStatusMessage = () => {
 		switch (status) {
-			case 'checkmate':
+			case GameStatus.CHECKMATE:
 				return playerWon
 					? 'Checkmate! You win!'
 					: `Checkmate! ${bot.name} wins!`;
-			case 'timeout':
+			case GameStatus.TIMEOUT:
 				return playerWon ? "Time's up! You win!" : "Time's up! You lose!";
-			case 'resigned':
+			case GameStatus.RESIGNED:
 				return playerWon ? `${bot.name} resigned!` : 'You resigned';
-			case 'stalemate':
+			case GameStatus.STALEMATE:
 				return 'Stalemate! Draw!';
-			case 'draw':
+			case GameStatus.DRAW:
 				return 'Draw!';
 			default:
 				return 'Game Over';
 		}
+	};
+
+	const getTerminationDetails = () => {
+		if (!termination) return null;
+
+		const terminationLabels: Record<TerminationType, string> = {
+			[TerminationType.CHECKMATE]: 'By Checkmate',
+			[TerminationType.TIMEOUT]: 'By Timeout',
+			[TerminationType.RESIGNATION]: 'By Resignation',
+			[TerminationType.STALEMATE]: 'By Stalemate',
+			[TerminationType.INSUFFICIENT_MATERIAL]: 'Insufficient Material',
+			[TerminationType.FIFTY_MOVE]: 'Fifty-Move Rule',
+			[TerminationType.THREEFOLD_REPETITION]: 'Threefold Repetition',
+			[TerminationType.AGREEMENT]: 'By Agreement',
+		};
+
+		return terminationLabels[termination];
 	};
 
 	const getIcon = () => {
@@ -68,6 +90,11 @@ const GameStatus = ({ status, winner, playerColor, bot }: GameStatusProps) => {
 				>
 					{getStatusMessage()}
 				</h2>
+				{getTerminationDetails() && (
+					<p className="text-sm text-white/90 mb-1">
+						{getTerminationDetails()}
+					</p>
+				)}
 				<p className="text-sm text-white/70">
 					{isDraw
 						? 'Neither player wins'
@@ -80,4 +107,4 @@ const GameStatus = ({ status, winner, playerColor, bot }: GameStatusProps) => {
 	);
 };
 
-export default GameStatus;
+export default GameStatusComponent;

@@ -1,4 +1,4 @@
-import type { GameSettings } from '@/components/game/types';
+import type { GameSettings, TerminationType } from '@/components/game/types';
 import type { Color } from '@/components/common/types';
 
 const STORAGE_KEYS = {
@@ -17,6 +17,7 @@ export interface SavedGame {
 	pgn: string;
 	fen: string;
 	result: 'win' | 'loss' | 'draw';
+	termination: TerminationType;
 	settings: GameSettings;
 	moves: number;
 	duration: number;
@@ -246,6 +247,7 @@ export function deleteActiveGame(gameId: string): void {
 export function completeActiveGame(
 	gameId: string,
 	result: 'win' | 'loss' | 'draw',
+	termination: TerminationType,
 	duration: number
 ): SavedGame | null {
 	const activeGame = getActiveGameById(gameId);
@@ -255,6 +257,7 @@ export function completeActiveGame(
 		pgn: activeGame.pgn,
 		fen: activeGame.fen,
 		result,
+		termination,
 		settings: activeGame.settings,
 		moves: activeGame.moveHistory.length,
 		duration,

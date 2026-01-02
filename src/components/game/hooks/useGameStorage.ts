@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
-import type { GameState, GameSettings } from '@/components/game/types';
+import type {
+	GameState,
+	GameSettings,
+	TerminationType,
+} from '@/components/game/types';
+import { GameStatus } from '@/components/game/types';
 import type { Color } from '@/components/common/types';
 import {
 	saveGame,
@@ -23,6 +28,7 @@ interface UseGameStorageReturn {
 	saveCompletedGame: (
 		state: GameState,
 		result: 'win' | 'loss' | 'draw',
+		termination: TerminationType,
 		duration: number
 	) => SavedGame | null;
 	getDefaultSettings: () => {
@@ -87,7 +93,11 @@ export function useGameStorage(): UseGameStorageReturn {
 			const now = Date.now();
 			if (now - lastSaveRef.current < 5000) return;
 
-			if (state.status !== 'playing' || !state.settings || !state.gameId)
+			if (
+				state.status !== GameStatus.PLAYING ||
+				!state.settings ||
+				!state.gameId
+			)
 				return;
 
 			lastSaveRef.current = now;
@@ -120,6 +130,7 @@ export function useGameStorage(): UseGameStorageReturn {
 		(
 			state: GameState,
 			result: 'win' | 'loss' | 'draw',
+			termination: TerminationType,
 			duration: number
 		): SavedGame | null => {
 			if (!state.settings) return null;
@@ -128,6 +139,7 @@ export function useGameStorage(): UseGameStorageReturn {
 				pgn: state.pgn,
 				fen: state.fen,
 				result,
+				termination,
 				settings: state.settings,
 				moves: state.history.length,
 				duration,
