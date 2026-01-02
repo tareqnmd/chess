@@ -5,16 +5,21 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 	padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
-const Card = ({ children, padding = 'md', className = '', ...props }: CardProps) => {
+const Card = ({
+	children,
+	padding = 'md',
+	className = '',
+	...props
+}: CardProps) => {
 	const paddingStyles = {
 		none: '',
 		sm: 'p-4',
 		md: 'p-6',
 		lg: 'p-8',
 	};
-	
+
 	return (
-		<div 
+		<div
 			className={`bg-slate-800/50 rounded-xl border border-slate-700/50 ${paddingStyles[padding]} ${className}`}
 			{...props}
 		>
@@ -24,4 +29,3 @@ const Card = ({ children, padding = 'md', className = '', ...props }: CardProps)
 };
 
 export default Card;
-

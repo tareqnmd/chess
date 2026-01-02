@@ -3,7 +3,10 @@ interface BoardSettingsButtonProps {
 	className?: string;
 }
 
-export const BoardSettingsButton = ({ onClick, className = '' }: BoardSettingsButtonProps) => {
+export const BoardSettingsButton = ({
+	onClick,
+	className = '',
+}: BoardSettingsButtonProps) => {
 	return (
 		<button
 			onClick={onClick}
@@ -40,4 +43,3 @@ export const BoardSettingsButton = ({ onClick, className = '' }: BoardSettingsBu
 		</button>
 	);
 };
-

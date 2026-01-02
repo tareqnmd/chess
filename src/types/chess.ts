@@ -1,12 +1,21 @@
-import type { Chess, Move as ChessJsMove, Square as ChessJsSquare, Color as ChessJsColor } from 'chess.js';
+import type {
+	Chess,
+	Move as ChessJsMove,
+	Square as ChessJsSquare,
+	Color as ChessJsColor,
+} from 'chess.js';
 
-// Re-export chess.js types
 export type { Chess };
 export type Move = ChessJsMove;
 export type Square = ChessJsSquare;
 export type Color = ChessJsColor;
 
-export type BotLevel = 'beginner' | 'easy' | 'intermediate' | 'advanced' | 'master';
+export type BotLevel =
+	| 'beginner'
+	| 'easy'
+	| 'intermediate'
+	| 'advanced'
+	| 'master';
 
 export interface Bot {
 	id: BotLevel;
@@ -20,8 +29,8 @@ export interface Bot {
 export interface TimeControl {
 	id: string;
 	name: string;
-	initialTime: number; // in seconds
-	increment: number; // in seconds
+	initialTime: number;
+	increment: number;
 }
 
 export interface GameSettings {
@@ -31,7 +40,7 @@ export interface GameSettings {
 }
 
 export interface ClockState {
-	white: number; // remaining time in ms
+	white: number;
 	black: number;
 	activeColor: Color | null;
 	isRunning: boolean;
@@ -49,20 +58,19 @@ export interface GameState {
 	startedAt: string | null;
 }
 
-export type GameStatus = 
-	| 'idle' 
-	| 'playing' 
-	| 'checkmate' 
-	| 'stalemate' 
-	| 'draw' 
-	| 'timeout' 
+export type GameStatus =
+	| 'idle'
+	| 'playing'
+	| 'checkmate'
+	| 'stalemate'
+	| 'draw'
+	| 'timeout'
 	| 'resigned';
 
-// Analysis types
 export interface PositionAnalysis {
 	fen: string;
-	evaluation: number; // in centipawns, positive = white advantage
-	mate: number | null; // moves to mate, positive = white wins
+	evaluation: number;
+	mate: number | null;
 	bestMove: string | null;
 	bestLine: string | null;
 	depth: number;

@@ -7,7 +7,6 @@ interface ChessClockProps {
 	isGameOver: boolean;
 }
 
-// Map chess.js color format to clock state keys
 const colorToKey = (color: Color): 'white' | 'black' => {
 	return color === 'w' ? 'white' : 'black';
 };
@@ -23,10 +22,11 @@ const ChessClock = ({
 	const getClockStyles = (color: Color) => {
 		const colorKey = colorToKey(color);
 		const isActive = clockState.activeColor === color && clockState.isRunning;
-		const isLow = clockState[colorKey] < 30000; // Less than 30 seconds
-		const isCritical = clockState[colorKey] < 10000; // Less than 10 seconds
+		const isLow = clockState[colorKey] < 30000;
+		const isCritical = clockState[colorKey] < 10000;
 
-		let baseStyles = 'rounded-xl p-4 font-mono text-3xl font-bold transition-all duration-300';
+		let baseStyles =
+			'rounded-xl p-4 font-mono text-3xl font-bold transition-all duration-300';
 
 		if (isGameOver) {
 			baseStyles += ' opacity-50';
@@ -47,37 +47,51 @@ const ChessClock = ({
 
 	return (
 		<div className="flex flex-col gap-3" role="timer">
-			{/* Opponent's clock (top) */}
-			<div className={getClockStyles(opponentColor)} aria-label={`${opponentColor === 'w' ? 'White' : 'Black'} time remaining`}>
+			{}
+			<div
+				className={getClockStyles(opponentColor)}
+				aria-label={`${opponentColor === 'w' ? 'White' : 'Black'} time remaining`}
+			>
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
 						<div
 							className={`w-4 h-4 rounded-full ${
-								opponentColor === 'w' ? 'bg-white' : 'bg-slate-900 border border-slate-600'
+								opponentColor === 'w'
+									? 'bg-white'
+									: 'bg-slate-900 border border-slate-600'
 							}`}
 						/>
 						<span className="text-sm font-medium opacity-70">
 							{opponentColor === 'w' ? 'White' : 'Black'}
 						</span>
 					</div>
-					<span className="tabular-nums">{formatTime(clockState[colorToKey(opponentColor)])}</span>
+					<span className="tabular-nums">
+						{formatTime(clockState[colorToKey(opponentColor)])}
+					</span>
 				</div>
 			</div>
 
-			{/* Player's clock (bottom) */}
-			<div className={getClockStyles(playerColor)} aria-label={`Your time remaining (${playerColor === 'w' ? 'White' : 'Black'})`}>
+			{}
+			<div
+				className={getClockStyles(playerColor)}
+				aria-label={`Your time remaining (${playerColor === 'w' ? 'White' : 'Black'})`}
+			>
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
 						<div
 							className={`w-4 h-4 rounded-full ${
-								playerColor === 'w' ? 'bg-white' : 'bg-slate-900 border border-slate-600'
+								playerColor === 'w'
+									? 'bg-white'
+									: 'bg-slate-900 border border-slate-600'
 							}`}
 						/>
 						<span className="text-sm font-medium opacity-70">
 							{playerColor === 'w' ? 'White' : 'Black'} (You)
 						</span>
 					</div>
-					<span className="tabular-nums">{formatTime(clockState[colorToKey(playerColor)])}</span>
+					<span className="tabular-nums">
+						{formatTime(clockState[colorToKey(playerColor)])}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -85,4 +99,3 @@ const ChessClock = ({
 };
 
 export default ChessClock;
-

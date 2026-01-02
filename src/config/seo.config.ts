@@ -1,20 +1,15 @@
-/**
- * SEO Configuration
- * All SEO-related metadata and settings
- */
-
 import { APP_CONFIG } from './app.config';
 
-const DEFAULT_DESCRIPTION = 'Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills.';
+const DEFAULT_DESCRIPTION =
+	'Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills.';
 
 export const SEO_CONFIG = {
-	// Primary Meta Tags
 	title: `${APP_CONFIG.name} - ${APP_CONFIG.tagline}`,
 	titleTemplate: '%s | Chess',
 	defaultTitle: 'Chess - Play Against AI, Analyze Games & Learn Chess Strategy',
-	
+
 	description: DEFAULT_DESCRIPTION,
-	
+
 	keywords: [
 		'chess',
 		'chess game',
@@ -32,15 +27,12 @@ export const SEO_CONFIG = {
 		'chess openings',
 		'online chess',
 	],
-	
-	// Canonical URL
+
 	canonical: APP_CONFIG.url,
-	
-	// Language & Region
+
 	language: 'en',
 	locale: 'en_US',
-	
-	// Robots
+
 	robots: {
 		index: true,
 		follow: true,
@@ -52,8 +44,7 @@ export const SEO_CONFIG = {
 			'max-snippet': -1,
 		},
 	},
-	
-	// Structured Data (Schema.org)
+
 	structuredData: {
 		'@context': 'https://schema.org',
 		'@type': 'WebApplication',
@@ -90,8 +81,7 @@ export const SEO_CONFIG = {
 			name: APP_CONFIG.author,
 		},
 	},
-	
-	// Additional Meta
+
 	additional: {
 		author: APP_CONFIG.author,
 		creator: APP_CONFIG.author,
@@ -111,4 +101,3 @@ export const SEO_CONFIG = {
 } as const;
 
 export type SEOConfig = typeof SEO_CONFIG;
-

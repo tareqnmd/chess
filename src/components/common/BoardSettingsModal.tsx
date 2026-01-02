@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import Select from '@/components/ui/Select';
@@ -53,6 +54,7 @@ export const BoardSettingsModal = ({
 
 	const handleSave = () => {
 		onSave(localSettings);
+		toast.success('Board settings saved successfully');
 		onClose();
 	};
 
@@ -98,7 +100,7 @@ export const BoardSettingsModal = ({
 			}
 		>
 			<div className="space-y-6">
-				{/* User ID Display */}
+				{}
 				<div>
 					<label className="block text-sm font-medium text-slate-300 mb-2">
 						Your User ID
@@ -108,7 +110,7 @@ export const BoardSettingsModal = ({
 					</div>
 				</div>
 
-				{/* Piece Theme */}
+				{}
 				<div>
 					<label className="block text-sm font-medium text-slate-300 mb-2">
 						Piece Style
@@ -130,7 +132,7 @@ export const BoardSettingsModal = ({
 					</Select>
 				</div>
 
-				{/* Board Theme Presets */}
+				{}
 				<div>
 					<label className="block text-sm font-medium text-slate-300 mb-3">
 						Board Theme
@@ -169,7 +171,7 @@ export const BoardSettingsModal = ({
 					</div>
 				</div>
 
-				{/* Custom Colors */}
+				{}
 				<div className="grid grid-cols-2 gap-4">
 					<div>
 						<label className="block text-sm font-medium text-slate-300 mb-2">
@@ -213,7 +215,7 @@ export const BoardSettingsModal = ({
 					</div>
 				</div>
 
-				{/* Show Coordinates */}
+				{}
 				<div className="flex items-center justify-between">
 					<label className="text-sm font-medium text-slate-300">
 						Show Board Coordinates
@@ -241,7 +243,7 @@ export const BoardSettingsModal = ({
 					</button>
 				</div>
 
-				{/* Animation Duration */}
+				{}
 				<div>
 					<label className="block text-sm font-medium text-slate-300 mb-2">
 						Animation Speed: {localSettings.animationDuration}ms

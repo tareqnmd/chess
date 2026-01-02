@@ -7,13 +7,17 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
 	({ label, error, className = '', id, ...props }, ref) => {
-		const inputId = id || `input-${label?.replace(/\s+/g, '-').toLowerCase() || 'field'}`;
+		const inputId =
+			id || `input-${label?.replace(/\s+/g, '-').toLowerCase() || 'field'}`;
 		const errorId = `${inputId}-error`;
-		
+
 		return (
 			<div className="flex flex-col gap-2">
 				{label && (
-					<label htmlFor={inputId} className="text-sm font-medium text-slate-300">
+					<label
+						htmlFor={inputId}
+						className="text-sm font-medium text-slate-300"
+					>
 						{label}
 					</label>
 				)}
@@ -26,7 +30,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 					{...props}
 				/>
 				{error && (
-					<p id={errorId} className="text-sm text-red-400" role="alert">{error}</p>
+					<p id={errorId} className="text-sm text-red-400" role="alert">
+						{error}
+					</p>
 				)}
 			</div>
 		);
@@ -36,4 +42,3 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 
 export default Input;
-

@@ -34,7 +34,7 @@ const AnalysisPanel = ({
 		if (mate !== null) {
 			return mate > 0 ? 100 : 0;
 		}
-		// Clamp evaluation between -5 and +5 for visual purposes
+
 		const clamped = Math.max(-5, Math.min(5, eval_));
 		return ((clamped + 5) / 10) * 100;
 	};
@@ -54,7 +54,7 @@ const AnalysisPanel = ({
 				<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 					Engine Analysis
 				</h3>
-				
+
 				<div className="flex gap-3 mb-4">
 					{isAnalyzing ? (
 						<button
@@ -80,38 +80,48 @@ const AnalysisPanel = ({
 					</button>
 				</div>
 
-				{/* Evaluation Display */}
+				{}
 				{analysis && (
 					<div className="flex flex-col gap-3">
-						{/* Eval Bar */}
+						{}
 						<div className="h-6 bg-slate-900 rounded-full overflow-hidden relative">
 							<div
 								className="h-full bg-gradient-to-r from-slate-100 to-slate-300 transition-all duration-500"
-								style={{ width: `${getEvalBarWidth(analysis.evaluation, analysis.mate)}%` }}
+								style={{
+									width: `${getEvalBarWidth(analysis.evaluation, analysis.mate)}%`,
+								}}
 							/>
 							<div className="absolute inset-0 flex items-center justify-center">
-								<span className={`text-sm font-bold ${getEvalColor(analysis.evaluation, analysis.mate)}`}>
+								<span
+									className={`text-sm font-bold ${getEvalColor(analysis.evaluation, analysis.mate)}`}
+								>
 									{formatEvaluation(analysis.evaluation, analysis.mate)}
 								</span>
 							</div>
 						</div>
 
-						{/* Analysis Details */}
+						{}
 						<div className="grid grid-cols-2 gap-3 text-sm">
 							<div className="p-2 bg-slate-700/30 rounded-lg">
 								<span className="text-slate-500">Depth:</span>
-								<span className="ml-2 text-slate-200 font-mono">{analysis.depth}</span>
+								<span className="ml-2 text-slate-200 font-mono">
+									{analysis.depth}
+								</span>
 							</div>
 							<div className="p-2 bg-slate-700/30 rounded-lg">
 								<span className="text-slate-500">Best:</span>
-								<span className="ml-2 text-emerald-400 font-mono">{analysis.bestMove || '-'}</span>
+								<span className="ml-2 text-emerald-400 font-mono">
+									{analysis.bestMove || '-'}
+								</span>
 							</div>
 						</div>
 
-						{/* Best Line */}
+						{}
 						{analysis.bestLine && (
 							<div className="p-3 bg-slate-700/30 rounded-lg">
-								<span className="text-slate-500 text-xs uppercase tracking-wider">Best Line:</span>
+								<span className="text-slate-500 text-xs uppercase tracking-wider">
+									Best Line:
+								</span>
 								<p className="mt-1 text-slate-200 font-mono text-sm break-all">
 									{analysis.bestLine}
 								</p>
@@ -121,13 +131,16 @@ const AnalysisPanel = ({
 				)}
 			</section>
 
-			{/* Saved Analyses */}
+			{}
 			<section className="p-5 bg-slate-800/50 rounded-xl border border-slate-700/50 flex-1">
 				<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 					Saved Positions ({savedAnalyses.length})
 				</h3>
-				
-				<div className="flex flex-col gap-2 max-h-64 overflow-y-auto" role="list">
+
+				<div
+					className="flex flex-col gap-2 max-h-64 overflow-y-auto"
+					role="list"
+				>
 					{savedAnalyses.length === 0 ? (
 						<p className="text-slate-500 text-sm text-center py-4">
 							No saved analyses yet
@@ -141,7 +154,9 @@ const AnalysisPanel = ({
 							>
 								<div className="flex-1 min-w-0">
 									<div className="flex items-center gap-2">
-										<span className={`font-mono font-bold ${getEvalColor(saved.evaluation, null)}`}>
+										<span
+											className={`font-mono font-bold ${getEvalColor(saved.evaluation, null)}`}
+										>
 											{formatEvaluation(saved.evaluation, null)}
 										</span>
 										<span className="text-slate-500 text-xs">
@@ -158,8 +173,18 @@ const AnalysisPanel = ({
 										className="p-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded"
 										title="Load position"
 									>
-										<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+										<svg
+											className="w-4 h-4"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+											/>
 										</svg>
 									</button>
 									<button
@@ -167,8 +192,18 @@ const AnalysisPanel = ({
 										className="p-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded"
 										title="Delete"
 									>
-										<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+										<svg
+											className="w-4 h-4"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+											/>
 										</svg>
 									</button>
 								</div>
@@ -182,4 +217,3 @@ const AnalysisPanel = ({
 };
 
 export default AnalysisPanel;
-

@@ -8,13 +8,17 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
 	({ label, helperText, className = '', children, id, ...props }, ref) => {
-		const selectId = id || `select-${label?.replace(/\s+/g, '-').toLowerCase() || 'field'}`;
+		const selectId =
+			id || `select-${label?.replace(/\s+/g, '-').toLowerCase() || 'field'}`;
 		const helperTextId = `${selectId}-helper`;
-		
+
 		return (
 			<div className="flex flex-col gap-2">
 				{label && (
-					<label htmlFor={selectId} className="text-sm font-medium text-slate-300">
+					<label
+						htmlFor={selectId}
+						className="text-sm font-medium text-slate-300"
+					>
 						{label}
 					</label>
 				)}
@@ -28,7 +32,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
 					{children}
 				</select>
 				{helperText && (
-					<p id={helperTextId} className="text-xs text-slate-400">{helperText}</p>
+					<p id={helperTextId} className="text-xs text-slate-400">
+						{helperText}
+					</p>
 				)}
 			</div>
 		);
@@ -38,4 +44,3 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
 Select.displayName = 'Select';
 
 export default Select;
-

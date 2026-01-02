@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Toaster } from 'sonner';
 import AnalysisPage from './components/analysis/AnalysisPage';
 import { BoardSettingsModal } from './components/common/BoardSettingsModal';
 import Footer from './components/common/Footer';
@@ -39,34 +40,26 @@ function App() {
 	}, []);
 
 	const handleNavigate = useCallback((page: Page) => {
-		// Clear import data when navigating away from analysis
 		if (page !== 'analysis') {
 			setAnalysisImport({});
 		}
 		setCurrentPage(page);
 
-		// Update meta tags for the new page
 		updatePageMeta(page);
 
-		// Track page view
 		trackPageView(page);
 	}, []);
 
-	// Initialize analytics and meta tags on mount
 	useEffect(() => {
-		// Initialize analytics
 		initializeAnalytics();
 
-		// Set user ID for tracking
 		const userId = getUserId();
 		setUserId(userId);
 
-		// Update meta tags
 		updatePageMeta(currentPage);
 
-		// Track initial page view
 		trackPageView(currentPage);
-	}, []);
+	}, [currentPage]);
 
 	const handleSaveSettings = useCallback((settings: BoardSettings) => {
 		setBoardSettings(settings);
@@ -94,6 +87,13 @@ function App() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+			<Toaster
+				position="top-center"
+				expand={false}
+				richColors
+				closeButton
+				theme="dark"
+			/>
 			<div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
 				<Header
 					currentPage={currentPage}

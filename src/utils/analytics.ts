@@ -1,54 +1,58 @@
-/**
- * Analytics Utilities
- * Helper functions for Google Analytics and other tracking services
- */
-
 import { APP_CONFIG } from '@/config';
+
+type GtagCommand = 'config' | 'set' | 'event' | 'js';
+type GtagConfigParams = {
+	send_page_view?: boolean;
+	user_id?: string;
+	[key: string]: string | number | boolean | undefined;
+};
+type GtagEventParams = {
+	[key: string]: string | number | boolean | undefined;
+};
 
 declare global {
 	interface Window {
-		gtag?: (...args: any[]) => void;
-		dataLayer?: any[];
+		gtag?: (
+			command: GtagCommand,
+			targetId: string | Date,
+			config?: GtagConfigParams | GtagEventParams
+		) => void;
+		dataLayer?: unknown[];
 	}
 }
 
-/**
- * Initialize Google Analytics
- */
 export function initializeAnalytics() {
-	if (!APP_CONFIG.analytics.enabled || !APP_CONFIG.analytics.googleAnalyticsId) {
+	if (
+		!APP_CONFIG.analytics.enabled ||
+		!APP_CONFIG.analytics.googleAnalyticsId
+	) {
 		console.log('Analytics disabled or not configured');
 		return;
 	}
 
-	// Load Google Analytics script
 	const script = document.createElement('script');
 	script.async = true;
 	script.src = `https://www.googletagmanager.com/gtag/js?id=${APP_CONFIG.analytics.googleAnalyticsId}`;
 	document.head.appendChild(script);
 
-	// Initialize dataLayer
 	window.dataLayer = window.dataLayer || [];
-	window.gtag = function gtag(...args: any[]) {
-		window.dataLayer?.push(args);
+	window.gtag = function gtag(
+		command: GtagCommand,
+		targetId: string | Date,
+		config?: GtagConfigParams | GtagEventParams
+	) {
+		window.dataLayer?.push([command, targetId, config]);
 	};
 
 	window.gtag('js', new Date());
 	window.gtag('config', APP_CONFIG.analytics.googleAnalyticsId, {
-		send_page_view: false, // We'll send manually
+		send_page_view: false,
 	});
 
 	console.log('Google Analytics initialized');
 }
 
-/**
- * Track page view
- */
-export function trackPageView(
-	page: string,
-	title?: string,
-	path?: string
-) {
+export function trackPageView(page: string, title?: string, path?: string) {
 	if (!APP_CONFIG.analytics.enabled || !window.gtag) return;
 
 	window.gtag('event', 'page_view', {
@@ -61,12 +65,9 @@ export function trackPageView(
 	console.log('Page view tracked:', page);
 }
 
-/**
- * Track custom event
- */
 export function trackEvent(
 	eventName: string,
-	eventParams?: Record<string, any>
+	eventParams?: Record<string, string | number | boolean | undefined>
 ) {
 	if (!APP_CONFIG.analytics.enabled || !window.gtag) return;
 
@@ -75,9 +76,6 @@ export function trackEvent(
 	console.log('Event tracked:', eventName, eventParams);
 }
 
-/**
- * Track game start
- */
 export function trackGameStart(
 	botName: string,
 	botRating: number,
@@ -92,9 +90,6 @@ export function trackGameStart(
 	});
 }
 
-/**
- * Track game end
- */
 export function trackGameEnd(
 	result: 'win' | 'loss' | 'draw',
 	moves: number,
@@ -107,9 +102,6 @@ export function trackGameEnd(
 	});
 }
 
-/**
- * Track analysis
- */
 export function trackAnalysis(depth: number, positionType: string = 'custom') {
 	trackEvent('position_analysis', {
 		depth,
@@ -117,19 +109,16 @@ export function trackAnalysis(depth: number, positionType: string = 'custom') {
 	});
 }
 
-/**
- * Track board settings change
- */
-export function trackBoardSettingsChange(settingType: string, value: any) {
+export function trackBoardSettingsChange(
+	settingType: string,
+	value: string | number | boolean
+) {
 	trackEvent('settings_change', {
 		setting_type: settingType,
 		value: String(value),
 	});
 }
 
-/**
- * Track user engagement time
- */
 export function trackEngagement(page: string, timeSpent: number) {
 	trackEvent('user_engagement', {
 		page,
@@ -137,9 +126,6 @@ export function trackEngagement(page: string, timeSpent: number) {
 	});
 }
 
-/**
- * Track error
- */
 export function trackError(
 	errorMessage: string,
 	errorLocation: string,
@@ -152,9 +138,6 @@ export function trackError(
 	});
 }
 
-/**
- * Track social share
- */
 export function trackShare(platform: string, page: string) {
 	trackEvent('share', {
 		platform,
@@ -162,28 +145,20 @@ export function trackShare(platform: string, page: string) {
 	});
 }
 
-/**
- * Track search (if implementing search feature)
- */
 export function trackSearch(searchTerm: string, resultsCount: number) {
 	trackEvent('search', {
 		search_term: searchTerm,
 		results_count: resultsCount,
 	});
 }
-
-/**
- * Set user properties
- */
-export function setUserProperties(properties: Record<string, any>) {
+export function setUserProperties(
+	properties: Record<string, string | number | boolean | undefined>
+) {
 	if (!APP_CONFIG.analytics.enabled || !window.gtag) return;
 
 	window.gtag('set', 'user_properties', properties);
 }
 
-/**
- * Track performance metrics
- */
 export function trackPerformance(metricName: string, value: number) {
 	trackEvent('performance', {
 		metric_name: metricName,
@@ -191,9 +166,6 @@ export function trackPerformance(metricName: string, value: number) {
 	});
 }
 
-/**
- * Initialize user tracking (with user ID from storage)
- */
 export function setUserId(userId: string) {
 	if (!APP_CONFIG.analytics.enabled || !window.gtag) return;
 
@@ -201,4 +173,3 @@ export function setUserId(userId: string) {
 		user_id: userId,
 	});
 }
-

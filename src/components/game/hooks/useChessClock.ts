@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ClockState, Color, TimeControl } from '@/types/chess';
 
-// Map chess.js color format to clock state keys
 const colorToKey = (color: Color): 'white' | 'black' => {
 	return color === 'w' ? 'white' : 'black';
 };
@@ -85,13 +84,12 @@ export function useChessClock(
 			white: initialTimeMs,
 			black: initialTimeMs,
 			activeColor: 'w',
-			isRunning: false, // Don't start running until both players move
+			isRunning: false,
 		});
 	}, []);
 
 	const switchTurn = useCallback((newActiveColor: Color) => {
 		setClockState((prev) => {
-			// Add increment to the player who just moved
 			const previousColor = prev.activeColor;
 			if (previousColor && incrementRef.current > 0) {
 				const prevKey = colorToKey(previousColor);
@@ -127,18 +125,21 @@ export function useChessClock(
 		}));
 	}, [clearTimer]);
 
-	const resetClock = useCallback((timeControl: TimeControl) => {
-		clearTimer();
-		const initialTimeMs = timeControl.initialTime * 1000;
-		incrementRef.current = timeControl.increment * 1000;
+	const resetClock = useCallback(
+		(timeControl: TimeControl) => {
+			clearTimer();
+			const initialTimeMs = timeControl.initialTime * 1000;
+			incrementRef.current = timeControl.increment * 1000;
 
-		setClockState({
-			white: initialTimeMs,
-			black: initialTimeMs,
-			activeColor: null,
-			isRunning: false,
-		});
-	}, [clearTimer]);
+			setClockState({
+				white: initialTimeMs,
+				black: initialTimeMs,
+				activeColor: null,
+				isRunning: false,
+			});
+		},
+		[clearTimer]
+	);
 
 	const addIncrement = useCallback((color: Color, increment: number) => {
 		const key = colorToKey(color);
@@ -181,4 +182,3 @@ export function useChessClock(
 		startCountdown,
 	};
 }
-

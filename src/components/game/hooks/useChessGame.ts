@@ -1,11 +1,16 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Chess } from 'chess.js';
-import type { GameState, GameSettings, GameStatus, Color, Square } from '@/types/chess';
+import type {
+	GameState,
+	GameSettings,
+	GameStatus,
+	Color,
+	Square,
+} from '@/types/chess';
 import { calculateBotMove, parseUCIMove } from '@/lib/chess-ai';
 
 const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-// Generate game ID
 function generateGameId(): string {
 	return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
@@ -24,9 +29,9 @@ interface UseChessGameReturn {
 
 export function useChessGame(): UseChessGameReturn {
 	const chessRef = useRef(new Chess());
-	// Keep a master chess instance that tracks full PGN
+
 	const masterChessRef = useRef(new Chess());
-	
+
 	const [gameState, setGameState] = useState<GameState>({
 		gameId: null,
 		chess: chessRef.current,
@@ -45,19 +50,22 @@ export function useChessGame(): UseChessGameReturn {
 		setGameState((prev) => ({ ...prev, ...updates }));
 	}, []);
 
-	const checkGameEnd = useCallback((chess: Chess): { status: GameStatus; winner: Color | 'draw' | null } => {
-		if (chess.isCheckmate()) {
-			const winner = chess.turn() === 'w' ? 'b' : 'w';
-			return { status: 'checkmate', winner };
-		}
-		if (chess.isStalemate()) {
-			return { status: 'stalemate', winner: 'draw' };
-		}
-		if (chess.isDraw()) {
-			return { status: 'draw', winner: 'draw' };
-		}
-		return { status: 'playing', winner: null };
-	}, []);
+	const checkGameEnd = useCallback(
+		(chess: Chess): { status: GameStatus; winner: Color | 'draw' | null } => {
+			if (chess.isCheckmate()) {
+				const winner = chess.turn() === 'w' ? 'b' : 'w';
+				return { status: 'checkmate', winner };
+			}
+			if (chess.isStalemate()) {
+				return { status: 'stalemate', winner: 'draw' };
+			}
+			if (chess.isDraw()) {
+				return { status: 'draw', winner: 'draw' };
+			}
+			return { status: 'playing', winner: null };
+		},
+		[]
+	);
 
 	const makeBotMove = useCallback(async () => {
 		if (botThinkingRef.current) return;
@@ -67,15 +75,14 @@ export function useChessGame(): UseChessGameReturn {
 
 		const chess = new Chess(fen);
 		const isBotTurn = chess.turn() !== settings.playerColor;
-		
+
 		if (!isBotTurn) return;
 
 		botThinkingRef.current = true;
 
 		try {
-			// Use Stockfish to get the best move
 			const uciMove = await calculateBotMove(fen, settings.bot.id);
-			
+
 			if (uciMove) {
 				const parsed = parseUCIMove(uciMove);
 				if (parsed) {
@@ -85,18 +92,16 @@ export function useChessGame(): UseChessGameReturn {
 						to: parsed.to,
 						promotion: parsed.promotion,
 					});
-					
+
 					if (result) {
 						const { status: newStatus, winner } = checkGameEnd(newChess);
-						
-						// Also apply move to master chess for proper PGN
+
 						masterChessRef.current.move({
 							from: parsed.from,
 							to: parsed.to,
 							promotion: parsed.promotion,
 						});
-						
-						// Append the new move to existing history (FEN-based Chess instances lose history)
+
 						setGameState((prev) => ({
 							...prev,
 							chess: newChess,
@@ -114,7 +119,6 @@ export function useChessGame(): UseChessGameReturn {
 		}
 	}, [gameState, checkGameEnd]);
 
-	// Trigger bot move when it's bot's turn
 	useEffect(() => {
 		if (gameState.status !== 'playing' || !gameState.settings) return;
 
@@ -129,11 +133,11 @@ export function useChessGame(): UseChessGameReturn {
 	const startGame = useCallback((settings: GameSettings) => {
 		const chess = new Chess();
 		chessRef.current = chess;
-		masterChessRef.current = new Chess(); // Reset master chess for new game
-		
+		masterChessRef.current = new Chess();
+
 		const gameId = generateGameId();
 		const now = new Date().toISOString();
-		
+
 		setGameState({
 			gameId,
 			chess,
@@ -147,59 +151,60 @@ export function useChessGame(): UseChessGameReturn {
 		});
 	}, []);
 
-	const makeMove = useCallback((from: string, to: string, promotion?: string): boolean => {
-		const { settings, status, fen } = gameState;
-		
-		if (status !== 'playing' || !settings) return false;
+	const makeMove = useCallback(
+		(from: string, to: string, promotion?: string): boolean => {
+			const { settings, status, fen } = gameState;
 
-		const chess = new Chess(fen);
-		const isPlayerTurn = chess.turn() === settings.playerColor;
-		
-		if (!isPlayerTurn) return false;
+			if (status !== 'playing' || !settings) return false;
 
-		try {
-			const move = chess.move({
-				from,
-				to,
-				promotion: promotion || 'q',
-			});
+			const chess = new Chess(fen);
+			const isPlayerTurn = chess.turn() === settings.playerColor;
 
-			if (move) {
-				const { status: newStatus, winner } = checkGameEnd(chess);
-				
-				// Also apply move to master chess for proper PGN
-				masterChessRef.current.move({
+			if (!isPlayerTurn) return false;
+
+			try {
+				const move = chess.move({
 					from,
 					to,
 					promotion: promotion || 'q',
 				});
-				
-				// Append the new move to existing history (FEN-based Chess instances lose history)
-				setGameState((prev) => ({
-					...prev,
-					chess,
-					fen: chess.fen(),
-					pgn: masterChessRef.current.pgn(),
-					history: [...prev.history, move],
-					status: newStatus,
-					winner,
-				}));
 
-				return true;
+				if (move) {
+					const { status: newStatus, winner } = checkGameEnd(chess);
+
+					masterChessRef.current.move({
+						from,
+						to,
+						promotion: promotion || 'q',
+					});
+
+					setGameState((prev) => ({
+						...prev,
+						chess,
+						fen: chess.fen(),
+						pgn: masterChessRef.current.pgn(),
+						history: [...prev.history, move],
+						status: newStatus,
+						winner,
+					}));
+
+					return true;
+				}
+			} catch {
+				return false;
 			}
-		} catch {
-			return false;
-		}
 
-		return false;
-	}, [gameState, checkGameEnd]);
+			return false;
+		},
+		[gameState, checkGameEnd]
+	);
 
 	const resetGame = useCallback(() => {
 		const chess = new Chess();
 		chessRef.current = chess;
 		masterChessRef.current = new Chess();
 		botThinkingRef.current = false;
-		
+
 		setGameState({
 			gameId: null,
 			chess,
@@ -221,18 +226,24 @@ export function useChessGame(): UseChessGameReturn {
 		updateGameState({ status: 'resigned', winner });
 	}, [gameState, updateGameState]);
 
-	const setTimeoutWinner = useCallback((loser: Color) => {
-		const winner = loser === 'w' ? 'b' : 'w';
-		updateGameState({ status: 'timeout', winner });
-	}, [updateGameState]);
+	const setTimeoutWinner = useCallback(
+		(loser: Color) => {
+			const winner = loser === 'w' ? 'b' : 'w';
+			updateGameState({ status: 'timeout', winner });
+		},
+		[updateGameState]
+	);
 
-	const getLegalMovesForSquare = useCallback((square: string): string[] => {
-		const chess = new Chess(gameState.fen);
-		const moves = chess.moves({ square: square as Square, verbose: true });
-		return moves.map((m) => m.to);
-	}, [gameState.fen]);
+	const getLegalMovesForSquare = useCallback(
+		(square: string): string[] => {
+			const chess = new Chess(gameState.fen);
+			const moves = chess.moves({ square: square as Square, verbose: true });
+			return moves.map((m) => m.to);
+		},
+		[gameState.fen]
+	);
 
-	const isPlayerTurn = gameState.settings 
+	const isPlayerTurn = gameState.settings
 		? new Chess(gameState.fen).turn() === gameState.settings.playerColor
 		: false;
 
@@ -250,4 +261,3 @@ export function useChessGame(): UseChessGameReturn {
 		getLegalMovesForSquare,
 	};
 }
-

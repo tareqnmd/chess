@@ -1,13 +1,7 @@
-/**
- * Meta & Social Media Configuration
- * Open Graph, Twitter Cards, and other social media metadata
- */
-
 import { APP_CONFIG } from './app.config';
 import { SEO_CONFIG } from './seo.config';
 
 export const META_CONFIG = {
-	// Open Graph (Facebook, LinkedIn, etc.)
 	openGraph: {
 		type: 'website',
 		url: APP_CONFIG.url,
@@ -25,8 +19,7 @@ export const META_CONFIG = {
 			},
 		],
 	},
-	
-	// Twitter Card
+
 	twitter: {
 		card: 'summary_large_image',
 		site: APP_CONFIG.social.twitter,
@@ -35,8 +28,7 @@ export const META_CONFIG = {
 		description: SEO_CONFIG.description,
 		images: [`${APP_CONFIG.url}/chess.svg`],
 	},
-	
-	// Page-specific metadata (can be overridden per page)
+
 	pages: {
 		play: {
 			title: 'Play Chess Against AI',
@@ -62,8 +54,7 @@ export const META_CONFIG = {
 			keywords: ['game history', 'chess records', 'pgn export', 'game review'],
 		},
 	},
-	
-	// Social Sharing defaults
+
 	sharing: {
 		title: SEO_CONFIG.defaultTitle,
 		description: SEO_CONFIG.description,
@@ -74,12 +65,9 @@ export const META_CONFIG = {
 
 export type MetaConfig = typeof META_CONFIG;
 
-/**
- * Generate page-specific meta tags
- */
 export function getPageMeta(page: keyof typeof META_CONFIG.pages) {
 	const pageMeta = META_CONFIG.pages[page];
-	
+
 	return {
 		title: `${pageMeta.title} | ${APP_CONFIG.name}`,
 		description: pageMeta.description,
@@ -96,4 +84,3 @@ export function getPageMeta(page: keyof typeof META_CONFIG.pages) {
 		},
 	};
 }
-

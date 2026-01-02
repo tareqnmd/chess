@@ -42,4 +42,3 @@ export const TIME_CONTROLS: TimeControl[] = [
 export const getTimeControlById = (id: string): TimeControl | undefined => {
 	return TIME_CONTROLS.find((tc) => tc.id === id);
 };
-

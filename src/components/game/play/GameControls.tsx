@@ -34,7 +34,7 @@ const GameControls = ({
 					Resign
 				</button>
 			)}
-			
+
 			<button
 				onClick={onNewGame}
 				className={`flex-1 py-3 px-4 font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2 ${
@@ -63,4 +63,3 @@ const GameControls = ({
 };
 
 export default GameControls;
-

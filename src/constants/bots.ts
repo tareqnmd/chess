@@ -46,4 +46,3 @@ export const BOTS: Bot[] = [
 export const getBotById = (id: string): Bot | undefined => {
 	return BOTS.find((bot) => bot.id === id);
 };
-

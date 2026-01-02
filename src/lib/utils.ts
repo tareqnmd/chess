@@ -1,18 +1,12 @@
 import { type ClassValue, clsx } from 'clsx';
 
-/**
- * Merge class names with clsx
- */
 export function cn(...inputs: ClassValue[]) {
 	return clsx(inputs);
 }
 
-/**
- * Format time in milliseconds to MM:SS or HH:MM:SS
- */
 export function formatTime(ms: number): string {
 	if (ms < 0) ms = 0;
-	
+
 	const totalSeconds = Math.floor(ms / 1000);
 	const hours = Math.floor(totalSeconds / 3600);
 	const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -23,4 +17,3 @@ export function formatTime(ms: number): string {
 	}
 	return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
-

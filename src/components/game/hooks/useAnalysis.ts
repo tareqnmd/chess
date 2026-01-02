@@ -1,7 +1,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import type { PositionAnalysis, AnalysisState } from '@/types/chess';
 import { getEngine } from '@/lib/stockfish-engine';
-import { saveAnalysis, getSavedAnalyses, deleteAnalysis, type SavedAnalysis } from '@/lib/storage';
+import {
+	saveAnalysis,
+	getSavedAnalyses,
+	deleteAnalysis,
+	type SavedAnalysis,
+} from '@/lib/storage';
 
 interface UseAnalysisReturn {
 	analysisState: AnalysisState;
@@ -20,16 +25,14 @@ export function useAnalysis(): UseAnalysisReturn {
 		currentAnalysis: null,
 		history: [],
 	});
-	
+
 	const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
 	const isAnalyzingRef = useRef(false);
 
-	// Load saved analyses on mount
 	useEffect(() => {
 		setSavedAnalyses(getSavedAnalyses());
 	}, []);
 
-	// Cleanup engine on unmount
 	useEffect(() => {
 		return () => {
 			if (isAnalyzingRef.current) {
@@ -44,7 +47,7 @@ export function useAnalysis(): UseAnalysisReturn {
 		}
 
 		isAnalyzingRef.current = true;
-		setAnalysisState(prev => ({
+		setAnalysisState((prev) => ({
 			...prev,
 			isAnalyzing: true,
 		}));
@@ -53,22 +56,20 @@ export function useAnalysis(): UseAnalysisReturn {
 			const engine = getEngine();
 			await engine.waitReady();
 
-			// Listen for intermediate results
 			const cleanup = engine.onMessage((data) => {
 				if (data.depth && data.depth > 0) {
 					const isWhiteTurn = fen.split(' ')[1] === 'w';
-					let evaluation = data.positionEvaluation 
-						? parseInt(data.positionEvaluation) / 100 
+					let evaluation = data.positionEvaluation
+						? parseInt(data.positionEvaluation) / 100
 						: 0;
-					
-					// Normalize evaluation to white's perspective
+
 					if (!isWhiteTurn) {
 						evaluation = -evaluation;
 					}
 
 					const mate = data.possibleMate ? parseInt(data.possibleMate) : null;
-					
-					setAnalysisState(prev => ({
+
+					setAnalysisState((prev) => ({
 						...prev,
 						currentAnalysis: {
 							fen,
@@ -82,12 +83,11 @@ export function useAnalysis(): UseAnalysisReturn {
 				}
 			});
 
-			// Get final evaluation
 			const bestMove = await engine.findBestMove(fen, { depth });
-			
+
 			cleanup();
 
-			setAnalysisState(prev => {
+			setAnalysisState((prev) => {
 				const finalAnalysis: PositionAnalysis = prev.currentAnalysis || {
 					fen,
 					evaluation: 0,
@@ -105,7 +105,7 @@ export function useAnalysis(): UseAnalysisReturn {
 			});
 		} catch (error) {
 			console.error('Analysis error:', error);
-			setAnalysisState(prev => ({
+			setAnalysisState((prev) => ({
 				...prev,
 				isAnalyzing: false,
 			}));
@@ -118,29 +118,32 @@ export function useAnalysis(): UseAnalysisReturn {
 		if (isAnalyzingRef.current) {
 			getEngine().stop();
 			isAnalyzingRef.current = false;
-			setAnalysisState(prev => ({
+			setAnalysisState((prev) => ({
 				...prev,
 				isAnalyzing: false,
 			}));
 		}
 	}, []);
 
-	const saveCurrentAnalysis = useCallback((notes = ''): SavedAnalysis | null => {
-		const { currentAnalysis } = analysisState;
-		if (!currentAnalysis) return null;
+	const saveCurrentAnalysis = useCallback(
+		(notes = ''): SavedAnalysis | null => {
+			const { currentAnalysis } = analysisState;
+			if (!currentAnalysis) return null;
 
-		const saved = saveAnalysis({
-			fen: currentAnalysis.fen,
-			evaluation: currentAnalysis.evaluation,
-			bestMove: currentAnalysis.bestMove,
-			bestLine: currentAnalysis.bestLine,
-			depth: currentAnalysis.depth,
-			notes,
-		});
+			const saved = saveAnalysis({
+				fen: currentAnalysis.fen,
+				evaluation: currentAnalysis.evaluation,
+				bestMove: currentAnalysis.bestMove,
+				bestLine: currentAnalysis.bestLine,
+				depth: currentAnalysis.depth,
+				notes,
+			});
 
-		setSavedAnalyses(prev => [saved, ...prev]);
-		return saved;
-	}, [analysisState]);
+			setSavedAnalyses((prev) => [saved, ...prev]);
+			return saved;
+		},
+		[analysisState]
+	);
 
 	const loadSavedAnalyses = useCallback(() => {
 		setSavedAnalyses(getSavedAnalyses());
@@ -148,7 +151,7 @@ export function useAnalysis(): UseAnalysisReturn {
 
 	const removeSavedAnalysis = useCallback((id: string) => {
 		deleteAnalysis(id);
-		setSavedAnalyses(prev => prev.filter(a => a.id !== id));
+		setSavedAnalyses((prev) => prev.filter((a) => a.id !== id));
 	}, []);
 
 	const clearAnalysis = useCallback(() => {
@@ -170,4 +173,3 @@ export function useAnalysis(): UseAnalysisReturn {
 		clearAnalysis,
 	};
 }
-

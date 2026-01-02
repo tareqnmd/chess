@@ -1,34 +1,24 @@
-/**
- * Application Configuration
- * Central place for app-wide settings and constants
- */
-
 export const APP_CONFIG = {
-	// App Identity
 	name: 'Chess',
 	fullName: 'Chess - Play & Analyze',
 	tagline: 'Play Against AI, Analyze Games & Learn Chess Strategy',
 	version: '1.0.0',
 	author: 'Chess App',
-	
-	// URLs
+
 	url: 'https://yourchessapp.com',
 	baseUrl: '/',
-	
-	// Social Media
+
 	social: {
 		twitter: '@yourhandle',
 		github: 'https://github.com/yourusername/chess',
 	},
-	
-	// Theme
+
 	theme: {
-		primaryColor: '#10b981', // emerald-500
-		backgroundColor: '#0f172a', // slate-900
-		accentColor: '#34d399', // emerald-400
+		primaryColor: '#10b981',
+		backgroundColor: '#0f172a',
+		accentColor: '#34d399',
 	},
-	
-	// Features
+
 	features: {
 		aiOpponent: true,
 		stockfishAnalysis: true,
@@ -37,8 +27,7 @@ export const APP_CONFIG = {
 		exportPGN: true,
 		multipleDifficulties: true,
 	},
-	
-	// Game Settings
+
 	game: {
 		defaultTimeControl: {
 			minutes: 10,
@@ -47,8 +36,7 @@ export const APP_CONFIG = {
 		defaultBotRating: 1500,
 		stockfishDepth: 18,
 	},
-	
-	// Storage Keys
+
 	storageKeys: {
 		boardSettings: 'chess_board_settings',
 		userId: 'chess_user_id',
@@ -56,29 +44,26 @@ export const APP_CONFIG = {
 		currentGame: 'chess_current_game',
 		savedAnalyses: 'chess_saved_analyses',
 	},
-	
-	// Contact & Support
+
 	contact: {
 		email: 'support@yourchessapp.com',
 		supportUrl: 'https://yourchessapp.com/support',
 	},
-	
-	// Analytics & Verification
+
 	analytics: {
 		enabled: false,
-		googleAnalyticsId: 'G-XXXXXXXXXX', // Format: G-XXXXXXXXXX for GA4
-		googleTagManagerId: '', // Optional: GTM-XXXXXXX
-		measurementId: '', // Optional: Additional measurement ID
+		googleAnalyticsId: 'G-XXXXXXXXXX',
+		googleTagManagerId: '',
+		measurementId: '',
 	},
-	
+
 	verification: {
-		google: '', // Google Search Console verification code
-		bing: '', // Bing Webmaster Tools verification
-		yandex: '', // Yandex verification
-		pinterest: '', // Pinterest verification
+		google: '',
+		bing: '',
+		yandex: '',
+		pinterest: '',
 	},
-	
-	// Legal
+
 	legal: {
 		privacyPolicyUrl: 'https://yourchessapp.com/privacy',
 		termsOfServiceUrl: 'https://yourchessapp.com/terms',
@@ -86,4 +71,3 @@ export const APP_CONFIG = {
 } as const;
 
 export type AppConfig = typeof APP_CONFIG;
-

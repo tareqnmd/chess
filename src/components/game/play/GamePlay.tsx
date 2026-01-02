@@ -2,6 +2,7 @@ import type { GameSettings as GameSettingsType } from '@/types/chess';
 import type { BoardSettings } from '@/types/board-settings';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import GameLayout from '../GameLayout';
 import { useChessClock } from '../hooks/useChessClock';
 import { useChessGame } from '../hooks/useChessGame';
@@ -18,7 +19,6 @@ interface GamePlayProps {
 }
 
 const GamePlay = ({ boardSettings }: GamePlayProps) => {
-
 	const {
 		gameState,
 		startGame,
@@ -106,8 +106,12 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 
 				if (gameState.winner === gameState.settings.playerColor) {
 					result = 'win';
+					toast.success('Congratulations! You won! 🏆');
 				} else if (gameState.winner && gameState.winner !== 'draw') {
 					result = 'loss';
+					toast.error('Game over! You lost 💔');
+				} else {
+					toast.info('Game ended in a draw 🤝');
 				}
 
 				saveCompletedGame(gameState, result, duration);
@@ -122,6 +126,7 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 			gameStartTimeRef.current = Date.now();
 			clockStartedRef.current = false;
 			clearSavedGame();
+			toast.success(`Game started vs ${settings.bot.name}`);
 		},
 		[startGame, startClock, clearSavedGame]
 	);
@@ -149,7 +154,10 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 
 	return (
 		<GameLayout>
-			<section className={`relative ${isIdle ? 'hidden lg:block' : ''}`} aria-label="Chess board">
+			<section
+				className={`relative ${isIdle ? 'hidden lg:block' : ''}`}
+				aria-label="Chess board"
+			>
 				<GameBoard
 					gameState={gameState}
 					onMove={handleMove}

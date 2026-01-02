@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react';
 import type { GameState, GameSettings, Color } from '@/types/chess';
-import { 
-	saveGame, 
-	saveCurrentGame, 
-	getCurrentGame, 
+import {
+	saveGame,
+	saveCurrentGame,
+	getCurrentGame,
 	clearCurrentGame,
 	getUserPreferences,
 	saveUserPreferences,
@@ -24,9 +24,21 @@ interface UseGameStorageReturn {
 		result: 'win' | 'loss' | 'draw',
 		duration: number
 	) => SavedGame | null;
-	getDefaultSettings: () => { botId: string; timeControlId: string; color: Color };
-	saveDefaultSettings: (botId: string, timeControlId: string, color: Color) => void;
-	initializeGame: (settings: GameSettings, clockWhite: number, clockBlack: number) => string;
+	getDefaultSettings: () => {
+		botId: string;
+		timeControlId: string;
+		color: Color;
+	};
+	saveDefaultSettings: (
+		botId: string,
+		timeControlId: string,
+		color: Color
+	) => void;
+	initializeGame: (
+		settings: GameSettings,
+		clockWhite: number,
+		clockBlack: number
+	) => string;
 	recordMove: (
 		move: { san: string; fen: string; color: 'w' | 'b'; clockTime: number },
 		pgn: string
@@ -36,53 +48,64 @@ interface UseGameStorageReturn {
 export function useGameStorage(): UseGameStorageReturn {
 	const lastSaveRef = useRef<number>(0);
 	const saveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-	
-	// Get user ID (will be created if doesn't exist)
+
 	const userId = getUserId();
 
-	// Cleanup interval on unmount
 	useEffect(() => {
+		const interval = saveIntervalRef.current;
 		return () => {
-			if (saveIntervalRef.current) {
-				clearInterval(saveIntervalRef.current);
+			if (interval) {
+				clearInterval(interval);
 			}
 		};
 	}, []);
-	
-	const initializeGame = useCallback((settings: GameSettings, clockWhite: number, clockBlack: number): string => {
-		return initializeGameSession(settings, clockWhite, clockBlack);
-	}, []);
-	
-	const recordMove = useCallback((
-		move: { san: string; fen: string; color: 'w' | 'b'; clockTime: number },
-		pgn: string
-	) => {
-		addMoveToCurrentGame(move, pgn);
-	}, []);
 
-	const autoSave = useCallback((state: GameState, clockWhite: number, clockBlack: number) => {
-		// Throttle saves to once per 5 seconds
-		const now = Date.now();
-		if (now - lastSaveRef.current < 5000) return;
-		
-		if (state.status !== 'playing' || !state.settings || !state.gameId) return;
+	const initializeGame = useCallback(
+		(
+			settings: GameSettings,
+			clockWhite: number,
+			clockBlack: number
+		): string => {
+			return initializeGameSession(settings, clockWhite, clockBlack);
+		},
+		[]
+	);
 
-		lastSaveRef.current = now;
-		
-		// Get the current game to preserve move history
-		const currentGame = getCurrentGame();
-		
-		saveCurrentGame({
-			gameId: state.gameId,
-			fen: state.fen,
-			pgn: state.pgn,
-			settings: state.settings,
-			clockWhite,
-			clockBlack,
-			moveHistory: currentGame?.moveHistory || [],
-			startedAt: state.startedAt || new Date().toISOString(),
-		});
-	}, []);
+	const recordMove = useCallback(
+		(
+			move: { san: string; fen: string; color: 'w' | 'b'; clockTime: number },
+			pgn: string
+		) => {
+			addMoveToCurrentGame(move, pgn);
+		},
+		[]
+	);
+
+	const autoSave = useCallback(
+		(state: GameState, clockWhite: number, clockBlack: number) => {
+			const now = Date.now();
+			if (now - lastSaveRef.current < 5000) return;
+
+			if (state.status !== 'playing' || !state.settings || !state.gameId)
+				return;
+
+			lastSaveRef.current = now;
+
+			const currentGame = getCurrentGame();
+
+			saveCurrentGame({
+				gameId: state.gameId,
+				fen: state.fen,
+				pgn: state.pgn,
+				settings: state.settings,
+				clockWhite,
+				clockBlack,
+				moveHistory: currentGame?.moveHistory || [],
+				startedAt: state.startedAt || new Date().toISOString(),
+			});
+		},
+		[]
+	);
 
 	const loadSavedGame = useCallback((): CurrentGameState | null => {
 		return getCurrentGame();
@@ -92,28 +115,30 @@ export function useGameStorage(): UseGameStorageReturn {
 		clearCurrentGame();
 	}, []);
 
-	const saveCompletedGame = useCallback((
-		state: GameState,
-		result: 'win' | 'loss' | 'draw',
-		duration: number
-	): SavedGame | null => {
-		if (!state.settings) return null;
+	const saveCompletedGame = useCallback(
+		(
+			state: GameState,
+			result: 'win' | 'loss' | 'draw',
+			duration: number
+		): SavedGame | null => {
+			if (!state.settings) return null;
 
-		const saved = saveGame({
-			pgn: state.pgn,
-			fen: state.fen,
-			result,
-			settings: state.settings,
-			moves: state.history.length,
-			duration,
-			startedAt: state.startedAt || new Date().toISOString(),
-		});
+			const saved = saveGame({
+				pgn: state.pgn,
+				fen: state.fen,
+				result,
+				settings: state.settings,
+				moves: state.history.length,
+				duration,
+				startedAt: state.startedAt || new Date().toISOString(),
+			});
 
-		// Clear auto-saved game after completion
-		clearCurrentGame();
+			clearCurrentGame();
 
-		return saved;
-	}, []);
+			return saved;
+		},
+		[]
+	);
 
 	const getDefaultSettings = useCallback(() => {
 		const prefs = getUserPreferences();
@@ -124,13 +149,16 @@ export function useGameStorage(): UseGameStorageReturn {
 		};
 	}, []);
 
-	const saveDefaultSettings = useCallback((botId: string, timeControlId: string, color: Color) => {
-		saveUserPreferences({
-			defaultBot: botId,
-			defaultTimeControl: timeControlId,
-			defaultColor: color,
-		});
-	}, []);
+	const saveDefaultSettings = useCallback(
+		(botId: string, timeControlId: string, color: Color) => {
+			saveUserPreferences({
+				defaultBot: botId,
+				defaultTimeControl: timeControlId,
+				defaultColor: color,
+			});
+		},
+		[]
+	);
 
 	return {
 		userId,
@@ -144,4 +172,3 @@ export function useGameStorage(): UseGameStorageReturn {
 		recordMove,
 	};
 }
-

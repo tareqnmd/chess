@@ -7,4 +7,3 @@ const GameLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default GameLayout;
-

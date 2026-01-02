@@ -15,7 +15,6 @@ export const Modal = ({
 	children,
 	footer,
 }: ModalProps) => {
-	// Close on escape key
 	useEffect(() => {
 		const handleEscape = (e: KeyboardEvent) => {
 			if (e.key === 'Escape' && isOpen) {
@@ -27,7 +26,6 @@ export const Modal = ({
 		return () => document.removeEventListener('keydown', handleEscape);
 	}, [isOpen, onClose]);
 
-	// Prevent body scroll when modal is open
 	useEffect(() => {
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
@@ -48,16 +46,16 @@ export const Modal = ({
 			aria-modal="true"
 			aria-labelledby="modal-title"
 		>
-			{/* Backdrop */}
+			{}
 			<div
 				className="absolute inset-0 bg-black/60 backdrop-blur-sm"
 				onClick={onClose}
 				aria-hidden="true"
 			/>
 
-			{/* Modal content */}
+			{}
 			<div className="relative bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-700">
-				{/* Header */}
+				{}
 				<div className="flex items-center justify-between p-6 border-b border-slate-700">
 					<h2 id="modal-title" className="text-2xl font-bold text-white">
 						{title}
@@ -83,10 +81,10 @@ export const Modal = ({
 					</button>
 				</div>
 
-				{/* Body */}
+				{}
 				<div className="flex-1 overflow-y-auto p-6">{children}</div>
 
-				{/* Footer */}
+				{}
 				{footer && (
 					<div className="flex items-center justify-end gap-3 p-6 border-t border-slate-700">
 						{footer}

@@ -14,7 +14,6 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 		}
 	}, [history]);
 
-	// Group moves into pairs (white, black)
 	const movePairs: { moveNumber: number; white?: Move; black?: Move }[] = [];
 	for (let i = 0; i < history.length; i += 2) {
 		movePairs.push({
@@ -24,13 +23,16 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 		});
 	}
 
-	const getMoveStyles = (move: Move | undefined, isLastMove: boolean): string => {
+	const getMoveStyles = (
+		move: Move | undefined,
+		isLastMove: boolean
+	): string => {
 		let styles = 'px-2 py-1 rounded font-mono text-sm transition-colors ';
-		
+
 		if (!move) {
 			return styles;
 		}
-		
+
 		if (isLastMove) {
 			styles += 'bg-emerald-600/30 text-emerald-300';
 		} else if (move.captured) {
@@ -42,7 +44,7 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 		} else {
 			styles += 'text-slate-300 hover:bg-slate-600/50';
 		}
-		
+
 		return styles;
 	};
 
@@ -94,4 +96,3 @@ const MoveHistory = ({ history }: MoveHistoryProps) => {
 };
 
 export default MoveHistory;
-

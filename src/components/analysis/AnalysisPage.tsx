@@ -2,6 +2,7 @@ import { gameService } from '@/lib/game-service';
 import type { BoardSettings } from '@/types/board-settings';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { useAnalysis } from '../game/hooks/useAnalysis';
 import AnalysisBoard from './AnalysisBoard';
 import AnalysisPanel from './AnalysisPanel';
@@ -14,7 +15,11 @@ interface AnalysisPageProps {
 	boardSettings: BoardSettings;
 }
 
-const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageProps) => {
+const AnalysisPage = ({
+	importedPgn,
+	importedFen,
+	boardSettings,
+}: AnalysisPageProps) => {
 	const [fen, setFen] = useState(importedFen || INITIAL_FEN);
 	const [fenInput, setFenInput] = useState(importedFen || INITIAL_FEN);
 	const [pgnInput, setPgnInput] = useState(importedPgn || '');
@@ -32,25 +37,44 @@ const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageP
 		removeSavedAnalysis,
 	} = useAnalysis();
 
-	// Load imported PGN on mount
+	const handleLoadPgn = useCallback((pgn: string) => {
+		setPgnError(null);
+
+		const result = gameService.parsePgn(pgn);
+		if (!result) {
+			const errorMsg = 'Invalid PGN format';
+			setPgnError(errorMsg);
+			toast.error(errorMsg);
+			return false;
+		}
+
+		setPgnInput(pgn);
+		setMoveList(result.moves);
+		setCurrentMoveIndex(result.moves.length - 1);
+		setFen(result.fen);
+		setFenInput(result.fen);
+		setShowPgnInput(false);
+		toast.success('PGN loaded successfully');
+		return true;
+	}, []);
+
 	useEffect(() => {
 		if (importedPgn) {
-			handleLoadPgn(importedPgn);
+			setTimeout(() => handleLoadPgn(importedPgn), 0);
 		} else if (importedFen) {
-			setFen(importedFen);
-			setFenInput(importedFen);
+			setTimeout(() => {
+				setFen(importedFen);
+				setFenInput(importedFen);
+			}, 0);
 		}
-	}, [importedPgn, importedFen]);
+	}, [importedPgn, importedFen, handleLoadPgn]);
 
-	// Handle move made on the board (via drag-drop or click)
 	const handleFenChange = useCallback(
 		(newFen: string) => {
-			// Try to detect what move was made by comparing positions
 			try {
 				const oldChess = new Chess(fen);
 				new Chess(newFen);
 
-				// Find the move by trying all legal moves from old position
 				const legalMoves = oldChess.moves({ verbose: true });
 				let foundMove: string | null = null;
 
@@ -64,8 +88,6 @@ const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageP
 				}
 
 				if (foundMove) {
-					// A legal move was made - add it to the move list
-					// If we're in the middle of a game, truncate future moves and add the new one
 					const newMoveList = [
 						...moveList.slice(0, currentMoveIndex + 1),
 						foundMove,
@@ -77,10 +99,9 @@ const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageP
 					return;
 				}
 			} catch {
-				// If anything fails, just set the new FEN
+				return;
 			}
 
-			// Fallback: just update FEN and clear move list (e.g., if position was set up manually)
 			setFen(newFen);
 			setFenInput(newFen);
 			setMoveList([]);
@@ -88,24 +109,6 @@ const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageP
 		},
 		[fen, moveList, currentMoveIndex]
 	);
-
-	const handleLoadPgn = useCallback((pgn: string) => {
-		setPgnError(null);
-
-		const result = gameService.parsePgn(pgn);
-		if (!result) {
-			setPgnError('Invalid PGN format');
-			return false;
-		}
-
-		setPgnInput(pgn);
-		setMoveList(result.moves);
-		setCurrentMoveIndex(result.moves.length - 1);
-		setFen(result.fen);
-		setFenInput(result.fen);
-		setShowPgnInput(false);
-		return true;
-	}, []);
 
 	const handlePgnSubmit = useCallback(() => {
 		handleLoadPgn(pgnInput);
@@ -146,12 +149,13 @@ const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageP
 		const validation = gameService.validateFen(fenInput);
 		if (validation.valid) {
 			setFen(fenInput);
-			// Clear move list when FEN is manually changed
+
 			setMoveList([]);
 			setCurrentMoveIndex(-1);
+			toast.success('FEN position loaded');
 		} else {
-			// Invalid FEN, reset input
 			setFenInput(fen);
+			toast.error(validation.error || 'Invalid FEN format');
 		}
 	}, [fenInput, fen]);
 
@@ -278,7 +282,10 @@ const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageP
 								</button>
 							</div>
 						</header>
-						<div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto p-2 bg-slate-900/50 rounded-lg" role="list">
+						<div
+							className="flex flex-wrap gap-1 max-h-24 overflow-y-auto p-2 bg-slate-900/50 rounded-lg"
+							role="list"
+						>
 							{moveList.map((move, index) => (
 								<button
 									key={index}
@@ -337,7 +344,11 @@ const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageP
 								className="w-full h-32 px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-slate-200 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
 								aria-label="PGN input"
 							/>
-							{pgnError && <p className="text-red-400 text-sm" role="alert">{pgnError}</p>}
+							{pgnError && (
+								<p className="text-red-400 text-sm" role="alert">
+									{pgnError}
+								</p>
+							)}
 							<button
 								onClick={handlePgnSubmit}
 								className="w-full py-2 px-4 bg-emerald-600/30 hover:bg-emerald-600/40 text-emerald-400 text-sm rounded-lg border border-emerald-600/40 transition-all"
@@ -348,7 +359,10 @@ const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageP
 					)}
 				</section>
 				<section className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
-					<label htmlFor="fen-input" className="text-sm font-medium text-slate-400 uppercase tracking-wider block mb-2">
+					<label
+						htmlFor="fen-input"
+						className="text-sm font-medium text-slate-400 uppercase tracking-wider block mb-2"
+					>
 						Position (FEN)
 					</label>
 					<div className="flex gap-2">

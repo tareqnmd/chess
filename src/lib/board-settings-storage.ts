@@ -4,9 +4,6 @@ import { DEFAULT_BOARD_SETTINGS } from '@/types/board-settings';
 const BOARD_SETTINGS_KEY = 'chess_board_settings';
 const USER_ID_KEY = 'chess_user_id';
 
-/**
- * Generate a unique user ID (GUID)
- */
 function generateUserId(): string {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
 		const r = (Math.random() * 16) | 0;
@@ -15,9 +12,6 @@ function generateUserId(): string {
 	});
 }
 
-/**
- * Get or create user ID
- */
 export function getUserId(): string {
 	try {
 		let userId = localStorage.getItem(USER_ID_KEY);
@@ -32,21 +26,18 @@ export function getUserId(): string {
 	}
 }
 
-/**
- * Load board settings from local storage
- */
 export function loadBoardSettings(): BoardSettings {
 	try {
 		const userId = getUserId();
 		const stored = localStorage.getItem(BOARD_SETTINGS_KEY);
-		
+
 		if (stored) {
 			const settings = JSON.parse(stored) as BoardSettings;
-			// Ensure userId is set
+
 			settings.userId = userId;
 			return settings;
 		}
-		
+
 		return {
 			...DEFAULT_BOARD_SETTINGS,
 			userId,
@@ -60,12 +51,8 @@ export function loadBoardSettings(): BoardSettings {
 	}
 }
 
-/**
- * Save board settings to local storage
- */
 export function saveBoardSettings(settings: BoardSettings): void {
 	try {
-		// Ensure userId is set
 		if (!settings.userId) {
 			settings.userId = getUserId();
 		}
@@ -75,9 +62,6 @@ export function saveBoardSettings(settings: BoardSettings): void {
 	}
 }
 
-/**
- * Reset board settings to defaults
- */
 export function resetBoardSettings(): BoardSettings {
 	const settings = {
 		...DEFAULT_BOARD_SETTINGS,
@@ -86,4 +70,3 @@ export function resetBoardSettings(): BoardSettings {
 	saveBoardSettings(settings);
 	return settings;
 }
-

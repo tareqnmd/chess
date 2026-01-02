@@ -8,13 +8,10 @@ const Footer = () => {
 				<p>
 					© {new Date().getFullYear()} {APP_CONFIG.name}. All rights reserved.
 				</p>
-				<p className="mt-2 text-xs">
-					v{APP_CONFIG.version}
-				</p>
+				<p className="mt-2 text-xs">v{APP_CONFIG.version}</p>
 			</div>
 		</footer>
 	);
 };
 
 export default Footer;
-

@@ -1,4 +1,4 @@
-export type PieceTheme = 
+export type PieceTheme =
 	| 'cburnett'
 	| 'alpha'
 	| 'california'
@@ -53,7 +53,6 @@ export const DEFAULT_BOARD_SETTINGS: BoardSettings = {
 	animationDuration: 200,
 };
 
-// Preset board themes
 export const BOARD_THEMES: Record<string, BoardTheme> = {
 	slate: {
 		light: '#94a3b8',
@@ -80,4 +79,3 @@ export const BOARD_THEMES: Record<string, BoardTheme> = {
 		dark: '#b58863',
 	},
 };
-
