@@ -1,6 +1,6 @@
 import ChessBoard from '@/components/common/ChessBoard';
-import type { BoardSettings } from '@/types/board-settings';
-import type { PositionAnalysis } from '@/types/chess';
+import type { BoardSettings } from '@/components/common/types';
+import type { PositionAnalysis } from '@/components/analysis/types';
 
 interface AnalysisBoardProps {
 	fen: string;

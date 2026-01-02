@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { BOTS } from '@/constants/bots';
-import { TIME_CONTROLS } from '@/constants/timeControls';
-import type { Bot, Color, GameSettings, TimeControl } from '@/types/chess';
+import { BOTS, TIME_CONTROLS } from '@/components/game/constants';
+import type { Bot, GameSettings, TimeControl } from '@/components/game/types';
+import type { Color } from '@/components/common/types';
 import { Button, Card, Select } from '@/components/ui';
 
 interface GameSettingsProps {

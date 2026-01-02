@@ -3,8 +3,8 @@ import { toast } from 'sonner';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import Select from '@/components/ui/Select';
-import type { BoardSettings, PieceTheme } from '@/types/board-settings';
-import { BOARD_THEMES } from '@/types/board-settings';
+import type { BoardSettings, PieceTheme } from '@/components/common/types';
+import { BOARD_THEMES } from '@/components/common/constants';
 
 interface BoardSettingsModalProps {
 	isOpen: boolean;

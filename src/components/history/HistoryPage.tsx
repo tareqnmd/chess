@@ -9,7 +9,7 @@ import {
 	type SavedGame,
 	type GameStats,
 } from '@/lib/storage';
-import { BOTS } from '@/constants/bots';
+import { BOTS } from '@/components/game/constants';
 
 interface HistoryPageProps {
 	onAnalyzeGame?: (pgn: string, fen: string) => void;

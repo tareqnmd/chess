@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
-import type { GameState, GameSettings, Color } from '@/types/chess';
+import type { GameState, GameSettings } from '@/components/game/types';
+import type { Color } from '@/components/common/types';
 import {
 	saveGame,
 	saveCurrentGame,

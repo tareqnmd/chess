@@ -4,9 +4,8 @@ import type {
 	GameState,
 	GameSettings,
 	GameStatus,
-	Color,
-	Square,
-} from '@/types/chess';
+} from '@/components/game/types';
+import type { Color, Square } from '@/components/common/types';
 import { calculateBotMove, parseUCIMove } from '@/lib/chess-ai';
 
 const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';

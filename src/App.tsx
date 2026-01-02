@@ -4,6 +4,7 @@ import AnalysisPage from './components/analysis/AnalysisPage';
 import { BoardSettingsModal } from './components/common/BoardSettingsModal';
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
+import type { BoardSettings } from './components/common/types';
 import GamePlay from './components/game/play/GamePlay';
 import HistoryPage from './components/history/HistoryPage';
 import {
@@ -11,7 +12,6 @@ import {
 	loadBoardSettings,
 	saveBoardSettings,
 } from './lib/board-settings-storage';
-import type { BoardSettings } from './types/board-settings';
 import {
 	initializeAnalytics,
 	setUserId,
@@ -86,7 +86,7 @@ function App() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+		<div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
 			<Toaster
 				position="top-center"
 				expand={false}

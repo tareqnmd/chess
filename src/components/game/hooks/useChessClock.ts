@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { ClockState, Color, TimeControl } from '@/types/chess';
+import type { ClockState, TimeControl } from '@/components/game/types';
+import type { Color } from '@/components/common/types';
 
 const colorToKey = (color: Color): 'white' | 'black' => {
 	return color === 'w' ? 'white' : 'black';

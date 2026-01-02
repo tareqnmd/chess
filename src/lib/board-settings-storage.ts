@@ -1,5 +1,5 @@
-import type { BoardSettings } from '@/types/board-settings';
-import { DEFAULT_BOARD_SETTINGS } from '@/types/board-settings';
+import type { BoardSettings } from '@/components/common/types';
+import { DEFAULT_BOARD_SETTINGS } from '@/components/common/constants';
 
 const BOARD_SETTINGS_KEY = 'chess_board_settings';
 const USER_ID_KEY = 'chess_user_id';

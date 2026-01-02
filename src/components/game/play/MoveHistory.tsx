@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import type { Move } from '@/types/chess';
+import type { Move } from '@/components/common/types';
 
 interface MoveHistoryProps {
 	history: Move[];

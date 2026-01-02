@@ -1,5 +1,5 @@
-import type { GameSettings as GameSettingsType } from '@/types/chess';
-import type { BoardSettings } from '@/types/board-settings';
+import type { GameSettings as GameSettingsType } from '@/components/game/types';
+import type { BoardSettings } from '@/components/common/types';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';

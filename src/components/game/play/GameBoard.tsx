@@ -1,5 +1,5 @@
-import type { GameState } from '@/types/chess';
-import type { BoardSettings } from '@/types/board-settings';
+import type { GameState } from '@/components/game/types';
+import type { BoardSettings } from '@/components/common/types';
 import ChessBoard from '@/components/common/ChessBoard';
 
 interface GameBoardProps {

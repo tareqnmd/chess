@@ -1,4 +1,8 @@
-import type { GameStatus as GameStatusType, Color, Bot } from '@/types/chess';
+import type {
+	GameStatus as GameStatusType,
+	Bot,
+} from '@/components/game/types';
+import type { Color } from '@/components/common/types';
 
 interface GameStatusProps {
 	status: GameStatusType;

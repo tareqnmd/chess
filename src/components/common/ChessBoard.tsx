@@ -2,7 +2,7 @@ import { Chess, Square } from 'chess.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { toast } from 'sonner';
-import type { BoardSettings } from '@/types/board-settings';
+import type { BoardSettings } from '@/components/common/types';
 
 type PieceDataType = {
 	pieceType: string;

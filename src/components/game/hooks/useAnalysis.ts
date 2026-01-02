@@ -1,5 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { PositionAnalysis, AnalysisState } from '@/types/chess';
+import type {
+	PositionAnalysis,
+	AnalysisState,
+} from '@/components/analysis/types';
 import { getEngine } from '@/lib/stockfish-engine';
 import {
 	saveAnalysis,

@@ -1,4 +1,5 @@
-import type { ClockState, Color } from '@/types/chess';
+import type { ClockState } from '@/components/game/types';
+import type { Color } from '@/components/common/types';
 
 interface ChessClockProps {
 	clockState: ClockState;

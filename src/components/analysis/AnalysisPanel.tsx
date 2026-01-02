@@ -1,4 +1,4 @@
-import type { PositionAnalysis } from '@/types/chess';
+import type { PositionAnalysis } from '@/components/analysis/types';
 import type { SavedAnalysis } from '@/lib/storage';
 
 interface AnalysisPanelProps {

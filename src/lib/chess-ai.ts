@@ -1,5 +1,5 @@
 import { Chess } from 'chess.js';
-import type { BotLevel } from '@/types/chess';
+import type { BotLevel } from '@/components/game/types';
 import { getEngine } from './stockfish-engine';
 
 const BOT_CONFIG: Record<

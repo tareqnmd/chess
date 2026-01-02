@@ -1,5 +1,6 @@
 import { Chess } from 'chess.js';
-import type { GameSettings, Color } from '@/types/chess';
+import type { GameSettings } from '@/components/game/types';
+import type { Color } from '@/components/common/types';
 import {
 	getUserId,
 	getGameHistory,

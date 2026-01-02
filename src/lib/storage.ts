@@ -1,4 +1,5 @@
-import type { GameSettings, Color } from '@/types/chess';
+import type { GameSettings } from '@/components/game/types';
+import type { Color } from '@/components/common/types';
 
 const STORAGE_KEYS = {
 	USER_ID: 'chess_user_id',

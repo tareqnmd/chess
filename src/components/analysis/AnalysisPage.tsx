@@ -1,5 +1,5 @@
 import { gameService } from '@/lib/game-service';
-import type { BoardSettings } from '@/types/board-settings';
+import type { BoardSettings } from '@/components/common/types';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
