@@ -80,13 +80,11 @@ const AnalysisPanel = ({
 					</button>
 				</div>
 
-				{}
 				{analysis && (
 					<div className="flex flex-col gap-3">
-						{}
 						<div className="h-6 bg-slate-900 rounded-full overflow-hidden relative">
 							<div
-								className="h-full bg-gradient-to-r from-slate-100 to-slate-300 transition-all duration-500"
+								className="h-full bg-linear-to-r from-slate-100 to-slate-300 transition-all duration-500"
 								style={{
 									width: `${getEvalBarWidth(analysis.evaluation, analysis.mate)}%`,
 								}}
@@ -100,7 +98,6 @@ const AnalysisPanel = ({
 							</div>
 						</div>
 
-						{}
 						<div className="grid grid-cols-2 gap-3 text-sm">
 							<div className="p-2 bg-slate-700/30 rounded-lg">
 								<span className="text-slate-500">Depth:</span>
@@ -116,7 +113,6 @@ const AnalysisPanel = ({
 							</div>
 						</div>
 
-						{}
 						{analysis.bestLine && (
 							<div className="p-3 bg-slate-700/30 rounded-lg">
 								<span className="text-slate-500 text-xs uppercase tracking-wider">
@@ -131,7 +127,6 @@ const AnalysisPanel = ({
 				)}
 			</section>
 
-			{}
 			<section className="p-5 bg-slate-800/50 rounded-xl border border-slate-700/50 flex-1">
 				<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 					Saved Positions ({savedAnalyses.length})

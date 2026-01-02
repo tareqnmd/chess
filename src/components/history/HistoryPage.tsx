@@ -108,9 +108,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 
 	return (
 		<div className="grid lg:grid-cols-[1fr_400px] gap-6 lg:gap-8">
-			{}
 			<section className="flex flex-col gap-6">
-				{}
 				<header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
 					<h2 className="text-xl sm:text-2xl font-semibold text-slate-100">
 						Game History
@@ -134,7 +132,6 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 					</div>
 				</header>
 
-				{}
 				{games.length === 0 ? (
 					<div className="p-12 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
 						<div className="text-5xl mb-4" aria-hidden="true">

@@ -46,16 +46,13 @@ export const Modal = ({
 			aria-modal="true"
 			aria-labelledby="modal-title"
 		>
-			{}
 			<div
 				className="absolute inset-0 bg-black/60 backdrop-blur-sm"
 				onClick={onClose}
 				aria-hidden="true"
 			/>
 
-			{}
 			<div className="relative bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-700">
-				{}
 				<div className="flex items-center justify-between p-6 border-b border-slate-700">
 					<h2 id="modal-title" className="text-2xl font-bold text-white">
 						{title}
@@ -81,10 +78,8 @@ export const Modal = ({
 					</button>
 				</div>
 
-				{}
 				<div className="flex-1 overflow-y-auto p-6">{children}</div>
 
-				{}
 				{footer && (
 					<div className="flex items-center justify-end gap-3 p-6 border-t border-slate-700">
 						{footer}

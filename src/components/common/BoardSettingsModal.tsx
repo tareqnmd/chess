@@ -1,10 +1,10 @@
+import { BOARD_THEMES } from '@/components/common/constants';
+import type { BoardSettings, PieceTheme } from '@/components/common/types';
+import Button from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
+import Select from '@/components/ui/Select';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Modal } from '@/components/ui/Modal';
-import Button from '@/components/ui/Button';
-import Select from '@/components/ui/Select';
-import type { BoardSettings, PieceTheme } from '@/components/common/types';
-import { BOARD_THEMES } from '@/components/common/constants';
 
 interface BoardSettingsModalProps {
 	isOpen: boolean;
@@ -100,7 +100,6 @@ export const BoardSettingsModal = ({
 			}
 		>
 			<div className="space-y-6">
-				{}
 				<div>
 					<label className="block text-sm font-medium text-slate-300 mb-2">
 						Your User ID
@@ -110,7 +109,6 @@ export const BoardSettingsModal = ({
 					</div>
 				</div>
 
-				{}
 				<div>
 					<label className="block text-sm font-medium text-slate-300 mb-2">
 						Piece Style
@@ -132,7 +130,6 @@ export const BoardSettingsModal = ({
 					</Select>
 				</div>
 
-				{}
 				<div>
 					<label className="block text-sm font-medium text-slate-300 mb-3">
 						Board Theme
@@ -171,7 +168,6 @@ export const BoardSettingsModal = ({
 					</div>
 				</div>
 
-				{}
 				<div className="grid grid-cols-2 gap-4">
 					<div>
 						<label className="block text-sm font-medium text-slate-300 mb-2">
@@ -215,7 +211,6 @@ export const BoardSettingsModal = ({
 					</div>
 				</div>
 
-				{}
 				<div className="flex items-center justify-between">
 					<label className="text-sm font-medium text-slate-300">
 						Show Board Coordinates
@@ -243,7 +238,6 @@ export const BoardSettingsModal = ({
 					</button>
 				</div>
 
-				{}
 				<div>
 					<label className="block text-sm font-medium text-slate-300 mb-2">
 						Animation Speed: {localSettings.animationDuration}ms

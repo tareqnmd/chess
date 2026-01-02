@@ -70,9 +70,9 @@ function App() {
 				closeButton
 				theme="dark"
 			/>
-			<div className="min-h-screen grid grid-rows-[auto_1fr_auto] gap-4 md:gap-6 lg:gap-8">
+			<div className="min-h-screen grid grid-rows-[auto_1fr_auto] gap-4 md:gap-6 lg:gap-8 overflow-hidden">
 				<Header onOpenSettings={() => setIsSettingsOpen(true)} />
-				<main className="container">
+				<main className="container overflow-hidden">
 					<Routes>
 						<Route
 							path="/"

@@ -1,5 +1,5 @@
-import type { ClockState } from '@/components/game/types';
 import type { Color } from '@/components/common/types';
+import type { ClockState } from '@/components/game/types';
 
 interface ChessClockProps {
 	clockState: ClockState;
@@ -48,7 +48,6 @@ const ChessClock = ({
 
 	return (
 		<div className="flex flex-col gap-3" role="timer">
-			{}
 			<div
 				className={getClockStyles(opponentColor)}
 				aria-label={`${opponentColor === 'w' ? 'White' : 'Black'} time remaining`}
@@ -72,7 +71,6 @@ const ChessClock = ({
 				</div>
 			</div>
 
-			{}
 			<div
 				className={getClockStyles(playerColor)}
 				aria-label={`Your time remaining (${playerColor === 'w' ? 'White' : 'Black'})`}

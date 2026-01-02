@@ -42,7 +42,6 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 
 	return (
 		<Card className="flex flex-col gap-5">
-			{}
 			<Select
 				label="Opponent"
 				value={selectedBot.id}
@@ -56,7 +55,6 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 				))}
 			</Select>
 
-			{}
 			<Select
 				label="Time Control"
 				value={selectedTime.id}
@@ -74,7 +72,6 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 				))}
 			</Select>
 
-			{}
 			<div className="flex flex-col gap-4">
 				<label className="block text-sm font-medium text-slate-300">
 					Play as
@@ -110,7 +107,6 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 				</div>
 			</div>
 
-			{}
 			<Button
 				onClick={handleStartGame}
 				variant="primary"
