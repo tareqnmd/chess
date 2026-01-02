@@ -75,7 +75,7 @@ const AnalysisPanel = ({
 					<div className="flex flex-col gap-3">
 						<div className="h-6 bg-slate-900 rounded-full overflow-hidden relative">
 							<div
-								className="h-full bg-gradient-to-r from-slate-100 to-slate-300 transition-all duration-500"
+								className="h-full bg-linear-to-r from-slate-100 to-slate-300 transition-all duration-500"
 								style={{
 									width: `${getEvalBarWidth(analysis.evaluation, analysis.mate)}%`,
 								}}

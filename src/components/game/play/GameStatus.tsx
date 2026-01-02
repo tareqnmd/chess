@@ -79,7 +79,7 @@ const GameStatusComponent = ({
 			aria-modal="false"
 		>
 			<div
-				className={`text-center p-8 rounded-2xl bg-gradient-to-br ${getBackgroundClass()} border-2 shadow-2xl transform animate-bounce-in`}
+				className={`text-center p-8 rounded-2xl bg-linear-to-br ${getBackgroundClass()} border-2 shadow-2xl transform animate-bounce-in`}
 			>
 				<div className="text-6xl mb-4" aria-hidden="true">
 					{getIcon()}

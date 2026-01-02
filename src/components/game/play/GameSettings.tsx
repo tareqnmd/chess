@@ -100,7 +100,7 @@ const GameSettingsComponent = ({ onStartGame }: GameSettingsProps) => {
 						selected={colorChoice === 'random'}
 						variant="circle"
 						size="md"
-						className="bg-gradient-to-r from-white from-50% to-slate-900 to-50% border-2 border-slate-700"
+						className="bg-linear-to-r from-white from-50% to-slate-900 to-50% border-2 border-slate-700"
 						title="Random color"
 						aria-label="Random color"
 					/>
