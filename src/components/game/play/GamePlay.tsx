@@ -1,8 +1,8 @@
 import type { BoardSettings } from '@/components/common/types';
-import type { GameSettings as GameSettingsType } from '@/components/game/types';
 import { GameStatus } from '@/components/game/types';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import GameLayout from '../GameLayout';
 import { useChessClock } from '../hooks/useChessClock';
@@ -11,7 +11,6 @@ import { useGameStorage } from '../hooks/useGameStorage';
 import ChessClock from './ChessClock';
 import GameBoard from './GameBoard';
 import GameControls from './GameControls';
-import GameSettings from './GameSettings';
 import GameStatusComponent from './GameStatus';
 import MoveHistory from './MoveHistory';
 
@@ -20,12 +19,13 @@ interface GamePlayProps {
 }
 
 const GamePlay = ({ boardSettings }: GamePlayProps) => {
+	const { gameId } = useParams<{ gameId: string }>();
+	const navigate = useNavigate();
+
 	const {
 		gameState,
-		startGame,
 		restoreGame,
 		makeMove,
-		resetGame,
 		resign,
 		setTimeoutWinner,
 		isPlayerTurn,
@@ -33,7 +33,6 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 
 	const {
 		clockState,
-		startClock,
 		switchTurn,
 		stopClock,
 		resetClock,
@@ -46,7 +45,6 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		saveCompletedGame,
 		clearSavedGame,
 		recordMove,
-		initializeGame,
 		loadSavedGame,
 	} = useGameStorage();
 
@@ -61,36 +59,67 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		gameRestoredRef.current = true;
 
 		const savedGame = loadSavedGame();
-		if (savedGame && savedGame.settings) {
-			restoreGame(
-				savedGame.gameId,
-				savedGame.fen,
-				savedGame.pgn,
-				savedGame.settings,
-				savedGame.startedAt
-			);
 
-			const chess = new Chess(savedGame.fen);
-			const currentTurn = chess.turn();
-
-			resetClock(
-				savedGame.settings.timeControl,
-				savedGame.clockWhite,
-				savedGame.clockBlack
-			);
-
-			switchTurn(currentTurn);
-
-			prevFenRef.current = savedGame.fen;
-			prevHistoryLengthRef.current = savedGame.moveHistory.length;
-
-			if (savedGame.moveHistory.length >= 2) {
-				clockStartedRef.current = true;
-			}
-
-			toast.info('Game restored from last session');
+		if (!savedGame || !savedGame.settings || savedGame.gameId !== gameId) {
+			navigate('/', { replace: true });
+			return;
 		}
-	}, [loadSavedGame, restoreGame, resetClock, switchTurn, startCountdown]);
+
+		const chess = new Chess(savedGame.fen);
+
+		// Only restore if the game is still playable (not ended)
+		const isGameEnded =
+			chess.isCheckmate() ||
+			chess.isStalemate() ||
+			chess.isInsufficientMaterial() ||
+			chess.isThreefoldRepetition() ||
+			chess.isDraw();
+
+		if (isGameEnded) {
+			clearSavedGame();
+			navigate('/', { replace: true });
+			return;
+		}
+
+		restoreGame(
+			savedGame.gameId,
+			savedGame.fen,
+			savedGame.pgn,
+			savedGame.settings,
+			savedGame.startedAt
+		);
+
+		const currentTurn = chess.turn();
+
+		resetClock(
+			savedGame.settings.timeControl,
+			savedGame.clockWhite,
+			savedGame.clockBlack
+		);
+
+		switchTurn(currentTurn);
+
+		prevFenRef.current = savedGame.fen;
+		prevHistoryLengthRef.current = savedGame.moveHistory.length;
+
+		gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
+
+		if (savedGame.moveHistory.length >= 2) {
+			clockStartedRef.current = true;
+			startCountdown();
+		}
+
+		toast.info('Game restored from last session');
+	}, [
+		gameId,
+		loadSavedGame,
+		restoreGame,
+		resetClock,
+		switchTurn,
+		startCountdown,
+		clearSavedGame,
+		navigate,
+	]);
 
 	useEffect(() => {
 		if (gameState.status !== GameStatus.PLAYING || !gameState.settings) return;
@@ -176,35 +205,18 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 				}
 
 				saveCompletedGame(gameState, result, gameState.termination, duration);
+
+				setTimeout(() => {
+					navigate('/', { replace: true });
+				}, 3000);
 			}
 		}
-	}, [gameState.status, stopClock, gameState, saveCompletedGame]);
-
-	const handleStartGame = useCallback(
-		(settings: GameSettingsType) => {
-			startGame(settings);
-			startClock(settings.timeControl);
-			gameStartTimeRef.current = Date.now();
-			clockStartedRef.current = false;
-			clearSavedGame();
-			initializeGame(
-				settings,
-				settings.timeControl.initialTime * 1000,
-				settings.timeControl.initialTime * 1000
-			);
-			toast.success(`Game started vs ${settings.bot.name}`);
-		},
-		[startGame, startClock, clearSavedGame, initializeGame]
-	);
+	}, [gameState.status, stopClock, gameState, saveCompletedGame, navigate]);
 
 	const handleNewGame = useCallback(() => {
-		resetGame();
-		if (gameState.settings) {
-			resetClock(gameState.settings.timeControl);
-		}
-		gameStartTimeRef.current = 0;
-		clockStartedRef.current = false;
-	}, [resetGame, resetClock, gameState.settings]);
+		clearSavedGame();
+		navigate('/', { replace: true });
+	}, [clearSavedGame, navigate]);
 
 	const handleMove = useCallback(
 		(from: string, to: string, promotion?: string): boolean => {
@@ -213,7 +225,6 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		[makeMove]
 	);
 
-	const isIdle = gameState.status === GameStatus.IDLE;
 	const isPlaying = gameState.status === GameStatus.PLAYING;
 	const isGameOver =
 		gameState.status !== GameStatus.PLAYING &&
@@ -221,15 +232,12 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 
 	return (
 		<GameLayout>
-			<section
-				className={`relative ${isIdle ? 'hidden lg:block' : ''}`}
-				aria-label="Chess board"
-			>
+			<section className="relative" aria-label="Chess board">
 				<GameBoard
 					gameState={gameState}
 					onMove={handleMove}
 					isPlayerTurn={isPlayerTurn}
-					disabled={isIdle}
+					disabled={false}
 					settings={boardSettings}
 				/>
 				{isGameOver && gameState.settings && (
@@ -244,41 +252,35 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 			</section>
 
 			<aside className="flex flex-col gap-6">
-				{isIdle ? (
-					<GameSettings onStartGame={handleStartGame} />
-				) : (
+				{gameState.settings && (
 					<>
-						{gameState.settings && (
-							<section className="flex items-center gap-4 p-5 bg-slate-800/50 rounded-xl border border-slate-700/50">
-								<span className="text-4xl" aria-hidden="true">
-									{gameState.settings.bot.avatar}
-								</span>
-								<div className="flex-1">
-									<h3 className="font-semibold text-slate-100">
-										{gameState.settings.bot.name}
-									</h3>
-									<p className="text-sm text-slate-400">
-										Rating: {gameState.settings.bot.rating}
-									</p>
+						<section className="flex items-center gap-4 p-5 bg-slate-800/50 rounded-xl border border-slate-700/50">
+							<span className="text-4xl" aria-hidden="true">
+								{gameState.settings.bot.avatar}
+							</span>
+							<div className="flex-1">
+								<h3 className="font-semibold text-slate-100">
+									{gameState.settings.bot.name}
+								</h3>
+								<p className="text-sm text-slate-400">
+									Rating: {gameState.settings.bot.rating}
+								</p>
+							</div>
+							{!isPlayerTurn && isPlaying && (
+								<div className="px-3 py-1 bg-emerald-600/20 text-emerald-400 text-sm rounded-full border border-emerald-600/30">
+									Thinking...
 								</div>
-								{!isPlayerTurn && isPlaying && (
-									<div className="px-3 py-1 bg-emerald-600/20 text-emerald-400 text-sm rounded-full border border-emerald-600/30">
-										Thinking...
-									</div>
-								)}
-							</section>
-						)}
+							)}
+						</section>
 
-						{gameState.settings && (
-							<section aria-label="Game clock">
-								<ChessClock
-									clockState={clockState}
-									formatTime={formatTime}
-									playerColor={gameState.settings.playerColor}
-									isGameOver={isGameOver}
-								/>
-							</section>
-						)}
+						<section aria-label="Game clock">
+							<ChessClock
+								clockState={clockState}
+								formatTime={formatTime}
+								playerColor={gameState.settings.playerColor}
+								isGameOver={isGameOver}
+							/>
+						</section>
 
 						<section className="flex-1 p-5 bg-slate-800/50 rounded-xl border border-slate-700/50">
 							<h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-3">

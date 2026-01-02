@@ -1,5 +1,5 @@
-import type { GameSettings, TerminationType } from '@/components/game/types';
 import type { Color } from '@/components/common/types';
+import type { GameSettings, TerminationType } from '@/components/game/types';
 
 const STORAGE_KEYS = {
 	USER_ID: 'chess_user_id',
@@ -366,7 +366,9 @@ export function initializeGameSession(
 	clockWhite: number,
 	clockBlack: number
 ): string {
-	const gameId = generateId();
+	clearCurrentGame();
+
+	const gameId = generateUUID();
 	const now = new Date().toISOString();
 
 	const gameState: CurrentGameState = {

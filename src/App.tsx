@@ -8,6 +8,7 @@ import Header from './components/common/Header';
 import NotFound from './components/common/NotFound';
 import type { BoardSettings } from './components/common/types';
 import GamePlay from './components/game/play/GamePlay';
+import HomePage from './components/home/HomePage';
 import HistoryPage from './components/history/HistoryPage';
 import {
 	getUserId,
@@ -45,7 +46,7 @@ function App() {
 
 	useEffect(() => {
 		const getPageFromPath = (pathname: string) => {
-			if (pathname === '/') return 'play';
+			if (pathname === '/' || pathname.startsWith('/play')) return 'play';
 			if (pathname.startsWith('/analysis')) return 'analysis';
 			if (pathname.startsWith('/history')) return 'history';
 			return 'play';
@@ -74,8 +75,9 @@ function App() {
 				<Header onOpenSettings={() => setIsSettingsOpen(true)} />
 				<main className="container overflow-hidden">
 					<Routes>
+						<Route path="/" element={<HomePage />} />
 						<Route
-							path="/"
+							path="/play/:gameId"
 							element={<GamePlay boardSettings={boardSettings} />}
 						/>
 						<Route
