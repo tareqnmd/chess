@@ -1,4 +1,5 @@
 import type { GameState } from '@/types/chess';
+import type { BoardSettings } from '@/types/board-settings';
 import ChessBoard from '@/components/common/ChessBoard';
 
 interface GameBoardProps {
@@ -6,6 +7,7 @@ interface GameBoardProps {
 	onMove: (from: string, to: string, promotion?: string) => boolean;
 	isPlayerTurn: boolean;
 	disabled?: boolean;
+	settings?: BoardSettings;
 }
 
 const GameBoard = ({
@@ -13,6 +15,7 @@ const GameBoard = ({
 	onMove,
 	isPlayerTurn,
 	disabled = false,
+	settings,
 }: GameBoardProps) => {
 	return (
 		<ChessBoard
@@ -23,6 +26,7 @@ const GameBoard = ({
 			isPlayerTurn={isPlayerTurn}
 			disabled={disabled}
 			botName={gameState.settings?.bot.name}
+			settings={settings}
 		/>
 	);
 };

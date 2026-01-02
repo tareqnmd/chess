@@ -1,4 +1,5 @@
 import type { GameSettings as GameSettingsType } from '@/types/chess';
+import type { BoardSettings } from '@/types/board-settings';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useRef } from 'react';
 import GameLayout from '../GameLayout';
@@ -12,7 +13,12 @@ import GameSettings from './GameSettings';
 import GameStatus from './GameStatus';
 import MoveHistory from './MoveHistory';
 
-const GamePlay = () => {
+interface GamePlayProps {
+	boardSettings: BoardSettings;
+}
+
+const GamePlay = ({ boardSettings }: GamePlayProps) => {
+
 	const {
 		gameState,
 		startGame,
@@ -149,6 +155,7 @@ const GamePlay = () => {
 					onMove={handleMove}
 					isPlayerTurn={isPlayerTurn}
 					disabled={isIdle}
+					settings={boardSettings}
 				/>
 				{isGameOver && gameState.settings && (
 					<GameStatus

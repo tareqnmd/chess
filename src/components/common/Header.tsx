@@ -1,9 +1,12 @@
+import { BoardSettingsButton } from './BoardSettingsButton';
+
 interface HeaderProps {
 	currentPage: 'play' | 'analysis' | 'history';
 	onNavigate: (page: 'play' | 'analysis' | 'history') => void;
+	onOpenSettings: () => void;
 }
 
-const Header = ({ currentPage, onNavigate }: HeaderProps) => {
+const Header = ({ currentPage, onNavigate, onOpenSettings }: HeaderProps) => {
 	return (
 		<header className="mb-6">
 			<div className="flex justify-between items-center pb-4 sm:pb-6">
@@ -11,7 +14,8 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 					chess
 				</h1>
 				
-				<nav className="flex gap-3 sm:gap-4 md:gap-6" aria-label="Main navigation">
+				<div className="flex items-center gap-4">
+					<nav className="flex gap-3 sm:gap-4 md:gap-6" aria-label="Main navigation">
 					<button
 						onClick={() => onNavigate('play')}
 						className={`text-sm font-medium transition-all ${
@@ -46,6 +50,9 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 						History
 					</button>
 				</nav>
+				
+				<BoardSettingsButton onClick={onOpenSettings} />
+			</div>
 			</div>
 			<div className="border-b border-slate-700/50"></div>
 		</header>

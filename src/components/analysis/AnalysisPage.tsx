@@ -1,4 +1,5 @@
 import { gameService } from '@/lib/game-service';
+import type { BoardSettings } from '@/types/board-settings';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useState } from 'react';
 import { useAnalysis } from '../game/hooks/useAnalysis';
@@ -10,9 +11,10 @@ const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 interface AnalysisPageProps {
 	importedPgn?: string;
 	importedFen?: string;
+	boardSettings: BoardSettings;
 }
 
-const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
+const AnalysisPage = ({ importedPgn, importedFen, boardSettings }: AnalysisPageProps) => {
 	const [fen, setFen] = useState(importedFen || INITIAL_FEN);
 	const [fenInput, setFenInput] = useState(importedFen || INITIAL_FEN);
 	const [pgnInput, setPgnInput] = useState(importedPgn || '');
@@ -184,6 +186,7 @@ const AnalysisPage = ({ importedPgn, importedFen }: AnalysisPageProps) => {
 						onFenChange={handleFenChange}
 						analysis={analysisState.currentAnalysis}
 						isAnalyzing={analysisState.isAnalyzing}
+						settings={boardSettings}
 					/>
 				</div>
 				{moveList.length > 0 && (

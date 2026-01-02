@@ -1,6 +1,7 @@
 import { Chess, Square } from 'chess.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
+import type { BoardSettings } from '@/types/board-settings';
 
 type BoardMode = 'game' | 'analysis';
 
@@ -9,6 +10,7 @@ interface ChessBoardProps {
 	fen: string;
 	mode: BoardMode;
 	disabled?: boolean;
+	settings?: BoardSettings;
 
 	// Game mode props
 	playerColor?: 'w' | 'b';
@@ -30,6 +32,7 @@ const ChessBoard = ({
 	fen,
 	mode,
 	disabled = false,
+	settings,
 	playerColor,
 	onMove,
 	isPlayerTurn = true,
@@ -70,8 +73,12 @@ const ChessBoard = ({
 
 	const captureIndicatorColor = 'rgba(239, 68, 68, 0.4)';
 
-	const darkSquareColor = mode === 'game' ? '#334155' : '#475569';
-	const lightSquareColor = mode === 'game' ? '#94a3b8' : '#cbd5e1';
+	// Use settings or defaults
+	const darkSquareColor = settings?.boardTheme.dark || (mode === 'game' ? '#334155' : '#475569');
+	const lightSquareColor = settings?.boardTheme.light || (mode === 'game' ? '#94a3b8' : '#cbd5e1');
+	const pieceTheme = settings?.pieceTheme;
+	const showCoordinates = settings?.showCoordinates ?? true;
+	const animationDuration = settings?.animationDuration ?? 200;
 
 	// Get legal moves for a square
 	const getMoveOptions = useCallback(
@@ -392,7 +399,9 @@ const ChessBoard = ({
 				borderRadius: '8px',
 				boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
 			},
-			animationDurationInMs: 200,
+			animationDurationInMs: animationDuration,
+			...(pieceTheme && { pieceTheme }),
+			...(showCoordinates !== undefined && { showBoardNotation: showCoordinates }),
 		}),
 		[
 			mode,
@@ -409,6 +418,9 @@ const ChessBoard = ({
 			bestMoveSquares,
 			darkSquareColor,
 			lightSquareColor,
+			animationDuration,
+			pieceTheme,
+			showCoordinates,
 		]
 	);
 

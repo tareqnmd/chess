@@ -4,6 +4,9 @@ import Footer from './components/common/Footer';
 import Header from './components/common/Header';
 import GamePlay from './components/game/play/GamePlay';
 import HistoryPage from './components/history/HistoryPage';
+import { BoardSettingsModal } from './components/common/BoardSettingsModal';
+import type { BoardSettings } from './types/board-settings';
+import { loadBoardSettings, saveBoardSettings } from './lib/board-settings-storage';
 
 type Page = 'play' | 'analysis' | 'history';
 
@@ -15,6 +18,8 @@ interface AnalysisImport {
 function App() {
 	const [currentPage, setCurrentPage] = useState<Page>('play');
 	const [analysisImport, setAnalysisImport] = useState<AnalysisImport>({});
+	const [boardSettings, setBoardSettings] = useState<BoardSettings>(() => loadBoardSettings());
+	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
 	const handleAnalyzeGame = useCallback((pgn: string, fen: string) => {
 		setAnalysisImport({ pgn, fen });
@@ -29,21 +34,27 @@ function App() {
 		setCurrentPage(page);
 	}, []);
 
+	const handleSaveSettings = useCallback((settings: BoardSettings) => {
+		setBoardSettings(settings);
+		saveBoardSettings(settings);
+	}, []);
+
 	const renderPage = () => {
 		switch (currentPage) {
 			case 'play':
-				return <GamePlay />;
+				return <GamePlay boardSettings={boardSettings} />;
 			case 'analysis':
 				return (
 					<AnalysisPage
 						importedPgn={analysisImport.pgn}
 						importedFen={analysisImport.fen}
+						boardSettings={boardSettings}
 					/>
 				);
 			case 'history':
 				return <HistoryPage onAnalyzeGame={handleAnalyzeGame} />;
 			default:
-				return <GamePlay />;
+				return <GamePlay boardSettings={boardSettings} />;
 		}
 	};
 
@@ -53,10 +64,18 @@ function App() {
 				<Header
 					currentPage={currentPage}
 					onNavigate={handleNavigate}
+					onOpenSettings={() => setIsSettingsOpen(true)}
 				/>
 				<main className="mt-8">{renderPage()}</main>
 				<Footer />
 			</div>
+
+			<BoardSettingsModal
+				isOpen={isSettingsOpen}
+				onClose={() => setIsSettingsOpen(false)}
+				settings={boardSettings}
+				onSave={handleSaveSettings}
+			/>
 		</div>
 	);
 }

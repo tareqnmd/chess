@@ -1,4 +1,5 @@
 import type { PositionAnalysis } from '@/types/chess';
+import type { BoardSettings } from '@/types/board-settings';
 import ChessBoard from '@/components/common/ChessBoard';
 
 interface AnalysisBoardProps {
@@ -6,6 +7,7 @@ interface AnalysisBoardProps {
 	onFenChange: (fen: string) => void;
 	analysis: PositionAnalysis | null;
 	isAnalyzing: boolean;
+	settings?: BoardSettings;
 }
 
 const AnalysisBoard = ({
@@ -13,6 +15,7 @@ const AnalysisBoard = ({
 	onFenChange,
 	analysis,
 	isAnalyzing,
+	settings,
 }: AnalysisBoardProps) => {
 	return (
 		<ChessBoard
@@ -21,6 +24,7 @@ const AnalysisBoard = ({
 			onFenChange={onFenChange}
 			bestMove={analysis?.bestMove}
 			isAnalyzing={isAnalyzing}
+			settings={settings}
 		/>
 	);
 };
