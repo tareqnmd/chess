@@ -1,5 +1,5 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'info';
@@ -17,7 +17,6 @@ const IconButton = ({
 	return (
 		<button
 			className={cn(
-				// Base styles
 				'inline-flex items-center justify-center',
 				'rounded-lg',
 				'transition-all duration-200',
