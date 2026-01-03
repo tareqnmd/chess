@@ -165,6 +165,7 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 		resetClock,
 		switchTurn,
 		startCountdown,
+		setTimeoutWinner,
 	]);
 
 	useEffect(() => {
