@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 import { BoardSettingsButton } from './BoardSettingsButton';
+import Logo from './Logo';
 
 interface HeaderProps {
 	onOpenSettings: () => void;
@@ -16,9 +17,7 @@ const Header = ({ onOpenSettings }: HeaderProps) => {
 			<div className="container">
 				<div className="flex justify-between items-center flex-wrap gap-4">
 					<Link to="/" className="no-underline">
-						<h1 className="text-xl sm:text-2xl font-bold text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer">
-							Chess
-						</h1>
+						<Logo />
 					</Link>
 
 					<div className="flex items-center gap-4">
