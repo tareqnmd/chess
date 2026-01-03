@@ -1,104 +1,153 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Primary Meta Tags -->
-    <title>Chess - Play Against AI, Analyze Games & Learn Chess Strategy</title>
-    <meta name="title" content="Chess - Play Against AI, Analyze Games & Learn Chess Strategy" />
-    <meta name="description" content="Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills." />
-    <meta name="keywords" content="chess, chess game, play chess online, chess AI, chess analysis, stockfish, chess strategy, learn chess, chess puzzles, chess training" />
-    <meta name="author" content="Chess App" />
-    <meta name="language" content="English" />
-    <meta name="robots" content="index, follow" />
-    <meta name="googlebot" content="index, follow" />
-    
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#0f172a" />
-    <meta name="msapplication-TileColor" content="#0f172a" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    
-    <!-- Mobile App Capable -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Chess" />
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/chess.svg" />
-    <link rel="apple-touch-icon" href="/chess.svg" />
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://yourchessapp.com/" />
-    <meta property="og:title" content="Chess - Play Against AI, Analyze Games & Learn Chess Strategy" />
-    <meta property="og:description" content="Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills." />
-    <meta property="og:image" content="https://yourchessapp.com/chess.svg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="Chess" />
-    <meta property="og:locale" content="en_US" />
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://yourchessapp.com/" />
-    <meta property="twitter:title" content="Chess - Play Against AI, Analyze Games & Learn Chess Strategy" />
-    <meta property="twitter:description" content="Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills." />
-    <meta property="twitter:image" content="https://yourchessapp.com/chess.svg" />
-    <meta property="twitter:creator" content="@yourhandle" />
-    
-    <!-- Additional SEO -->
-    <link rel="canonical" href="https://yourchessapp.com/" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    
-    <!-- Site Verification (add your codes) -->
-    <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" /> -->
-    <!-- <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" /> -->
-    <!-- <meta name="yandex-verification" content="YOUR_YANDEX_VERIFICATION_CODE" /> -->
-    <!-- <meta name="p:domain_verify" content="YOUR_PINTEREST_VERIFICATION_CODE" /> -->
-    
-    <!-- Performance & Preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Schema.org JSON-LD -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Chess",
-      "applicationCategory": "Game",
-      "applicationSubCategory": "Chess Game",
-      "operatingSystem": "Any",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "description": "Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills.",
-      "featureList": [
-        "Play against AI opponents",
-        "Multiple difficulty levels",
-        "Stockfish chess engine analysis",
-        "Game history tracking",
-        "Position analysis",
-        "Customizable board themes"
-      ],
-      "screenshot": "https://yourchessapp.com/chess.svg",
-      "softwareVersion": "1.0.0",
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "150"
-      }
-    }
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<!-- Primary Meta Tags -->
+		<title>Chess - Play Against AI, Analyze Games & Learn Chess Strategy</title>
+		<meta
+			name="title"
+			content="Chess - Play Against AI, Analyze Games & Learn Chess Strategy"
+		/>
+		<meta
+			name="description"
+			content="Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills."
+		/>
+		<meta
+			name="keywords"
+			content="chess, chess game, play chess online, chess AI, chess analysis, stockfish, chess strategy, learn chess, chess puzzles, chess training"
+		/>
+		<meta name="author" content="Md Tareq - tareqnmd.com" />
+		<meta name="language" content="English" />
+		<meta name="robots" content="index, follow" />
+		<meta name="googlebot" content="index, follow" />
+
+		<!-- Theme Color -->
+		<meta name="theme-color" content="#0f172a" />
+		<meta name="msapplication-TileColor" content="#0f172a" />
+		<meta
+			name="apple-mobile-web-app-status-bar-style"
+			content="black-translucent"
+		/>
+
+		<!-- Mobile App Capable -->
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-title" content="Chess" />
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/x-icon" href="/meta/favicon.ico" />
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/meta/favicon-16x16.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/meta/favicon-32x32.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/meta/apple-touch-icon.png"
+		/>
+		<link rel="manifest" href="/manifest.json" />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://chess.tareqnmd.com/" />
+		<meta
+			property="og:title"
+			content="Chess - Play Against AI, Analyze Games & Learn Chess Strategy"
+		/>
+		<meta
+			property="og:description"
+			content="Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills."
+		/>
+		<meta
+			property="og:image"
+			content="https://chess.tareqnmd.com/meta/og-image.png"
+		/>
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:site_name" content="Chess" />
+		<meta property="og:locale" content="en_US" />
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content="https://chess.tareqnmd.com/" />
+		<meta
+			property="twitter:title"
+			content="Chess - Play Against AI, Analyze Games & Learn Chess Strategy"
+		/>
+		<meta
+			property="twitter:description"
+			content="Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills."
+		/>
+		<meta
+			property="twitter:image"
+			content="https://chess.tareqnmd.com/meta/og-image.png"
+		/>
+		<meta property="twitter:creator" content="@tareqnmd" />
+
+		<!-- Additional SEO -->
+		<link rel="canonical" href="https://chess.tareqnmd.com/" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+		<!-- Site Verification (add your codes) -->
+		<!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" /> -->
+		<!-- <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" /> -->
+		<!-- <meta name="yandex-verification" content="YOUR_YANDEX_VERIFICATION_CODE" /> -->
+		<!-- <meta name="p:domain_verify" content="YOUR_PINTEREST_VERIFICATION_CODE" /> -->
+
+		<!-- Performance & Preconnect -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+
+		<!-- Schema.org JSON-LD -->
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebApplication",
+				"name": "Chess",
+				"applicationCategory": "Game",
+				"applicationSubCategory": "Chess Game",
+				"operatingSystem": "Any",
+				"offers": {
+					"@type": "Offer",
+					"price": "0",
+					"priceCurrency": "USD"
+				},
+				"description": "Master chess with AI opponents, powerful analysis tools powered by Stockfish, and comprehensive game history. Choose from multiple difficulty levels and improve your chess skills.",
+				"featureList": [
+					"Play against AI opponents",
+					"Multiple difficulty levels",
+					"Stockfish chess engine analysis",
+					"Game history tracking",
+					"Position analysis",
+					"Customizable board themes"
+				],
+				"screenshot": "https://chess.tareqnmd.com/meta/og-image.png",
+				"softwareVersion": "1.0.0",
+				"aggregateRating": {
+					"@type": "AggregateRating",
+					"ratingValue": "4.8",
+					"ratingCount": "150"
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="root"></div>
+		<script type="module" src="/src/main.tsx"></script>
+	</body>
 </html>

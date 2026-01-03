@@ -3,14 +3,14 @@ export const APP_CONFIG = {
 	fullName: 'Chess - Play & Analyze',
 	tagline: 'Play Against AI, Analyze Games & Learn Chess Strategy',
 	version: '1.0.0',
-	author: 'Chess App',
+	author: 'Md Tareq',
 
-	url: 'https://yourchessapp.com',
+	url: 'https://chess.tareqnmd.com',
 	baseUrl: '/',
 
 	social: {
-		twitter: '@yourhandle',
-		github: 'https://github.com/yourusername/chess',
+		twitter: '@tareqnmd',
+		github: 'https://github.com/tareqnmd',
 	},
 
 	theme: {
@@ -46,8 +46,8 @@ export const APP_CONFIG = {
 	},
 
 	contact: {
-		email: 'support@yourchessapp.com',
-		supportUrl: 'https://yourchessapp.com/support',
+		email: 'tareqnmd@gmail.com',
+		supportUrl: 'https://tareqnmd.com',
 	},
 
 	analytics: {
@@ -65,8 +65,8 @@ export const APP_CONFIG = {
 	},
 
 	legal: {
-		privacyPolicyUrl: 'https://yourchessapp.com/privacy',
-		termsOfServiceUrl: 'https://yourchessapp.com/terms',
+		privacyPolicyUrl: 'https://chess.tareqnmd.com/privacy',
+		termsOfServiceUrl: 'https://chess.tareqnmd.com/terms',
 	},
 } as const;
 

@@ -2,6 +2,8 @@
 
 A modern, feature-rich chess application built with React, TypeScript, and Stockfish engine. Play against AI opponents of varying difficulty, analyze positions, and track your game history.
 
+🌐 **Live Demo:** [chess.tareqnmd.com](https://chess.tareqnmd.com)
+
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-4.9-blue)
 ![React](https://img.shields.io/badge/React-18-blue)
@@ -30,7 +32,7 @@ A modern, feature-rich chess application built with React, TypeScript, and Stock
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/chess.git
+git clone https://github.com/tareqnmd/chess.git
 cd chess
 
 # Install dependencies
@@ -57,6 +59,15 @@ pnpm preview
 ```
 chess/
 ├── public/              # Static assets
+│   ├── meta/           # Meta images (favicons, OG images)
+│   │   ├── favicon.ico
+│   │   ├── favicon-16x16.png
+│   │   ├── favicon-32x32.png
+│   │   ├── apple-touch-icon.png
+│   │   ├── android-chrome-192x192.png
+│   │   ├── android-chrome-512x512.png
+│   │   ├── logo.png
+│   │   └── og-image.png
 │   ├── chess.svg       # App icon
 │   ├── stockfish.js    # Stockfish engine
 │   ├── stockfish.wasm  # Stockfish WebAssembly
@@ -136,13 +147,13 @@ Update configuration files in `src/config/`:
 ```typescript
 export const APP_CONFIG = {
 	name: 'Chess',
-	url: 'https://yourchessapp.com', // Your domain
+	url: 'https://chess.tareqnmd.com', // Your domain
 	social: {
-		twitter: '@yourusername',
-		github: 'https://github.com/yourusername/chess',
+		twitter: '@tareqnmd',
+		github: 'https://github.com/tareqnmd',
 	},
 	contact: {
-		email: 'support@yourdomain.com',
+		email: 'tareqnmd@gmail.com',
 	},
 	analytics: {
 		enabled: true,
@@ -157,13 +168,13 @@ export const APP_CONFIG = {
 
 #### 2. Update `index.html`
 
-- Replace `https://yourchessapp.com/` with your domain
+- Replace URLs with your domain (already configured: `https://chess.tareqnmd.com/`)
 - Add verification meta tags (uncomment and fill in)
-- Update social media images
+- Update social media images (already configured to use `/meta/` folder)
 
 #### 3. Update `manifest.json`, `robots.txt`, `sitemap.xml`
 
-Replace placeholder URLs with your actual domain.
+All files already configured with `https://chess.tareqnmd.com/` domain.
 
 ### Analytics Setup
 
@@ -326,7 +337,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👥 Authors
 
-- Your Name - [@yourusername](https://twitter.com/yourusername)
+- Md Tareq - [@tareqnmd](https://twitter.com/tareqnmd)
 
 ## 🙏 Acknowledgments
 
@@ -338,9 +349,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📧 Contact
 
-- Email: support@yourchessapp.com
-- Twitter: [@yourusername](https://twitter.com/yourusername)
-- GitHub: [@yourusername](https://github.com/yourusername)
+- Email: tareqnmd@gmail.com
+- Twitter: [@tareqnmd](https://twitter.com/tareqnmd)
+- GitHub: [@tareqnmd](https://github.com/tareqnmd)
+- Website: [tareqnmd.com](https://tareqnmd.com)
 
 ## 🗺️ Roadmap
 
