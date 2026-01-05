@@ -22,8 +22,7 @@ const ChessClock = ({
 
 	const getClockStyles = (color: Color) => {
 		const colorKey = colorToKey(color);
-		// Show as active if it's the active color (regardless of running state)
-		// This ensures white shows as active at game start
+		// ...existing code without comments...
 		const isActive = clockState.activeColor === color;
 		const isLow = clockState[colorKey] < 30000;
 		const isCritical = clockState[colorKey] < 10000;

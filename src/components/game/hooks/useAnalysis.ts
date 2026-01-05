@@ -1,22 +1,22 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
 import type {
-	PositionAnalysis,
 	AnalysisState,
+	PositionAnalysis,
 } from '@/components/analysis/types';
 import { getEngine } from '@/lib/stockfish-engine';
 import {
-	saveAnalysis,
-	getSavedAnalyses,
 	deleteAnalysis,
+	getSavedAnalyses,
+	saveAnalysis,
 	type SavedAnalysis,
 } from '@/lib/storage';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UseAnalysisReturn {
 	analysisState: AnalysisState;
 	savedAnalyses: SavedAnalysis[];
 	analyzePosition: (fen: string, depth?: number) => Promise<void>;
 	stopAnalysis: () => void;
-	saveCurrentAnalysis: (notes?: string) => SavedAnalysis | null;
+	saveCurrentAnalysis: (notes?: string) => Promise<SavedAnalysis | null>;
 	loadSavedAnalyses: () => void;
 	removeSavedAnalysis: (id: string) => void;
 	clearAnalysis: () => void;
@@ -33,7 +33,9 @@ export function useAnalysis(): UseAnalysisReturn {
 	const isAnalyzingRef = useRef(false);
 
 	useEffect(() => {
-		setSavedAnalyses(getSavedAnalyses());
+		(async () => {
+			setSavedAnalyses(await getSavedAnalyses());
+		})();
 	}, []);
 
 	useEffect(() => {
@@ -129,11 +131,11 @@ export function useAnalysis(): UseAnalysisReturn {
 	}, []);
 
 	const saveCurrentAnalysis = useCallback(
-		(notes = ''): SavedAnalysis | null => {
+		async (notes = ''): Promise<SavedAnalysis | null> => {
 			const { currentAnalysis } = analysisState;
 			if (!currentAnalysis) return null;
 
-			const saved = saveAnalysis({
+			const saved = await saveAnalysis({
 				fen: currentAnalysis.fen,
 				evaluation: currentAnalysis.evaluation,
 				bestMove: currentAnalysis.bestMove,
@@ -142,14 +144,14 @@ export function useAnalysis(): UseAnalysisReturn {
 				notes,
 			});
 
-			setSavedAnalyses((prev) => [saved, ...prev]);
+			setSavedAnalyses(await getSavedAnalyses());
 			return saved;
 		},
 		[analysisState]
 	);
 
-	const loadSavedAnalyses = useCallback(() => {
-		setSavedAnalyses(getSavedAnalyses());
+	const loadSavedAnalyses = useCallback(async () => {
+		setSavedAnalyses(await getSavedAnalyses());
 	}, []);
 
 	const removeSavedAnalysis = useCallback((id: string) => {

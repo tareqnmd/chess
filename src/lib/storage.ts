@@ -1,5 +1,6 @@
 import type { Color } from '@/components/common/types';
 import type { GameSettings, TerminationType } from '@/components/game/types';
+import { IndexedDBStorage } from '../../lib/storage';
 
 const STORAGE_KEYS = {
 	USER_ID: 'chess_user_id',
@@ -7,6 +8,8 @@ const STORAGE_KEYS = {
 	SAVED_ANALYSIS: 'chess_saved_analysis',
 	USER_PREFERENCES: 'chess_user_preferences',
 } as const;
+
+const db = new IndexedDBStorage('ChessAppDB', 'appStore');
 
 export interface SavedGame {
 	id: string;
@@ -68,56 +71,50 @@ function generateUUID(): string {
 	});
 }
 
-export function getUserId(): string {
-	let userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+export async function getUserId(): Promise<string> {
+	let userId = await db.get<string>(STORAGE_KEYS.USER_ID);
 	if (!userId) {
 		userId = generateUUID();
-		localStorage.setItem(STORAGE_KEYS.USER_ID, userId);
+		await db.set(STORAGE_KEYS.USER_ID, userId);
 	}
 	return userId;
 }
 
-export function setUserId(id: string): void {
-	localStorage.setItem(STORAGE_KEYS.USER_ID, id);
+export async function setUserId(id: string): Promise<void> {
+	await db.set(STORAGE_KEYS.USER_ID, id);
 }
 
-export function getGameHistory(): SavedGame[] {
-	const data = localStorage.getItem(STORAGE_KEYS.GAME_HISTORY);
-	const games = safeJsonParse<SavedGame[]>(data, []);
-
+export async function getGameHistory(): Promise<SavedGame[]> {
+	const data = await db.get<string>(STORAGE_KEYS.GAME_HISTORY);
+	const games = safeJsonParse<SavedGame[]>(data ?? null, []);
 	// Migrate old games that don't have clockRunning or lastMoveTime fields
 	return games.map((game) => {
 		const migrated = { ...game };
-
 		if (migrated.clockRunning === undefined) {
-			// If game is playing and has moves, assume clock was running
-			// If game is finished or has no moves, clock is not running
 			migrated.clockRunning = game.status === 'playing' && game.moves > 0;
 		}
-
 		if (migrated.lastMoveTime === undefined) {
-			// For old games, use current time as fallback
 			migrated.lastMoveTime =
 				game.status === 'playing' && game.moves > 0
 					? new Date().toISOString()
 					: null;
 		}
-
 		return migrated;
 	});
 }
 
-export function createGameInHistory(
+export async function createGameInHistory(
 	gameId: string,
 	settings: GameSettings,
 	clockWhite: number,
 	clockBlack: number
-): SavedGame {
-	const history = getGameHistory();
+): Promise<SavedGame> {
+	const history = await getGameHistory();
 	const now = new Date().toISOString();
+	const userId = await getUserId();
 	const newGame: SavedGame = {
 		id: gameId,
-		odlId: getUserId(),
+		odlId: userId,
 		date: now,
 		pgn: '',
 		fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
@@ -131,20 +128,15 @@ export function createGameInHistory(
 		status: 'playing',
 		clockWhite,
 		clockBlack,
-		clockRunning: false, // Clock hasn't started yet for new games
-		lastMoveTime: null, // No moves made yet
+		clockRunning: false,
+		lastMoveTime: null,
 	};
-
 	const updatedHistory = [newGame, ...history].slice(0, 50);
-	localStorage.setItem(
-		STORAGE_KEYS.GAME_HISTORY,
-		JSON.stringify(updatedHistory)
-	);
-
+	await db.set(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(updatedHistory));
 	return newGame;
 }
 
-export function updateGameInHistory(
+export async function updateGameInHistory(
 	gameId: string,
 	updates: Partial<
 		Pick<
@@ -159,32 +151,27 @@ export function updateGameInHistory(
 			| 'lastMoveTime'
 		>
 	>
-): void {
-	const history = getGameHistory();
+): Promise<void> {
+	const history = await getGameHistory();
 	const index = history.findIndex((g) => g.id === gameId);
-
 	if (index === -1) return;
-
 	const updated: SavedGame = {
 		...history[index],
 		...updates,
 	};
-
 	history[index] = updated;
-	localStorage.setItem(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(history));
+	await db.set(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(history));
 }
 
-export function finishGameInHistory(
+export async function finishGameInHistory(
 	gameId: string,
 	result: 'win' | 'loss' | 'draw',
 	termination: TerminationType,
 	duration: number
-): void {
-	const history = getGameHistory();
+): Promise<void> {
+	const history = await getGameHistory();
 	const index = history.findIndex((g) => g.id === gameId);
-
 	if (index === -1) return;
-
 	const updated: SavedGame = {
 		...history[index],
 		result,
@@ -192,85 +179,81 @@ export function finishGameInHistory(
 		duration,
 		endedAt: new Date().toISOString(),
 		status: 'finished',
-		clockRunning: false, // Clock stops when game finishes
+		clockRunning: false,
 	};
-
 	history[index] = updated;
-	localStorage.setItem(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(history));
+	await db.set(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(history));
 }
 
-export function getGameById(gameId: string): SavedGame | null {
-	const history = getGameHistory();
+export async function getGameById(gameId: string): Promise<SavedGame | null> {
+	const history = await getGameHistory();
 	return history.find((g) => g.id === gameId) || null;
 }
 
-export function saveGame(
+export async function saveGame(
 	game: Omit<SavedGame, 'id' | 'date' | 'odlId'>
-): SavedGame {
-	const history = getGameHistory();
+): Promise<SavedGame> {
+	const history = await getGameHistory();
 	const now = new Date().toISOString();
+	const userId = await getUserId();
 	const newGame: SavedGame = {
 		...game,
 		id: generateId(),
-		odlId: getUserId(),
+		odlId: userId,
 		date: now,
 		endedAt: game.endedAt || now,
 	};
-
 	const updatedHistory = [newGame, ...history].slice(0, 50);
-	localStorage.setItem(
-		STORAGE_KEYS.GAME_HISTORY,
-		JSON.stringify(updatedHistory)
-	);
-
+	await db.set(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(updatedHistory));
 	return newGame;
 }
 
-export function deleteGame(id: string): void {
-	const history = getGameHistory();
+export async function deleteGame(id: string): Promise<void> {
+	const history = await getGameHistory();
 	const filtered = history.filter((g) => g.id !== id);
-	localStorage.setItem(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(filtered));
+	await db.set(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(filtered));
 }
 
-export function clearGameHistory(): void {
-	localStorage.removeItem(STORAGE_KEYS.GAME_HISTORY);
+export async function clearGameHistory(): Promise<void> {
+	await db.delete(STORAGE_KEYS.GAME_HISTORY);
 }
 
-export function getSavedAnalyses(): SavedAnalysis[] {
-	const data = localStorage.getItem(STORAGE_KEYS.SAVED_ANALYSIS);
-	return safeJsonParse<SavedAnalysis[]>(data, []);
+export async function getSavedAnalyses(): Promise<SavedAnalysis[]> {
+	const data = await db.get<string>(STORAGE_KEYS.SAVED_ANALYSIS);
+	return safeJsonParse<SavedAnalysis[]>(data ?? null, []);
 }
 
-export function saveAnalysis(
+export async function saveAnalysis(
 	analysis: Omit<SavedAnalysis, 'id' | 'date'>
-): SavedAnalysis {
-	const analyses = getSavedAnalyses();
+): Promise<SavedAnalysis> {
+	const analyses = await getSavedAnalyses();
 	const newAnalysis: SavedAnalysis = {
 		...analysis,
 		id: generateId(),
 		date: new Date().toISOString(),
 	};
-
 	const updated = [newAnalysis, ...analyses].slice(0, 100);
-	localStorage.setItem(STORAGE_KEYS.SAVED_ANALYSIS, JSON.stringify(updated));
-
+	await db.set(STORAGE_KEYS.SAVED_ANALYSIS, JSON.stringify(updated));
 	return newAnalysis;
 }
 
-export function updateAnalysisNotes(id: string, notes: string): void {
-	const analyses = getSavedAnalyses();
+export async function updateAnalysisNotes(
+	id: string,
+	notes: string
+): Promise<void> {
+	const analyses = await getSavedAnalyses();
 	const updated = analyses.map((a) => (a.id === id ? { ...a, notes } : a));
-	localStorage.setItem(STORAGE_KEYS.SAVED_ANALYSIS, JSON.stringify(updated));
+	await db.set(STORAGE_KEYS.SAVED_ANALYSIS, JSON.stringify(updated));
 }
 
-export function deleteAnalysis(id: string): void {
-	const analyses = getSavedAnalyses();
+export async function deleteAnalysis(id: string): Promise<void> {
+	const analyses = await getSavedAnalyses();
 	const filtered = analyses.filter((a) => a.id !== id);
-	localStorage.setItem(STORAGE_KEYS.SAVED_ANALYSIS, JSON.stringify(filtered));
+	await db.set(STORAGE_KEYS.SAVED_ANALYSIS, JSON.stringify(filtered));
 }
 
-export function clearSavedAnalyses(): void {
-	localStorage.removeItem(STORAGE_KEYS.SAVED_ANALYSIS);
+export async function clearSavedAnalyses(): Promise<void> {
+	await db.delete(STORAGE_KEYS.SAVED_ANALYSIS);
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -281,20 +264,20 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 	soundEnabled: true,
 };
 
-export function getUserPreferences(): UserPreferences {
-	const data = localStorage.getItem(STORAGE_KEYS.USER_PREFERENCES);
+export async function getUserPreferences(): Promise<UserPreferences> {
+	const data = await db.get<string>(STORAGE_KEYS.USER_PREFERENCES);
 	return {
 		...DEFAULT_PREFERENCES,
-		...safeJsonParse<Partial<UserPreferences>>(data, {}),
+		...safeJsonParse<Partial<UserPreferences>>(data ?? null, {}),
 	};
 }
 
-export function saveUserPreferences(
+export async function saveUserPreferences(
 	prefs: Partial<UserPreferences>
-): UserPreferences {
-	const current = getUserPreferences();
+): Promise<UserPreferences> {
+	const current = await getUserPreferences();
 	const updated = { ...current, ...prefs };
-	localStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(updated));
+	await db.set(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(updated));
 	return updated;
 }
 
@@ -309,10 +292,12 @@ export interface GameStats {
 	longestGame: number;
 }
 
-export function getGameStats(): GameStats {
-	const history = getGameHistory();
+export async function getGameStats(): Promise<GameStats> {
+	const history = await getGameHistory();
 	// Only count finished games for stats
-	const finishedGames = history.filter((g) => g.status === 'finished');
+	const finishedGames = history.filter(
+		(g: SavedGame) => g.status === 'finished'
+	);
 
 	if (finishedGames.length === 0) {
 		return {
@@ -327,14 +312,23 @@ export function getGameStats(): GameStats {
 		};
 	}
 
-	const wins = finishedGames.filter((g) => g.result === 'win').length;
-	const losses = finishedGames.filter((g) => g.result === 'loss').length;
-	const draws = finishedGames.filter((g) => g.result === 'draw').length;
-	const totalMoves = finishedGames.reduce((sum, g) => sum + g.moves, 0);
-	const longestGame = Math.max(...finishedGames.map((g) => g.moves));
+	const wins = finishedGames.filter(
+		(g: SavedGame) => g.result === 'win'
+	).length;
+	const losses = finishedGames.filter(
+		(g: SavedGame) => g.result === 'loss'
+	).length;
+	const draws = finishedGames.filter(
+		(g: SavedGame) => g.result === 'draw'
+	).length;
+	const totalMoves = finishedGames.reduce(
+		(sum: number, g: SavedGame) => sum + g.moves,
+		0
+	);
+	const longestGame = Math.max(...finishedGames.map((g: SavedGame) => g.moves));
 
 	const botCounts = finishedGames.reduce(
-		(acc, g) => {
+		(acc: Record<string, number>, g: SavedGame) => {
 			acc[g.settings.bot.id] = (acc[g.settings.bot.id] || 0) + 1;
 			return acc;
 		},
@@ -364,32 +358,29 @@ export interface ExportData {
 	preferences: UserPreferences;
 }
 
-export function exportAllData(): ExportData {
+export async function exportAllData(): Promise<ExportData> {
 	return {
 		version: '1.0',
 		exportDate: new Date().toISOString(),
-		gameHistory: getGameHistory(),
-		savedAnalyses: getSavedAnalyses(),
-		preferences: getUserPreferences(),
+		gameHistory: await getGameHistory(),
+		savedAnalyses: await getSavedAnalyses(),
+		preferences: await getUserPreferences(),
 	};
 }
 
-export function importData(data: ExportData): boolean {
+export async function importData(data: ExportData): Promise<boolean> {
 	try {
 		if (data.gameHistory) {
-			localStorage.setItem(
-				STORAGE_KEYS.GAME_HISTORY,
-				JSON.stringify(data.gameHistory)
-			);
+			await db.set(STORAGE_KEYS.GAME_HISTORY, JSON.stringify(data.gameHistory));
 		}
 		if (data.savedAnalyses) {
-			localStorage.setItem(
+			await db.set(
 				STORAGE_KEYS.SAVED_ANALYSIS,
 				JSON.stringify(data.savedAnalyses)
 			);
 		}
 		if (data.preferences) {
-			localStorage.setItem(
+			await db.set(
 				STORAGE_KEYS.USER_PREFERENCES,
 				JSON.stringify(data.preferences)
 			);
@@ -400,8 +391,8 @@ export function importData(data: ExportData): boolean {
 	}
 }
 
-export function downloadExportData(): void {
-	const data = exportAllData();
+export async function downloadExportData(): Promise<void> {
+	const data = await exportAllData();
 	const blob = new Blob([JSON.stringify(data, null, 2)], {
 		type: 'application/json',
 	});

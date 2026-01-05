@@ -24,17 +24,17 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 	const [selectedGame, setSelectedGame] = useState<SavedGame | null>(null);
 
 	useEffect(() => {
-		setTimeout(() => {
-			setGames(getGameHistory());
-			setStats(getGameStats());
-		}, 0);
+		(async () => {
+			setGames(await getGameHistory());
+			setStats(await getGameStats());
+		})();
 	}, []);
 
 	const handleDeleteGame = useCallback(
-		(id: string) => {
+		async (id: string) => {
 			deleteGame(id);
-			setGames(getGameHistory());
-			setStats(getGameStats());
+			setGames(await getGameHistory());
+			setStats(await getGameStats());
 			if (selectedGame?.id === id) {
 				setSelectedGame(null);
 			}
@@ -43,7 +43,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 		[selectedGame]
 	);
 
-	const handleClearHistory = useCallback(() => {
+	const handleClearHistory = useCallback(async () => {
 		if (
 			confirm(
 				'Are you sure you want to clear all game history? This cannot be undone.'
@@ -51,7 +51,7 @@ const HistoryPage = ({ onAnalyzeGame }: HistoryPageProps) => {
 		) {
 			clearGameHistory();
 			setGames([]);
-			setStats(getGameStats());
+			setStats(await getGameStats());
 			setSelectedGame(null);
 			toast.success('All game history cleared');
 		}

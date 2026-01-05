@@ -1,5 +1,5 @@
-import { gameService } from '@/lib/game-service';
 import type { BoardSettings } from '@/components/common/types';
+import { gameService } from '@/lib/game-service';
 import { Chess } from 'chess.js';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -168,8 +168,13 @@ const AnalysisPage = ({ boardSettings }: AnalysisPageProps) => {
 		analyzePosition(fen, 18);
 	}, [analyzePosition, fen]);
 
-	const handleSave = useCallback(() => {
-		saveCurrentAnalysis();
+	const handleSave = useCallback(async () => {
+		const result = await saveCurrentAnalysis();
+		if (result) {
+			toast.success('Analysis saved!');
+		} else {
+			toast.error('No analysis to save.');
+		}
 	}, [saveCurrentAnalysis]);
 
 	const handleLoadAnalysis = useCallback((loadFen: string) => {

@@ -53,109 +53,113 @@ const GamePlay = ({ boardSettings }: GamePlayProps) => {
 	const prevMovesCountRef = useRef(0);
 	const gameStartTimeRef = useRef<number>(0);
 	const gameInitializedRef = useRef(false);
-	const lastSaveRef = useRef<number>(0);
 	const clockStartedRef = useRef(false);
+	const lastSaveRef = useRef<number>(0);
 
+	// Only one useEffect for game initialization
 	useEffect(() => {
-		if (gameInitializedRef.current) return;
-		gameInitializedRef.current = true;
+		const initGame = async () => {
+			if (gameInitializedRef.current) return;
+			gameInitializedRef.current = true;
 
-		if (!gameId) {
-			navigate('/', { replace: true });
-			return;
-		}
+			if (!gameId) {
+				navigate('/', { replace: true });
+				return;
+			}
 
-		const savedGame = getGameById(gameId);
+			const savedGame = await getGameById(gameId);
 
-		if (!savedGame) {
-			toast.error('Game not found');
-			navigate('/', { replace: true });
-			return;
-		}
+			if (!savedGame) {
+				toast.error('Game not found');
+				navigate('/', { replace: true });
+				return;
+			}
 
-		if (savedGame.status === 'finished') {
-			toast.error('This game has already finished');
-			navigate('/history', { replace: true });
-			return;
-		}
+			if (savedGame.status === 'finished') {
+				toast.error('This game has already finished');
+				navigate('/history', { replace: true });
+				return;
+			}
 
-		// Check if it's a new game or resuming
-		if (savedGame.moves === 0) {
-			// New game
-			startGame(savedGame.settings);
-			startClock(savedGame.settings.timeControl);
-			gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
-		} else {
-			// Resuming game
-			restoreGame(
-				savedGame.id,
-				savedGame.fen,
-				savedGame.pgn,
-				savedGame.settings,
-				savedGame.startedAt
-			);
+			// Check if it's a new game or resuming
+			if (savedGame.moves === 0) {
+				// New game
+				startGame(savedGame.settings);
+				startClock(savedGame.settings.timeControl);
+				gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
+			} else {
+				// Resuming game
+				restoreGame(
+					savedGame.id,
+					savedGame.fen,
+					savedGame.pgn,
+					savedGame.settings,
+					savedGame.startedAt
+				);
 
-			let adjustedClockWhite = savedGame.clockWhite;
-			let adjustedClockBlack = savedGame.clockBlack;
-			let timeExpired = false;
-			let loser: 'w' | 'b' | null = null;
+				let adjustedClockWhite = savedGame.clockWhite;
+				let adjustedClockBlack = savedGame.clockBlack;
+				let timeExpired = false;
+				let loser: 'w' | 'b' | null = null;
 
-			if (savedGame.clockRunning && savedGame.lastMoveTime) {
+				if (savedGame.clockRunning && savedGame.lastMoveTime) {
+					const chess = new Chess(savedGame.fen);
+					const currentTurn = chess.turn();
+					const elapsedMs =
+						Date.now() - new Date(savedGame.lastMoveTime).getTime();
+
+					if (currentTurn === 'w') {
+						adjustedClockWhite = Math.max(0, savedGame.clockWhite - elapsedMs);
+						if (adjustedClockWhite === 0) {
+							timeExpired = true;
+							loser = 'w';
+						}
+					} else {
+						adjustedClockBlack = Math.max(0, savedGame.clockBlack - elapsedMs);
+						if (adjustedClockBlack === 0) {
+							timeExpired = true;
+							loser = 'b';
+						}
+					}
+				}
+
+				resetClock(
+					savedGame.settings.timeControl,
+					adjustedClockWhite,
+					adjustedClockBlack
+				);
+
 				const chess = new Chess(savedGame.fen);
 				const currentTurn = chess.turn();
-				const elapsedMs =
-					Date.now() - new Date(savedGame.lastMoveTime).getTime();
+				switchTurn(currentTurn);
 
-				if (currentTurn === 'w') {
-					adjustedClockWhite = Math.max(0, savedGame.clockWhite - elapsedMs);
-					if (adjustedClockWhite === 0) {
-						timeExpired = true;
-						loser = 'w';
-					}
-				} else {
-					adjustedClockBlack = Math.max(0, savedGame.clockBlack - elapsedMs);
-					if (adjustedClockBlack === 0) {
-						timeExpired = true;
-						loser = 'b';
-					}
+				prevFenRef.current = savedGame.fen;
+				prevMovesCountRef.current = savedGame.moves;
+				gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
+				lastSaveRef.current = Date.now();
+
+				// Clock starts only after both players moved (2+ moves)
+				if (savedGame.moves >= 2) {
+					clockStartedRef.current = true;
 				}
-			}
 
-			resetClock(
-				savedGame.settings.timeControl,
-				adjustedClockWhite,
-				adjustedClockBlack
-			);
-
-			const chess = new Chess(savedGame.fen);
-			const currentTurn = chess.turn();
-			switchTurn(currentTurn);
-
-			prevFenRef.current = savedGame.fen;
-			prevMovesCountRef.current = savedGame.moves;
-			gameStartTimeRef.current = new Date(savedGame.startedAt).getTime();
-			lastSaveRef.current = Date.now();
-
-			// Clock starts only after both players moved (2+ moves)
-			if (savedGame.moves >= 2) {
-				clockStartedRef.current = true;
-			}
-
-			// If time expired, trigger timeout immediately
-			if (timeExpired && loser) {
-				toast.error('Time expired while away from game');
-				setTimeout(() => {
-					setTimeoutWinner(loser);
-				}, 500);
-			} else {
-				if (savedGame.clockRunning) {
+				// If time expired, trigger timeout immediately
+				if (timeExpired && loser) {
+					toast.error('Time expired while away from game');
 					setTimeout(() => {
-						startCountdown();
-					}, 100);
+						setTimeoutWinner(loser);
+					}, 500);
+				} else {
+					if (savedGame.clockRunning) {
+						setTimeout(() => {
+							startCountdown();
+						}, 100);
+					}
+					toast.info('Game resumed');
 				}
-				toast.info('Game resumed');
 			}
-		}
+		};
+		initGame();
 	}, [
 		gameId,
 		navigate,

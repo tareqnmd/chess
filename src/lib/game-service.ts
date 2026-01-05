@@ -1,13 +1,13 @@
-import { Chess } from 'chess.js';
 import type { Color } from '@/components/common/types';
+import { Chess } from 'chess.js';
 import {
-	getUserId,
-	getGameHistory,
-	deleteGame as deleteGameFromStorage,
 	clearGameHistory,
+	deleteGame as deleteGameFromStorage,
+	getGameHistory,
 	getGameStats,
-	type SavedGame,
+	getUserId,
 	type GameStats,
+	type SavedGame,
 } from './storage';
 
 export interface GameForAnalysis {
@@ -25,31 +25,37 @@ class GameService {
 	private userId: string;
 
 	constructor() {
-		this.userId = getUserId();
+		// userId must be set asynchronously
+		this.userId = '';
+		this.initUserId();
 	}
 
-	getGameById(gameId: string): SavedGame | null {
-		const history = getGameHistory();
+	async initUserId() {
+		this.userId = await getUserId();
+	}
+	// All methods below should be inside the class
+
+	async getGameById(gameId: string): Promise<SavedGame | null> {
+		const history = await getGameHistory();
 		return history.find((g) => g.id === gameId) || null;
 	}
 
-	getAllGames(): SavedGame[] {
-		return getGameHistory();
+	async getAllGames(): Promise<SavedGame[]> {
+		return await getGameHistory();
 	}
 
-	getUserGames(): SavedGame[] {
-		const history = getGameHistory();
+	async getUserGames(): Promise<SavedGame[]> {
+		const history = await getGameHistory();
 		return history.filter((g) => g.odlId === this.userId);
 	}
 
-	getStats(): GameStats {
-		return getGameStats();
+	async getStats(): Promise<GameStats> {
+		return await getGameStats();
 	}
 
-	getGameForAnalysis(gameId: string): GameForAnalysis | null {
-		const game = this.getGameById(gameId);
+	async getGameForAnalysis(gameId: string): Promise<GameForAnalysis | null> {
+		const game = await this.getGameById(gameId);
 		if (!game) return null;
-
 		return {
 			id: game.id,
 			pgn: game.pgn,
@@ -62,8 +68,8 @@ class GameService {
 		};
 	}
 
-	getGamesForAnalysis(): GameForAnalysis[] {
-		const games = this.getAllGames();
+	async getGamesForAnalysis(): Promise<GameForAnalysis[]> {
+		const games = await this.getAllGames();
 		return games.map((game) => ({
 			id: game.id,
 			pgn: game.pgn,
@@ -76,21 +82,19 @@ class GameService {
 		}));
 	}
 
-	deleteGame(gameId: string): boolean {
-		const game = this.getGameById(gameId);
+	async deleteGame(gameId: string): Promise<boolean> {
+		const game = await this.getGameById(gameId);
 		if (!game) return false;
-
 		if (game.odlId !== this.userId) {
 			console.warn('Cannot delete game owned by another user');
 			return false;
 		}
-
-		deleteGameFromStorage(gameId);
+		await deleteGameFromStorage(gameId);
 		return true;
 	}
 
-	clearAllHistory(): void {
-		clearGameHistory();
+	async clearAllHistory(): Promise<void> {
+		await clearGameHistory();
 	}
 
 	validatePgn(pgn: string): { valid: boolean; error?: string; fen?: string } {
@@ -135,13 +139,13 @@ class GameService {
 		return result;
 	}
 
-	getGamePgn(gameId: string): string | null {
-		const game = this.getGameById(gameId);
+	async getGamePgn(gameId: string): Promise<string | null> {
+		const game = await this.getGameById(gameId);
 		return game?.pgn || null;
 	}
 
-	getGameFen(gameId: string): string | null {
-		const game = this.getGameById(gameId);
+	async getGameFen(gameId: string): Promise<string | null> {
+		const game = await this.getGameById(gameId);
 		return game?.fen || null;
 	}
 }

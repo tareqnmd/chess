@@ -1,6 +1,6 @@
-import type { GameState } from '@/components/game/types';
-import type { BoardSettings } from '@/components/common/types';
 import ChessBoard from '@/components/common/ChessBoard';
+import type { BoardSettings } from '@/components/common/types';
+import type { GameState } from '@/components/game/types';
 
 interface GameBoardProps {
 	gameState: GameState;
