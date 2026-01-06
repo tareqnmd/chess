@@ -52,16 +52,11 @@ export const APP_CONFIG = {
 
 	analytics: {
 		enabled: false,
-		googleAnalyticsId: 'G-XXXXXXXXXX',
-		googleTagManagerId: '',
-		measurementId: '',
+		googleAnalyticsId: 'G-M9NQM7FPBQ',
 	},
 
 	verification: {
-		google: '',
-		bing: '',
-		yandex: '',
-		pinterest: '',
+		google: 'gbYLrQzzftZr2FEqOyI7h-mXjZsrBR24XdCThbou59Y',
 	},
 
 	legal: {
