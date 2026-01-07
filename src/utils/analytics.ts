@@ -21,45 +21,65 @@ declare global {
 	}
 }
 
+const GA_PLACEHOLDER = 'G-XXXXXXXXXX';
+const GA_MEASUREMENT_ID: string = APP_CONFIG.analytics.googleAnalyticsId;
+const hasValidGaId =
+	Boolean(GA_MEASUREMENT_ID) && GA_MEASUREMENT_ID !== GA_PLACEHOLDER;
+const isAnalyticsConfigured = Boolean(
+	APP_CONFIG.analytics.enabled && hasValidGaId
+);
+
+let isAnalyticsInitialized = false;
+
+function addAnalyticsScript(measurementId: string) {
+	const existingScript = document.querySelector<HTMLScriptElement>(
+		`script[src="https://www.googletagmanager.com/gtag/js?id=${measurementId}"]`
+	);
+	if (existingScript) return;
+
+	const script = document.createElement('script');
+	script.async = true;
+	script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+	document.head.appendChild(script);
+}
+
 export function initializeAnalytics() {
-	if (
-		!APP_CONFIG.analytics.enabled ||
-		!APP_CONFIG.analytics.googleAnalyticsId
-	) {
+	if (!isAnalyticsConfigured || typeof window === 'undefined') {
 		console.log('Analytics disabled or not configured');
 		return;
 	}
 
-	const script = document.createElement('script');
-	script.async = true;
-	script.src = `https://www.googletagmanager.com/gtag/js?id=${APP_CONFIG.analytics.googleAnalyticsId}`;
-	document.head.appendChild(script);
+	if (isAnalyticsInitialized) return;
 
 	window.dataLayer = window.dataLayer || [];
-	window.gtag = function gtag(
-		command: GtagCommand,
-		targetId: string | Date,
-		config?: GtagConfigParams | GtagEventParams
-	) {
-		window.dataLayer?.push([command, targetId, config]);
-	};
+	window.gtag =
+		window.gtag ||
+		function gtag(
+			command: GtagCommand,
+			targetId: string | Date,
+			config?: GtagConfigParams | GtagEventParams
+		) {
+			window.dataLayer?.push([command, targetId, config]);
+		};
 
 	window.gtag('js', new Date());
-	window.gtag('config', APP_CONFIG.analytics.googleAnalyticsId, {
+	window.gtag('config', GA_MEASUREMENT_ID, {
 		send_page_view: false,
 	});
+
+	addAnalyticsScript(GA_MEASUREMENT_ID);
+	isAnalyticsInitialized = true;
 
 	console.log('Google Analytics initialized');
 }
 
 export function trackPageView(page: string, title?: string, path?: string) {
-	if (!APP_CONFIG.analytics.enabled || !window.gtag) return;
+	if (!isAnalyticsConfigured || !isAnalyticsInitialized || !window.gtag) return;
 
-	window.gtag('event', 'page_view', {
+	window.gtag('config', GA_MEASUREMENT_ID, {
 		page_title: title || document.title,
 		page_location: window.location.href,
 		page_path: path || window.location.pathname,
-		page: page,
 	});
 
 	console.log('Page view tracked:', page);
@@ -69,7 +89,7 @@ export function trackEvent(
 	eventName: string,
 	eventParams?: Record<string, string | number | boolean | undefined>
 ) {
-	if (!APP_CONFIG.analytics.enabled || !window.gtag) return;
+	if (!isAnalyticsConfigured || !window.gtag) return;
 
 	window.gtag('event', eventName, eventParams);
 
@@ -154,7 +174,7 @@ export function trackSearch(searchTerm: string, resultsCount: number) {
 export function setUserProperties(
 	properties: Record<string, string | number | boolean | undefined>
 ) {
-	if (!APP_CONFIG.analytics.enabled || !window.gtag) return;
+	if (!isAnalyticsConfigured || !window.gtag) return;
 
 	window.gtag('set', 'user_properties', properties);
 }
@@ -167,9 +187,9 @@ export function trackPerformance(metricName: string, value: number) {
 }
 
 export function setUserId(userId: string) {
-	if (!APP_CONFIG.analytics.enabled || !window.gtag) return;
+	if (!isAnalyticsConfigured || !window.gtag) return;
 
-	window.gtag('config', APP_CONFIG.analytics.googleAnalyticsId, {
+	window.gtag('config', GA_MEASUREMENT_ID, {
 		user_id: userId,
 	});
 }
