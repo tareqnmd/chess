@@ -77,15 +77,25 @@ export const SEO_CONFIG = {
 			ratingCount: '150',
 		},
 		author: {
-			'@type': 'Organization',
+			'@type': 'Person',
 			name: APP_CONFIG.author,
+			url: APP_CONFIG.authorUrl,
+			image: `${APP_CONFIG.url}${APP_CONFIG.authorImage}`,
+			sameAs: [
+				APP_CONFIG.social.github,
+				`https://twitter.com/${APP_CONFIG.social.twitter.replace('@', '')}`,
+				APP_CONFIG.authorUrl,
+			],
 		},
 	},
 
 	additional: {
 		author: APP_CONFIG.author,
-		creator: APP_CONFIG.author,
+		creator: APP_CONFIG.social.twitter,
 		publisher: APP_CONFIG.author,
+		authorUrl: APP_CONFIG.authorUrl,
+		authorImage: `${APP_CONFIG.url}${APP_CONFIG.authorImage}`,
+		authorUsername: APP_CONFIG.authorUsername,
 		formatDetection: {
 			telephone: false,
 			date: false,

@@ -77,6 +77,17 @@ export function updatePageMeta(page?: keyof typeof META_CONFIG.pages) {
 	const meta = generateMetaTags(page);
 	const og = generateOpenGraphTags(page);
 	const twitter = generateTwitterTags(page);
+	const authorImageUrl = `${APP_CONFIG.url}${APP_CONFIG.authorImage}`;
+
+	updateMetaTag(
+		'author',
+		`${APP_CONFIG.author} (@${APP_CONFIG.authorUsername})`
+	);
+	updateMetaTag('author:url', APP_CONFIG.authorUrl);
+	updateMetaTag('author:username', APP_CONFIG.authorUsername);
+	updateMetaTag('author:image', authorImageUrl);
+	updateOGTag('article:author', APP_CONFIG.authorUrl);
+	updateOGTag('profile:username', APP_CONFIG.authorUsername);
 
 	setDocumentTitle(page);
 
@@ -86,9 +97,12 @@ export function updatePageMeta(page?: keyof typeof META_CONFIG.pages) {
 	updateOGTag('og:title', og.title);
 	updateOGTag('og:description', og.description);
 	updateOGTag('og:url', og.url);
+	updateOGTag('og:site_name', APP_CONFIG.name);
 
 	updateMetaTag('twitter:title', twitter.title);
 	updateMetaTag('twitter:description', twitter.description);
+	updateMetaTag('twitter:creator', APP_CONFIG.social.twitter);
+	updateMetaTag('twitter:image', authorImageUrl);
 }
 
 export function getCanonicalUrl(page?: keyof typeof META_CONFIG.pages) {

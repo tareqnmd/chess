@@ -4,6 +4,9 @@ export const APP_CONFIG = {
 	tagline: 'Play Against AI, Analyze Games & Learn Chess Strategy',
 	version: '1.0.0',
 	author: 'Md Tareq',
+	authorUsername: 'tareqnmd',
+	authorUrl: 'https://tareqnmd.com',
+	authorImage: '/meta/author.webp',
 
 	url: 'https://chess.tareqnmd.com',
 	baseUrl: '/',
